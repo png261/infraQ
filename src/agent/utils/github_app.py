@@ -78,6 +78,11 @@ def _github_request(method: str, path: str, token: str, body: dict | None = None
         raise RuntimeError(f"GitHub API {method} {path} failed: {exc.code} {details}") from exc
 
 
+def _is_direct_token(credentials: dict[str, str]) -> bool:
+    key = (credentials.get("private_key") or "").strip()
+    return key.startswith(("ghp_", "gho_", "github_pat_")) or (bool(key) and len(key.splitlines()) == 1 and not key.startswith("-----"))
+
+
 def _app_jwt(credentials: dict[str, str]) -> str:
     now = int(time.time())
     app_id = credentials["app_id"]
@@ -89,6 +94,8 @@ def _app_jwt(credentials: dict[str, str]) -> str:
 
 def get_installation_token(owner: str, repo: str) -> str:
     credentials = get_github_app_credentials()
+    if _is_direct_token(credentials):
+        return credentials["private_key"].strip()
     app_token = _app_jwt(credentials)
     try:
         installation = _github_request("GET", f"/repos/{owner}/{repo}/installation", app_token)
@@ -217,6 +224,35 @@ def setup_repository_workspace(repository: dict, session_id: str) -> Path:
 
 def list_installed_repositories() -> dict:
     credentials = get_github_app_credentials()
+    if _is_direct_token(credentials):
+        token = credentials["private_key"].strip()
+        try:
+            user_data = _github_request("GET", "/user", token)
+            login = user_data.get("login") or "user"
+        except Exception:
+            login = "user"
+        accounts = [{"login": login, "type": "User", "canCreateRepositories": False}]
+        try:
+            repos_data = _github_request("GET", "/user/repos?per_page=100&sort=updated", token)
+        except Exception:
+            repos_data = []
+        repositories: list[dict] = []
+        for repository in (repos_data if isinstance(repos_data, list) else []):
+            full_name = repository.get("full_name") or ""
+            if not full_name or "/" not in full_name:
+                continue
+            owner, name = full_name.split("/", 1)
+            repositories.append(
+                {
+                    "fullName": full_name,
+                    "owner": owner,
+                    "name": name,
+                    "defaultBranch": repository.get("default_branch") or "main",
+                    "url": repository.get("html_url") or "",
+                    "private": bool(repository.get("private")),
+                }
+            )
+        return {"accounts": accounts, "repositories": repositories}
     app_token = _app_jwt(credentials)
     installations = _github_request("GET", "/app/installations", app_token)
     if not isinstance(installations, list):

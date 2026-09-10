@@ -467,6 +467,9 @@ def _github_app_jwt(payload: dict[str, Any]) -> str:
 
 def _github_installation_token(owner: str, repo: str) -> str:
     app_payload = _github_secret_payload()
+    key = str(app_payload.get("private_key") or "").strip()
+    if key.startswith(("ghp_", "gho_", "github_pat_")) or (bool(key) and len(key.splitlines()) == 1 and not key.startswith("-----")):
+        return key
     app_token = _github_app_jwt(app_payload)
     try:
         installation = _github_request("GET", f"/repos/{owner}/{repo}/installation", app_token)
