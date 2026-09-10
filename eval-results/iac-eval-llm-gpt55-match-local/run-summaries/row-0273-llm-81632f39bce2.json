@@ -1,0 +1,81 @@
+{
+  "index": 273,
+  "rowId": "273",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-81632f39bce2",
+  "userId": "local-user",
+  "durationSeconds": 81.47,
+  "difficulty": "3",
+  "resource": "aws_s3_bucket, aws_s3_bucket, aws_s3_bucket_inventory",
+  "prompt": "Create S3 bucket with bucket name = \"mybucket\" and an inventory configuration resource for the bucket that reports daily.",
+  "intent": "Has two resources \"aws_s3_bucket\"\n\nHas one resource \"aws_s3_bucket_inventory\"\nwith bucket = first bucket id OR name\nwith schedule with frequency = \"Daily\"",
+  "referenceOutput": "resource \"aws_s3_bucket\" \"test\" {\n  bucket = \"mybucket\"\n}\n\nresource \"aws_s3_bucket\" \"inventory\" {\n  bucket = \"my-tf-inventory-bucket\"\n}\n\nresource \"aws_s3_bucket_inventory\" \"test\" {\n  bucket = aws_s3_bucket.test.id\n  name   = \"EntireBucketDaily\"\n\n  included_object_versions = \"All\"\n\n  schedule {\n    frequency = \"Daily\"\n  }\n\n  destination {\n    bucket {\n      format     = \"ORC\"\n      bucket_arn = aws_s3_bucket.inventory.arn\n    }\n  }\n}",
+  "bleuScore": 0.113503,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0273-llm-81632f39bce2",
+  "generatedSourceFiles": [
+    "generated-source/row-0273-llm-81632f39bce2/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_s3_bucket": true,
+    "aws_s3_bucket_inventory": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS S3 bucket named `mybucket` and configures a daily S3 Inventory report for that bucket. The inventory reports current object versions in CSV format and stores the reports back into the same bucket under the `inventory/` prefix. A bucket policy is included to allow the S3 inventory service to write inventory reports to the bucket.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\ndata \"aws_caller_identity\" \"current\" {}\n\nresource \"aws_s3_bucket\" \"main\" {\n  bucket = \"mybucket\"\n}\n\nresource \"aws_s3_bucket_public_access_block\" \"main\" {\n  bucket = aws_s3_bucket.main.id\n\n  block_public_acls       = true\n  block_public_policy     = true\n  ignore_public_acls      = true\n  restrict_public_buckets = true\n}\n\ndata \"aws_iam_policy_document\" \"s3_inventory_write\" {\n  statement {\n    sid = \"AllowS3InventoryToWriteReports\"\n\n    principals {\n      type        = \"Service\"\n      identifiers = [\"s3.amazonaws.com\"]\n    }\n\n    actions = [\n      \"s3:PutObject\"\n    ]\n\n    resources = [\n      \"${aws_s3_bucket.main.arn}",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0273-llm-81632f39bce2.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create S3 bucket with bucket name = \"mybucket\" and an inventory configuration resource for the bucket that reports daily.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS S3 bucket named `mybucket` and configures a daily S3 Inventory report for that bucket. The inventory reports current object versions in CSV format and stores the reports back into the same bucket under the `inventory/` prefix. A bucket policy is included to allow the S3 inventory service to write inventory reports to the bucket.",
+  "failure_category": "",
+  "failure_reason": ""
+}

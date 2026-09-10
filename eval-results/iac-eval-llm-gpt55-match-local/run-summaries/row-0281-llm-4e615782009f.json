@@ -1,0 +1,83 @@
+{
+  "index": 281,
+  "rowId": "281",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-4e615782009f",
+  "userId": "local-user",
+  "durationSeconds": 18.99,
+  "difficulty": "2",
+  "resource": "aws_kms_key, aws_s3_bucket, aws_s3_bucket_server_side_encryption_configuration",
+  "prompt": "Create an AWS S3 bucket and apply KMS server side encryption that uses a defined KMS key resource.",
+  "intent": "Has one resource \"aws_s3_bucket\"\n\nHas one resource \"aws_kms_key\"\n\nHas one resource \"aws_s3_bucket_server_side_encryption\"\nwith bucket = bucket id OR name\nwith rule\n    with apply_server_side_encryption_by_default\n        with kms_master_key_id = kms key id\n        and sse_algorithm = \"aws:kms\"",
+  "referenceOutput": "resource \"aws_kms_key\" \"mykey\" {\n  description             = \"This key is used to encrypt bucket objects\"\n  deletion_window_in_days = 10\n}\n\nresource \"aws_s3_bucket\" \"mybucket\" {\n  bucket = \"mybucket\"\n}\n\nresource \"aws_s3_bucket_server_side_encryption_configuration\" \"example\" {\n  bucket = aws_s3_bucket.mybucket.id\n\n  rule {\n    apply_server_side_encryption_by_default {\n      kms_master_key_id = aws_kms_key.mykey.arn\n      sse_algorithm     = \"aws:kms\"\n    }\n  }\n}",
+  "bleuScore": 0.04762,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0281-llm-4e615782009f",
+  "generatedSourceFiles": [
+    "generated-source/row-0281-llm-4e615782009f/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: Terraform encountered problems during initialisation, including problems\nwith the configuration, described below.\n\nThe Terraform configuration must be valid before initialization so that\nTerraform can determine which modules and providers need to be installed.\n\n\nError: Unsupported block type\n\n  on main.tf line 35:\n  35: random_id \"bucket_suffix\" {\n\nBlocks of type \"random_id\" are not expected here.\n\nError: Unsupported block type\n\n  on main.tf line 35:\n  35: random_id \"bucket_suffix\" {\n\nBlocks of type \"random_id\" are not expected here.\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_kms_key": true,
+    "aws_s3_bucket": true,
+    "aws_s3_bucket_server_side_encryption_configuration": true,
+    "aws_s3_bucket_server_side_encryption": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS S3 bucket and applies default server-side encryption using a customer-managed AWS KMS key. It defines the KMS key, an alias for easier identification, the S3 bucket, and the bucket encryption configuration that references the KMS key.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"bucket_name_prefix\" {\n  description = \"Prefix for the S3 bucket name. A random suffix will be added.\"\n  type        = string\n  default     = \"kms-encrypted-bucket\"\n}\n\ndata \"aws_caller_identity\" \"current\" {}\n\nrandom_id \"bucket_suffix\" {\n  byte_length = 4\n}\n\nresource \"aws_kms_key\" \"s3_kms_key\" {\n  description             = \"Customer-managed KMS key for S3 server-side encryption\"\n  deletion_window_in_days = 10\n  enable_key_rotation     = true\n\n  policy = jsonencode({\n    Version = \"2",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0281-llm-4e615782009f.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an AWS S3 bucket and apply KMS server side encryption that uses a defined KMS key resource.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS S3 bucket and applies default server-side encryption using a customer-managed AWS KMS key. It defines the KMS key, an alias for easier identification, the S3 bucket, and the bucket encryption configuration that references the KMS key.",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: Terraform encountered problems during initialisation, including problems with the configuration, described below. The Terraform configuration must be valid before initialization so that Terraform can determine which modules and providers need to be installed. Error: Unsupported block type on main.tf line 35: 35: random_id \"bucket_suffix\" { Blocks of type \"random_id\" are not expected here. Error: Unsupported block type on main.tf line 35: 35: random_id \"bucket_suffix\" { Blocks of type \"ran... <truncated 30 chars>"
+}

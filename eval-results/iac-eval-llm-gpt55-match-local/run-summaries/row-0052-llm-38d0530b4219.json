@@ -1,0 +1,81 @@
+{
+  "index": 52,
+  "rowId": "52",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-38d0530b4219",
+  "userId": "local-user",
+  "durationSeconds": 103.77,
+  "difficulty": "3",
+  "resource": "aws_iam_role, aws_lexv2models_bot",
+  "prompt": "create a aws_lexv2models_bot for children",
+  "intent": "Has one resource \"aws_iam_role\" and one resource \"aws_lexv2models_bot\" and \"child_directed\" = true",
+  "referenceOutput": "provider \"aws\" {\n  region = \"us-west-2\"\n}\nresource \"aws_iam_role\" \"test_rolelex12\" {\n  name = \"test_rolelex12\"\n\n  assume_role_policy = jsonencode({\n    Version = \"2012-10-17\"\n    Statement = [\n      {\n        Action = \"sts:AssumeRole\"\n        Effect = \"Allow\"\n        Sid    = \"\"\n        Principal = {\n          Service = \"codebuild.amazonaws.com\"\n        }\n      },\n    ]\n  })\n}\n\nresource \"aws_lexv2models_bot\" \"example\" {\n  name = \"example\"\n  description  = \"An example bot for child-directed interactions\"\n  role_arn     = aws_iam_role.test_rolelex12.arn\n  type         = \"Bot\"\n  data_privacy {\n    child_directed = true\n  }\n  idle_session_ttl_in_seconds = 100\n\n  tags = {\n    foo = \"bar\"\n  }\n}",
+  "bleuScore": 0.086202,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-1/generated-source/row-0052-llm-38d0530b4219",
+  "generatedSourceFiles": [
+    "generated-source/row-0052-llm-38d0530b4219/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: Unsupported block type\n\n  on main.tf line 107, in resource \"aws_lexv2models_intent\" \"say_hello\":\n 107:   closing_response {\n\nBlocks of type \"closing_response\" are not expected here.\n\nError: Unsupported block type\n\n  on main.tf line 131, in resource \"aws_lexv2models_intent\" \"fallback\":\n 131:   closing_response {\n\nBlocks of type \"closing_response\" are not expected here.\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_iam_role": true,
+    "aws_lexv2models_bot": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "Description: This Terraform configuration creates an AWS Lex V2 bot designed for children. It enables Lex data privacy child-directed mode, creates the required IAM role for Lex, defines an English US locale, adds a simple child-friendly intent, and includes the built-in fallback intent.\n\n```hcl\nterraform {\n  required_version = \">= 1.3.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_iam_role\" \"lex_bot_role\" {\n  name = \"children-lexv2-bot-role\"\n\n  assume_role_policy = jsonencode({\n    Version = \"2012-10-17\"\n    Statement = [\n      {\n        Effect = \"Allow\"\n        Principal = {\n          Service = \"lexv2.amazonaws.com\"\n        }\n        Action = \"sts:AssumeRole\"\n      }\n    ]\n  })\n}\n\nresource \"aws_iam_role_policy\" \"lex_bot_policy\" {\n  name = \"children-lexv2-bot-policy\"\n  role = aws_iam_role.lex_bot_role.id\n\n  policy = jsonencode({\n    Version = \"2012-10-17\"\n    Statement = [\n      {\n        Effect = \"Allow\"\n        Action = [\n          \"polly:SynthesizeSpeech\",\n          \"comprehend:DetectSentiment\",\n          \"cloudwatch:PutMetricData\",\n          \"logs:CreateLogGro",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-1/run-summaries/row-0052-llm-38d0530b4219.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: create a aws_lexv2models_bot for children",
+  "promptStrategy": "default",
+  "answer": "Description: This Terraform configuration creates an AWS Lex V2 bot designed for children. It enables Lex data privacy child-directed mode, creates the required IAM role for Lex, defines an English US locale, adds a simple child-friendly intent, and includes the built-in fallback intent.",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: Unsupported block type on main.tf line 107, in resource \"aws_lexv2models_intent\" \"say_hello\": 107: closing_response { Blocks of type \"closing_response\" are not expected here. Error: Unsupported block type on main.tf line 131, in resource \"aws_lexv2models_intent\" \"fallback\": 131: closing_response { Blocks of type \"closing_response\" are not expected here."
+}

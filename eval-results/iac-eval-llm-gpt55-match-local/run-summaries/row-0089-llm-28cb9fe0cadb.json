@@ -1,0 +1,94 @@
+{
+  "index": 89,
+  "rowId": "89",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-28cb9fe0cadb",
+  "userId": "local-user",
+  "durationSeconds": 107.93,
+  "difficulty": "6",
+  "resource": "aws_eks_cluster, aws_iam_role, aws_iam_role_policy_attachment, aws_iam_role_policy_attachment, aws_subnet, aws_vpc, aws_region",
+  "prompt": "Set up an AWS provider for the specified region. Retrieve the current caller identity using 'aws_caller_identity'. Optionally, fetch the latest stable ECR image tagged as 'stable' from the specified repository. Define local variables including an image tag, AWS tags, and workspace name. Instantiate an EKS module with configurations for cluster setup, IAM policies, instance types, and node count. Retrieve information about the created EKS cluster and its authentication data. Configure Helm and Kubernetes providers using the EKS cluster's details for cluster communication.",
+  "intent": "has one \"aws_caller_identity\" data source named \"current\"\nhas one \"aws_ecr_image\" \nwith one \"repository_name\"\nwith one \"image_tag\"\n\nhas multiple local variables defining:\n\"image_tag\" \n\"aws_tags\"\n\"workspace_name\"\n\nhas one module named \"eks\"\n\nhas one \"aws_eks_cluster\" data source named \"aptos\"\nwith one \"name\"\nwith a \"depends_on\" \nhas one \"aws_eks_cluster_auth\"\nwith one \"name\"\n\nhas one \"helm\" provider\nhas one \"kubernetes\" provider",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nvariable \"cluster_name\" {\n  type = string\n  default = \"test-cluster\"\n}\n\ndata \"aws_region\" \"current\" {}\n\nresource \"aws_vpc\" \"main\" {\n  cidr_block = \"10.0.0.0/16\"\n}\n\ndata \"aws_availability_zones\" \"available\" {\n  state = \"available\"\n}\n\nresource \"aws_subnet\" \"test_eks_1\" {\n  vpc_id     = aws_vpc.main.id\n  cidr_block = \"10.0.1.0/24\"\n\n  availability_zone = data.aws_availability_zones.available.names[0]\n}\n\nresource \"aws_subnet\" \"test_eks_2\" {\n  vpc_id     = aws_vpc.main.id\n  cidr_block = \"10.0.2.0/24\"\n\n  availability_zone = data.aws_availability_zones.available.names[1]\n}\n\nresource \"aws_iam_role\" \"example\" {\n  name = \"${var.cluster_name}-eks\"\n\n  assume_role_policy = jsonencode({\n    Statement = [{\n      Action = \"sts:AssumeRole\"\n      Effect = \"Allow\"\n      Principal = {\n        Service = \"eks.amazonaws.com\"\n      }\n    }]\n    Version = \"2012-10-17\"\n  })\n}\n\nresource \"aws_iam_role_policy_attachment\" \"eks_cluster_policy\" {\n  policy_arn = \"arn:aws:iam::aws:policy/AmazonEKSClusterPolicy\"\n  role       = aws_iam_role.example.name\n}\n\nresource \"aws_iam_role_policy_attachment\" \"eks_service_policy\" {\n  policy_arn = \"arn:aws:iam::aws:policy/AmazonEKSServicePolicy\"\n  role       = aws_iam_role.example.name\n}\n\nresource \"aws_eks_cluster\" \"example\" {\n  name     = var.cluster_name\n  role_arn = aws_iam_role.example.arn\n\n  vpc_config {\n    subnet_ids = [ aws_subnet.test_eks_1.id, aws_subnet.test_eks_2.id ]\n  }\n\n  # Ensure that IAM Role permissions are created before and deleted after EKS Cluster handling.\n  # Otherwise, EKS will not be able to properly delete EKS managed EC2 infrastructure such as Security Groups.\n  depends_on = [\n    aws_iam_role_policy_attachment.eks_cluster_policy,\n    aws_iam_role_policy_attachment.eks_service_policy,\n  ]\n\n  # Manage kubectl configuration\n  provisioner \"local-exec\" {\n    command = \"aws eks --region ${data.aws_region.current.name} update-kubeconfig --name ${self.name}\"\n  }\n\n  provisioner \"local-exec\" {\n    when    = destroy\n    command = \"kubectl config unset users.${self.arn}\"\n  }\n  provisioner \"local-exec\" {\n    when    = destroy\n    command = \"kubectl config unset clusters.${self.arn}\"\n  }\n  provisioner \"local-exec\" {\n    when    = destroy\n    command = \"kubectl config unset contexts.${self.arn}\"\n  }\n}",
+  "bleuScore": 0.056817,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0089-llm-28cb9fe0cadb",
+  "generatedSourceFiles": [
+    "generated-source/row-0089-llm-28cb9fe0cadb/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: Unsupported block type\n\n  on .terraform/modules/eks/modules/eks-managed-node-group/main.tf line 136, in resource \"aws_launch_template\" \"this\":\n 136:   dynamic \"elastic_gpu_specifications\" {\n\nBlocks of type \"elastic_gpu_specifications\" are not expected here.\n\nError: Unsupported block type\n\n  on .terraform/modules/eks/modules/eks-managed-node-group/main.tf line 144, in resource \"aws_launch_template\" \"this\":\n 144:   dynamic \"elastic_inference_accelerator\" {\n\nBlocks of type \"elastic_inference_accelerator\" are not expected here.\n\nError: Unsupported block type\n\n  on .terraform/modules/eks/modules/self-managed-node-group/main.tf line 151, in resource \"aws_launch_template\" \"this\":\n 151:   dynamic \"elastic_gpu_specifications\" {\n\nBlocks of type \"elastic_gpu_specifications\" are not expected here.\n\nError: Unsupported block type\n\n  on .terraform/modules/eks/modules/self-managed-node-group/main.tf line 159, in resource \"aws_launch_template\" \"this\":\n 159:   dynamic \"elastic_inference_accelerator\" {\n\nBlocks of type \"elastic_inference_accelerator\" are not expected here.\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_eks_cluster": true,
+    "aws_iam_role": false,
+    "aws_iam_role_policy_attachment": false,
+    "aws_subnet": false,
+    "aws_vpc": false,
+    "aws_region": true,
+    "aws_caller_identity": true,
+    "aws_ecr_image": true,
+    "aws_tags": true,
+    "aws_eks_cluster_auth": true
+  },
+  "missingMarkers": [
+    "aws_iam_role",
+    "aws_iam_role_policy_attachment",
+    "aws_subnet",
+    "aws_vpc"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "The following Terraform configuration sets up AWS in a specified region, retrieves the current AWS caller identity, optionally looks up an ECR image tagged `stable`, defines useful local values, creates a VPC, provisions an EKS cluster using the official Terraform AWS EKS module, fetches cluster connection/authentication data, and configures both Kubernetes and Helm providers to communicate with the created EKS cluster.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.40.0\"\n    }\n\n    kubernetes = {\n      source  = \"hashicorp/kubernetes\"\n      version = \">= 2.25.0\"\n    }\n\n    helm = {\n      source  = \"hashicorp/helm\"\n      version = \">= 2.12.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n\n  default_tags {\n    tags = local.aws_tags\n  }\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be deployed.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"name_prefix\" {\n  description = \"Prefix used for naming AWS resources.\"\n  type        = string\n  default     = \"terraformai\"\n}\n\nvariable \"environment\" {\n  description = \"Deployment environment name",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0089-llm-28cb9fe0cadb.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Set up an AWS provider for the specified region. Retrieve the current caller identity using 'aws_caller_identity'. Optionally, fetch the latest stable ECR image tagged as 'stable' from the specified repository. Define local variables including an image tag, AWS tags, and workspace name. Instantiate an EKS module with configurations for cluster setup, IAM policies, instance types, and node count. Retrieve information about the created EKS cluster and its authentication data. Configure Helm and Kubernetes providers using the EKS cluster's details for cluster communication.",
+  "promptStrategy": "default",
+  "answer": "The following Terraform configuration sets up AWS in a specified region, retrieves the current AWS caller identity, optionally looks up an ECR image tagged `stable`, defines useful local values, creates a VPC, provisions an EKS cluster using the official Terraform AWS EKS module, fetches cluster connection/authentication data, and configures both Kubernetes and Helm providers to communicate with the created EKS cluster.",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: Unsupported block type on .terraform/modules/eks/modules/eks-managed-node-group/main.tf line 136, in resource \"aws_launch_template\" \"this\": 136: dynamic \"elastic_gpu_specifications\" { Blocks of type \"elastic_gpu_specifications\" are not expected here. Error: Unsupported block type on .terraform/modules/eks/modules/eks-managed-node-group/main.tf line 144, in resource \"aws_launch_template\" \"this\": 144: dynamic \"elastic_inference_accelerator\" { Blocks of type \"elastic_inference_accelerator\" a... <truncated 545 chars>"
+}

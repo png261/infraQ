@@ -1,0 +1,81 @@
+{
+  "index": 457,
+  "rowId": "457",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-1c79eb01f623",
+  "userId": "local-user",
+  "durationSeconds": 48.81,
+  "difficulty": "3",
+  "resource": "aws_network_acl, aws_vpc",
+  "prompt": "configures AWS as the cloud provider. It defines an AWS VPC with a specific CIDR block of 10.0.0.0/16 and a network ACL linked to this VPC that allows specific TCP traffic for both ingress and egress rules.",
+  "intent": "Has one \"aws_vpc\" resource:\nwith a specified \"cidr_block\" of \"10.0.0.0/16\"\n\nHas one \"aws_network_acl\" resource:\nlinked to the \"aws_vpc\" resource\nwith ingress rules allowing TCP traffic\nwith egress rules allowing TCP traffic",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 4.16\"\n    }\n  }\n\n  required_version = \">= 1.2.0\"\n}\n# Define the provider block for AWS\nprovider \"aws\" {\n  region = \"us-east-2\" # Set your desired AWS region\n}\n\nresource \"aws_vpc\" \"example\" {\n  cidr_block = \"10.0.0.0/16\"\n}\n\nresource \"aws_network_acl\" \"example\" {\n  vpc_id = aws_vpc.example.id\n\n  egress {\n    protocol   = \"tcp\"\n    rule_no    = 200\n    action     = \"allow\"\n    cidr_block = \"10.3.0.0/18\"\n    from_port  = 443\n    to_port    = 443\n  }\n\n  ingress {\n    protocol   = \"tcp\"\n    rule_no    = 100\n    action     = \"allow\"\n    cidr_block = \"10.3.0.0/18\"\n    from_port  = 80\n    to_port    = 80\n  }\n}",
+  "bleuScore": 0.27,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0457-llm-1c79eb01f623",
+  "generatedSourceFiles": [
+    "generated-source/row-0457-llm-1c79eb01f623/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_network_acl\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_network_acl": true,
+    "aws_vpc": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration sets up AWS as the cloud provider in the `us-east-1` region. It creates a VPC with the CIDR block `10.0.0.0/16` and defines a custom Network ACL associated with that VPC. The Network ACL allows specific TCP traffic for both ingress and egress, including HTTP traffic on port `80` and HTTPS traffic on port `443`.\n\n```hcl\nterraform {\n  required_version = \">= 1.0.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_vpc\" \"main\" {\n  cidr_block           = \"10.0.0.0/16\"\n  enable_dns_support   = true\n  enable_dns_hostnames = true\n\n  tags = {\n    Name = \"main-vpc\"\n  }\n}\n\nresource \"aws_network_acl\" \"main\" {\n  vpc_id = aws_vpc.main.id\n\n  ingress {\n    rule_no    = 100\n    protocol   = \"tcp\"\n    action     = \"allow\"\n    cidr_block = \"0.0.0.0/0\"\n    from_port  = 80\n    to_port    = 80\n  }\n\n  ingress {\n    rule_no    = 110\n    protocol   = \"tcp\"\n    action     = \"allow\"\n    cidr_block = \"0.0.0.0/0\"\n    from_port  = 443\n    to_port    = 443\n  }\n\n  egress {\n    rule_no    = 100\n    protocol   = \"tcp\"\n    action     = \"allow\"\n    cidr_block = \"0.0.0.0/0\"\n    ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0457-llm-1c79eb01f623.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: configures AWS as the cloud provider. It defines an AWS VPC with a specific CIDR block of 10.0.0.0/16 and a network ACL linked to this VPC that allows specific TCP traffic for both ingress and egress rules.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration sets up AWS as the cloud provider in the `us-east-1` region. It creates a VPC with the CIDR block `10.0.0.0/16` and defines a custom Network ACL associated with that VPC. The Network ACL allows specific TCP traffic for both ingress and egress, including HTTP traffic on port `80` and HTTPS traffic on port `443`.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_network_acl\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

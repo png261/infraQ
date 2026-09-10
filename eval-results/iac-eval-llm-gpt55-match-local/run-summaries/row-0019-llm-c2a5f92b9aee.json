@@ -1,0 +1,116 @@
+{
+  "index": 19,
+  "rowId": "19",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-c2a5f92b9aee",
+  "userId": "local-user",
+  "durationSeconds": 112.07,
+  "difficulty": "6",
+  "resource": "aws_db_instance, aws_db_subnet_group, aws_elastic_beanstalk_application, aws_elastic_beanstalk_environment, aws_elastic_beanstalk_environment, aws_iam_instance_profile, aws_iam_role, aws_iam_role_policy_attachment, aws_internet_gateway, aws_route_table, aws_route_table_association, aws_route_table_association, aws_security_group, aws_subnet, aws_subnet, aws_vpc",
+  "prompt": "Configure an AWS VPC with internet gateway, two public subnets, a security group, and a route table associated with the public subnets. Then connect these resources to two Elastic Beanstalk environments. These environments are also connected to a shared RDS database that is linked to the subnets. Name the database \"shared_rds\", the security group \"eb_env_sg\", the vpc \"eb_vpc\", and the subnets \"eb_subnet_public_1\" and \"eb_subnet_public_2\"",
+  "intent": "Has one \"aws_iam_role\" resource\n    with \"name\"\n    with \"assume_role_policy\" and \"Service\" set to \"ec2.amazonaws.com\"\n\nHas one \"aws_iam_role_policy_attachment\" resource\n    with \"role\" referencing the \"aws_iam_role\"\n    with \"policy_arn\" set to \"arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier\"\n\nHas one \"aws_iam_instance_profile\" resource\n    with \"name\"\n    with \"role\" referencing the \"aws_iam_role\" resource\n\nHas one \"aws_vpc\" resource\n    with \"cidr_block\" set to a valid value\n\nHas one \"aws_internet_gateway\" resource\n    with \"vpc_id\" referencing the \"aws_vpc\" resource\n\nHas two \"aws_subnet\" resources\n    with \"vpc_id\" referencing the \"aws_vpc\" resource\n    with \"cidr_block\" set to a valid value\n    with \"availability_zone\" set to a zone within the region\n\nHas one \"aws_security_group\" resource\n     with \"vpc_id\" referencing the \"aws_vpc\" resource\n     with \"ingress\" blocks\n     with \"egress\" block\n\nHas one \"aws_db_subnet_group\" resource\n     with \"subnet_ids\" referencing the \"aws_subnet\" resources\n\nHas one \"aws_route_table\" resources\n     with \"vpc_id\" referencing the \"aws_vpc\" resource\n     with the \"route\" block containing \"gateway_id\" referencing the \"aws_internet_gateway\" resource\n\nHas two \"aws_route_table_association\" resources\n     with \"subnet_id\" referencing one of the \"aws_subnet\" resources\n     with \"route_table_id\" referencing the \"aws_route_table\" resource\n\nHas one \"aws_elastic_beanstalk_application\" resource\n    with \"name\"\n\n\nHas two \"aws_elastic_beanstalk_environment\" resources\n    with \"name\"\n    with \"application\" referencing the \"aws_elastic_beanstalk_application\" resource\n    with \"solution_stack_name\"\n    with a \"setting\" block that has a \"value\" that references the \"aws_iam_instance_profile\" resource\n    with a \"setting\" block that has a \"value\" that references the \"id\" from all the \"aws_subnet\" resources\n    with a \"setting\" block that has a \"value\" that references the \"id\" from the \"aws_vpc\" resource\n    with a \"setting\" block that has a \"value\" that references the \"id\" from the \"aws_security_group\" resource\n    with a \"setting\" block that has a \"value\" that references the \"address\" from the \"db_instance\" resource\n    with a \"setting\" block that has a \"value\" that references the \"username\" from the \"db_instance\" resource \n    with a \"setting\" block that has a \"value\" that references the \"password\" from the \"db_instance\" resource \n\nHas a \"aws_db_instance\" resource\n    with \"instance_class\"\n    with \"allocated_storage\"\n    with \"engine\"\n    with \"username\"\n    with \"password\"\n    with \"backup_retention_period\" set to a non-zero number\n    with \"skip_final_snapshot\"\n    with \"db_subnet_group_name\" referencing the \"aws_db_subnet_group\" resource\n    with \"vpc_security_group_ids\" referencing the \"aws_security_group\" resource",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_iam_role\" \"eb_ec2_role\" {\n  name = \"elastic_beanstalk_ec2_role\"\n\n  assume_role_policy = jsonencode({\n    Version = \"2012-10-17\",\n    Statement = [\n      {\n        Action = \"sts:AssumeRole\",\n        Effect = \"Allow\",\n        Principal = {\n          Service = \"ec2.amazonaws.com\"\n        },\n      },\n    ]\n  })\n}\n\n# Attach the AWS managed policy for Elastic Beanstalk to the role\nresource \"aws_iam_role_policy_attachment\" \"eb_managed_policy\" {\n  role       = aws_iam_role.eb_ec2_role.name\n  policy_arn = \"arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier\"\n}\n\n# Create an instance profile tied to the role\nresource \"aws_iam_instance_profile\" \"eb_ec2_profile\" {\n  name = \"elastic_beanstalk_ec2_profile\"\n  role = aws_iam_role.eb_ec2_role.name\n}\n\n# VPC\nresource \"aws_vpc\" \"eb_vpc\" {\n  cidr_block = \"10.0.0.0/16\"\n  enable_dns_support   = true\n  enable_dns_hostnames = true\n}\n\n# Internet Gateway\nresource \"aws_internet_gateway\" \"eb_igw\" {\n  vpc_id = aws_vpc.eb_vpc.id\n}\n\ndata \"aws_availability_zones\" \"available\" {\n  state = \"available\"\n}\n\n# Subnets\nresource \"aws_subnet\" \"eb_subnet_public_1\" {\n  vpc_id     = aws_vpc.eb_vpc.id\n  cidr_block = \"10.0.1.0/24\"\n\n  map_public_ip_on_launch = true\n  availability_zone       = data.aws_availability_zones.available.names[0]\n}\n\nresource \"aws_subnet\" \"eb_subnet_public_2\" {\n  vpc_id     = aws_vpc.eb_vpc.id\n  cidr_block = \"10.0.2.0/24\"\n\n  map_public_ip_on_launch = true\n  availability_zone       = data.aws_availability_zones.available.names[1]\n}\n\n# Security groups for Elastic Beanstalk environments\nresource \"aws_security_group\" \"eb_env_sg\" {\n  name        = \"eb-env-sg\"\n  description = \"Security group for Elastic Beanstalk environments\"\n  vpc_id      = aws_vpc.eb_vpc.id\n}\n\nresource \"aws_vpc_security_group_ingress_rule\" \"ingress1\" {\n  security_group_id = aws_security_group.eb_env_sg.id\n  cidr_ipv4         = \"0.0.0.0/0\"\n  from_port         = 80\n  ip_protocol       = \"tcp\"\n  to_port           = 80\n}\n\nresource \"aws_vpc_security_group_ingress_rule\" \"ingress2\" {\n  security_group_id = aws_security_group.eb_env_sg.id\n  cidr_ipv4         = \"0.0.0.0/0\"\n  from_port         = 443\n  ip_protocol       = \"tcp\"\n  to_port           = 443\n}\n\nresource \"aws_vpc_security_group_egress_rule\" \"egress1\" {\n  security_group_id = aws_security_group.eb_env_sg.id\n  cidr_ipv4         = \"0.0.0.0/0\"\n  ip_protocol       = \"-1\"\n}\n\n# DB subnet group for RDS instance\nresource \"aws_db_subnet_group\" \"rds_subnet_group\" {\n  name       = \"rds-subnet-group\"\n  subnet_ids = [aws_subnet.eb_subnet_public_1.id, aws_subnet.eb_subnet_public_2.id]\n}\n\nresource \"aws_route_table\" \"eb_route_table\" {\n  vpc_id = aws_vpc.eb_vpc.id\n\n  route {\n    cidr_block = \"0.0.0.0/0\"\n    gateway_id = aws_internet_gateway.eb_igw.id\n  }\n}\n\nresource \"aws_route_table_association\" \"eb_route_table_association_1\" {\n  subnet_id      = aws_subnet.eb_subnet_public_1.id\n  route_table_id = aws_route_table.eb_route_table.id\n}\n\nresource \"aws_route_table_association\" \"eb_route_table_association_2\" {\n  subnet_id      = aws_subnet.eb_subnet_public_2.id\n  route_table_id = aws_route_table.eb_route_table.id\n}\n\n# RDS instance\nresource \"aws_db_instance\" \"shared_rds\" {\n  allocated_storage    = 20\n  engine               = \"mysql\"\n  instance_class       = \"db.t3.micro\"\n  username             = \"dbadmin\"\n  password             = \"securepassword\" \n  backup_retention_period = 0\n  skip_final_snapshot  = true\n  db_subnet_group_name  = aws_db_subnet_group.rds_subnet_group.name\n\n  vpc_security_group_ids = [aws_security_group.eb_env_sg.id]\n}\n\n# Elastic Beanstalk application\nresource \"aws_elastic_beanstalk_application\" \"microservice_app\" {\n  name        = \"MicroserviceApplication\"\n  description = \"An application for microservices\"\n}\n\nresource \"aws_elastic_beanstalk_environment\" \"microservice_env1\" {\n  name                = \"microservice-env1\"\n  application         = aws_elastic_beanstalk_application.microservice_app.name\n  solution_stack_name = \"64bit Amazon Linux 2023 v4.3.0 running Python 3.9\"\n\n  # Elastic Beanstalk environment variables for RDS connection\n  setting {\n    namespace = \"aws:elasticbeanstalk:application:environment\"\n    name      = \"DB_HOSTNAME\"\n    value     = aws_db_instance.shared_rds.address\n  }\n\n  setting {\n    namespace = \"aws:elasticbeanstalk:application:environment\"\n    name      = \"DB_USERNAME\"\n    value     = aws_db_instance.shared_rds.username\n  }\n\n  setting {\n    namespace = \"aws:elasticbeanstalk:application:environment\"\n    name      = \"DB_PASSWORD\"\n    value     = aws_db_instance.shared_rds.password\n  }\n\n  setting {\n    namespace = \"aws:ec2:vpc\"\n    name      = \"VPCId\"\n    value     = aws_vpc.eb_vpc.id\n  }\n\n  setting {\n    namespace = \"aws:ec2:vpc\"\n    name      = \"Subnets\"\n    value     = \"${aws_subnet.eb_subnet_public_1.id},${aws_subnet.eb_subnet_public_2.id}\"\n  }\n\n  setting {\n    namespace = \"aws:autoscaling:launchconfiguration\"\n    name      = \"SecurityGroups\"\n    value     = aws_security_group.eb_env_sg.id\n  }\n\n  setting {\n    namespace = \"aws:autoscaling:launchconfiguration\"\n    name      = \"IamInstanceProfile\"\n    value     = aws_iam_instance_profile.eb_ec2_profile.name\n  }\n}\n\nresource \"aws_elastic_beanstalk_environment\" \"microservice_env2\" {\n  name                = \"microservice-env2\"\n  application         = aws_elastic_beanstalk_application.microservice_app.name\n  solution_stack_name = \"64bit Amazon Linux 2023 v4.3.0 running Python 3.9\"\n\n  # Elastic Beanstalk environment variables for RDS connection\n  setting {\n    namespace = \"aws:elasticbeanstalk:application:environment\"\n    name      = \"DB_HOSTNAME\"\n    value     = aws_db_instance.shared_rds.address\n  }\n\n  setting {\n    namespace = \"aws:elasticbeanstalk:application:environment\"\n    name      = \"DB_USERNAME\"\n    value     = aws_db_instance.shared_rds.username\n  }\n\n  setting {\n    namespace = \"aws:elasticbeanstalk:application:environment\"\n    name      = \"DB_PASSWORD\"\n    value     = aws_db_instance.shared_rds.password\n  }\n\n  setting {\n    namespace = \"aws:ec2:vpc\"\n    name      = \"VPCId\"\n    value     = aws_vpc.eb_vpc.id\n  }\n\n  setting {\n    namespace = \"aws:ec2:vpc\"\n    name      = \"Subnets\"\n    value     = \"${aws_subnet.eb_subnet_public_1.id},${aws_subnet.eb_subnet_public_2.id}\"\n  }\n\n  setting {\n    namespace = \"aws:autoscaling:launchconfiguration\"\n    name      = \"SecurityGroups\"\n    value     = aws_security_group.eb_env_sg.id\n  }\n\n  setting {\n    namespace = \"aws:autoscaling:launchconfiguration\"\n    name      = \"IamInstanceProfile\"\n    value     = aws_iam_instance_profile.eb_ec2_profile.name\n  }\n}",
+  "bleuScore": 0.25331,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/generated-source/row-0019-llm-c2a5f92b9aee",
+  "generatedSourceFiles": [
+    "generated-source/row-0019-llm-c2a5f92b9aee/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "129",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "137",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "153",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "188",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_configuration_valid\": false, \"is_valid_db_instance\": false, \"is_valid_eb_app\": true, \"is_valid_eb_env\": false, \"is_valid_iam_instance_profile\": true, \"is_valid_iam_role\": true, \"is_valid_iam_role_policy_attachment\": true, \"is_valid_internet_gateway\": true, \"is_valid_route_table\": true, \"is_valid_route_table_association\": true, \"is_valid_security_group\": true, \"is_valid_subnet\": true, \"is_valid_subnet_group\": true, \"is_valid_vpc\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_db_instance": true,
+    "aws_db_subnet_group": true,
+    "aws_elastic_beanstalk_application": true,
+    "aws_elastic_beanstalk_environment": true,
+    "aws_iam_instance_profile": true,
+    "aws_iam_role": true,
+    "aws_iam_role_policy_attachment": true,
+    "aws_internet_gateway": true,
+    "aws_route_table": true,
+    "aws_route_table_association": true,
+    "aws_security_group": true,
+    "aws_subnet": true,
+    "aws_vpc": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS VPC named `eb_vpc` with an Internet Gateway, two public subnets named `eb_subnet_public_1` and `eb_subnet_public_2`, a public route table, and a security group named `eb_env_sg`. It provisions a shared PostgreSQL RDS database named `shared_rds` in a DB subnet group using the two public subnets. It also creates two Elastic Beanstalk environments connected to the VPC, public subnets, shared security group, and shared RDS database. Required IAM roles and instance profiles for Elastic Beanstalk are included.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region for all resources.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"rds_username\" {\n  description = \"Master username for the shared RDS database.\"\n  type        = string\n  default     = \"dbadmin\"\n}\n\nvariable \"rds_password\" {\n  description = \"Master password for the shared RDS database.\"\n  type        = string\n  sensitive   = true\n  default     = \"ChangeMe12345!\"\n}\n\nvariab",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/run-summaries/row-0019-llm-c2a5f92b9aee.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Configure an AWS VPC with internet gateway, two public subnets, a security group, and a route table associated with the public subnets. Then connect these resources to two Elastic Beanstalk environments. These environments are also connected to a shared RDS database that is linked to the subnets. Name the database \"shared_rds\", the security group \"eb_env_sg\", the vpc \"eb_vpc\", and the subnets \"eb_subnet_public_1\" and \"eb_subnet_public_2\"",
+  "answer": "This Terraform configuration creates an AWS VPC named `eb_vpc` with an Internet Gateway, two public subnets named `eb_subnet_public_1` and `eb_subnet_public_2`, a public route table, and a security group named `eb_env_sg`. It provisions a shared PostgreSQL RDS database named `shared_rds` in a DB subnet group using the two public subnets. It also creates two Elastic Beanstalk environments connected to the VPC, public subnets, shared security group, and shared RDS database. Required IAM roles and instance profiles for Elastic Beanstalk are included.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_configuration_valid\": false, \"is_valid_db_instance\": false, \"is_valid_eb_app\": true, \"is_valid_eb_env\": false, \"is_valid_iam_instance_profile\": true, \"is_valid_iam_role\": true, \"is_valid_iam_role_policy_attachment\": true, \"is_valid_internet_gateway\": true, \"is_valid_route_table\": true, \"is_valid_route_table_association\": true, \"is_valid_security_group\": true, \"is_valid_subnet\": true, \"is_valid_subnet_group\": true, \"is_valid... <truncated 69 chars>"
+}

@@ -1,0 +1,89 @@
+{
+  "index": 295,
+  "rowId": "295",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-6655cdf44d8e",
+  "userId": "local-user",
+  "durationSeconds": 217.74,
+  "difficulty": "4",
+  "resource": "aws_codebuild_project, aws_iam_policy, aws_iam_role, aws_iam_role_policy_attachment, aws_s3_bucket, aws_iam_policy_document, aws_iam_policy_document",
+  "prompt": "Infrastructure for an autograder for a CS class. The autograder needs to run students' code stored on GitHub in a specific environment and store the result. Accomplish this using the following services: AWS S3, AWS CodeBuild. Add any necessary services.",
+  "intent": "have one \"aws_s3_bucket\" resource\nhave one \"aws_codebuild_project\" resource\n  with \"artifacts\" argument block\n    with \"type\" argument with value \"S3\"\n    with \"location\" argument\n    with \"name\" argument\n  with \"environment\" argument block\n    with \"computer_type\" argument\n    with \"image\" argument\n    with \"type\" argument\n  with \"source\" argument block\n    with \"type\" argument with value \"GITHUB\"\n    with \"location\" argument",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_s3_bucket\" \"artifact_bucket\" {\n  bucket_prefix = \"artifact-bucket-\"\n}\n\nresource \"aws_codebuild_project\" \"autograder_build\" {\n  name         = \"autograder_build\"\n  service_role = aws_iam_role.autograder_build_role.arn\n\n  artifacts {\n    type     = \"S3\"\n    location = aws_s3_bucket.artifact_bucket.arn\n    name     = \"results.zip\" # include this\n  }\n\n  environment { # arguments required, exact value not specified\n    compute_type = \"BUILD_GENERAL1_SMALL\"\n    image        = \"aws/codebuild/standard:7.0-24.10.29\"\n    type         = \"LINUX_CONTAINER\"\n  }\n\n  source {\n    type            = \"GITHUB\"\n    git_clone_depth = 1 # good to have, not required\n    location        = \"github.com/source-location\"\n  }\n}\n\nresource \"aws_iam_role\" \"autograder_build_role\" {\n  assume_role_policy = data.aws_iam_policy_document.autograder_build_policy_assume.json\n}\n\ndata \"aws_iam_policy_document\" \"autograder_build_policy_assume\" {\n  statement {\n    actions = [\"sts:AssumeRole\"]\n\n    principals {\n      type        = \"Service\"\n      identifiers = [\"codebuild.amazonaws.com\"]\n    }\n  }\n\n}\n\ndata \"aws_iam_policy_document\" \"autograder_build_policy\" {\n  statement {\n    effect = \"Allow\"\n    actions = [\n      \"ec2:DescribeSubnets\",\n      \"ec2:DescribeSecurityGroups\",\n      \"ec2:DescribeVpcs\"\n    ]\n    resources = [\n      \"*\"\n    ]\n  }\n}\n\nresource \"aws_iam_policy\" \"autograder_build_policy\" {\n  name        = \"lambda_policy\"\n  description = \"Grants permissions to Lambda to describe vpc, subnet, security group\"\n\n  policy = data.aws_iam_policy_document.autograder_build_policy.json\n}\n\nresource \"aws_iam_role_policy_attachment\" \"lambda_policy_attach\" {\n  role       = aws_iam_role.autograder_build_role.name\n  policy_arn = aws_iam_policy.autograder_build_policy.arn\n}",
+  "bleuScore": 0.051667,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0295-llm-6655cdf44d8e",
+  "generatedSourceFiles": [
+    "generated-source/row-0295-llm-6655cdf44d8e/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: Invalid reference\n\n  on main.tf line 268, in resource \"aws_codebuild_project\" \"autograder\":\n 268:             - RESULT_PATH=\"${AUTOGRADER_RESULTS_PREFIX}/${CODEBUILD_BUILD_ID}\"\n\nA reference to a resource type must be followed by at least one attribute\naccess, specifying the resource name.\n\nError: Invalid reference\n\n  on main.tf line 268, in resource \"aws_codebuild_project\" \"autograder\":\n 268:             - RESULT_PATH=\"${AUTOGRADER_RESULTS_PREFIX}/${CODEBUILD_BUILD_ID}\"\n\nA reference to a resource type must be followed by at least one attribute\naccess, specifying the resource name.\n\nError: Invalid reference\n\n  on main.tf line 269, in resource \"aws_codebuild_project\" \"autograder\":\n 269:             - aws s3 cp autograder-output \"s3://${RESULTS_BUCKET}/${RESULT_PATH}/\" --recursive\n\nA reference to a resource type must be followed by at least one attribute\naccess, specifying the resource name.\n\nError: Invalid reference\n\n  on main.tf line 269, in resource \"aws_codebuild_project\" \"autograder\":\n 269:             - aws s3 cp autograder-output \"s3://${RESULTS_BUCKET}/${RESULT_PATH}/\" --recursive\n\nA reference to a resource type must be followed by at least one attribute\naccess, specifying the resource name.\n\nError: Invalid reference\n\n  on main.tf line 270, in resource \"aws_codebuild_project\" \"autograder\":\n 270:             - echo \"Results uploaded to s3://${RESULTS_BUCKET}/${RESULT_PATH}/\"\n\nA reference to a resource type must be followed by at least one attribute\naccess, specifying the resource name.\n\nError: Invalid reference\n\n  on main.tf line 270, in resource \"aws_codebuild_project\" \"autograder\":\n 270:             - echo \"Results uploaded to s3://${RESULTS_BUCKET}/${RESULT_PATH}/\"\n\nA reference to a resource type must be followed by at least one attribute\naccess, specifying the resource name.\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_codebuild_project": true,
+    "aws_iam_policy": false,
+    "aws_iam_role": true,
+    "aws_iam_role_policy_attachment": false,
+    "aws_s3_bucket": true,
+    "aws_iam_policy_document": false
+  },
+  "missingMarkers": [
+    "aws_iam_policy",
+    "aws_iam_role_policy_attachment",
+    "aws_iam_policy_document"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "Description: This Terraform program provisions an AWS-based CS autograder infrastructure using S3 and CodeBuild. It creates an S3 bucket to store autograder results, CodeBuild logs, and build artifacts. It provisions an IAM role and policy granting CodeBuild the permissions it needs to write results to S3 and publish logs to CloudWatch. A CodeBuild project is configured to pull student code from a GitHub repository, run tests in a controlled Linux build environment, and upload grading results back to S3.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the autograder infrastructure will be deployed.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"github_repository_url\" {\n  description = \"GitHub repository URL containing student submissions or autograder target code.\"\n  type        = string\n  default     = \"https://github.com/example-org/example-student-repo.git\"\n}\n\nvariable \"",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0295-llm-6655cdf44d8e.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Infrastructure for an autograder for a CS class. The autograder needs to run students' code stored on GitHub in a specific environment and store the result. Accomplish this using the following services: AWS S3, AWS CodeBuild. Add any necessary services.",
+  "promptStrategy": "default",
+  "answer": "Description: This Terraform program provisions an AWS-based CS autograder infrastructure using S3 and CodeBuild. It creates an S3 bucket to store autograder results, CodeBuild logs, and build artifacts. It provisions an IAM role and policy granting CodeBuild the permissions it needs to write results to S3 and publish logs to CloudWatch. A CodeBuild project is configured to pull student code from a GitHub repository, run tests in a controlled Linux build environment, and upload grading results back to S3.",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: Invalid reference on main.tf line 268, in resource \"aws_codebuild_project\" \"autograder\": 268: - RESULT_PATH=\"${AUTOGRADER_RESULTS_PREFIX}/${CODEBUILD_BUILD_ID}\" A reference to a resource type must be followed by at least one attribute access, specifying the resource name. Error: Invalid reference on main.tf line 268, in resource \"aws_codebuild_project\" \"autograder\": 268: - RESULT_PATH=\"${AUTOGRADER_RESULTS_PREFIX}/${CODEBUILD_BUILD_ID}\" A reference to a resource type must be followed by a... <truncated 1213 chars>"
+}

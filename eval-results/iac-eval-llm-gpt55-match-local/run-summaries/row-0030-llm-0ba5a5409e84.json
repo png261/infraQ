@@ -1,0 +1,79 @@
+{
+  "index": 30,
+  "rowId": "30",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-0ba5a5409e84",
+  "userId": "local-user",
+  "durationSeconds": 84.43,
+  "difficulty": "1",
+  "resource": "aws_elastic_beanstalk_application",
+  "prompt": "Provision a resource to deploy and scale a web application that was developed with supported programming languages.",
+  "intent": "Has one \"aws_elastic_beanstalk_application\" resource\n    with \"name\"",
+  "referenceOutput": "provider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_elastic_beanstalk_application\" \"tftest\" {\n  name        = \"tf-test-name\"\n  description = \"tf-test-desc\"\n}",
+  "bleuScore": 0.009548,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/generated-source/row-0030-llm-0ba5a5409e84",
+  "generatedSourceFiles": [
+    "generated-source/row-0030-llm-0ba5a5409e84/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_elastic_beanstalk_application": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "The Terraform configuration below provisions an AWS Elastic Beanstalk environment for deploying and scaling a web application written in a supported programming language, using a Python platform as the example runtime.\n\nIt creates:\n\n- An Elastic Beanstalk application\n- A scalable Elastic Beanstalk environment\n- Required IAM service role\n- Required EC2 instance role and instance profile\n- Auto Scaling configuration with configurable min/max instances\n- Application Load Balancer-based environment\n- Default VPC and subnet discovery\n- Useful outputs for the deployed environment\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\n############################\n# Variables\n############################\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Elastic Beanstalk environment will be deployed.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"application_name\" {\n  description = \"Name of the Elastic Beanstalk application.\"\n  type        = string\n  default     = \"supported-language-web-app\"\n}\n\nvariable \"environ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/run-summaries/row-0030-llm-0ba5a5409e84.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Provision a resource to deploy and scale a web application that was developed with supported programming languages.",
+  "answer": "The Terraform configuration below provisions an AWS Elastic Beanstalk environment for deploying and scaling a web application written in a supported programming language, using a Python platform as the example runtime.\n\nIt creates:\n\n- An Elastic Beanstalk application\n- A scalable Elastic Beanstalk environment\n- Required IAM service role\n- Required EC2 instance role and instance profile\n- Auto Scaling configuration with configurable min/max instances\n- Application Load Balancer-based environment\n- Default VPC and subnet discovery\n- Useful outputs for the deployed environment",
+  "failure_category": "",
+  "failure_reason": ""
+}

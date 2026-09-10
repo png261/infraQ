@@ -1,0 +1,80 @@
+{
+  "index": 352,
+  "rowId": "352",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-a887f386c8b6",
+  "userId": "local-user",
+  "durationSeconds": 114.65,
+  "difficulty": "3",
+  "resource": "aws_db_option_group",
+  "prompt": "defines an AWS RDS option group named \"option-group-pike\" with major engine version 11, and use the sqlserver-ee engine. It should have options for \"SQLSERVER_AUDIT\" and \"TDE\". IAM_ROLE_ARN and S3_BUCKET_ARN are included under SQLSERVER_AUDIT option",
+  "intent": "Has one \"aws_db_option_group\" resource\n    with one \"engine_name\" = \"sqlserver-ee\"\n    with one \"major_engine_version\" = \"11.00\"\n    with options for \"SQLSERVER_AUDIT\" and \"TDE\"\n    with specific settings for \"IAM_ROLE_ARN\" and \"S3_BUCKET_ARN\"",
+  "referenceOutput": "provider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_db_option_group\" \"example\" {\n  name                     = \"option-group-pike\"\n  option_group_description = \"Terraform Option Group\"\n  engine_name              = \"sqlserver-ee\"\n  major_engine_version     = \"11.00\"\n\n  option {\n    db_security_group_memberships  = []\n    option_name                    = \"SQLSERVER_AUDIT\"\n    port                           = 0\n    vpc_security_group_memberships = []\n\n    option_settings {\n      name  = \"IAM_ROLE_ARN\"\n      value = \"arn:aws:iam::680235478471:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS\"\n    }\n    option_settings {\n      name  = \"S3_BUCKET_ARN\"\n      value = \"arn:aws:s3:::testbucketineu-west2/rds\"\n    }\n  }\n\n  option {\n    option_name = \"TDE\"\n    port        = 0\n  }\n\n  tags = {\n    pike = \"permissions\"\n  }\n}",
+  "bleuScore": 0.138077,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0352-llm-a887f386c8b6",
+  "generatedSourceFiles": [
+    "generated-source/row-0352-llm-a887f386c8b6/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_db_option_group": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "The Terraform configuration below creates an AWS RDS Option Group named `option-group-pike` for the `sqlserver-ee` engine with major engine version `11.00`. It configures two options:\n\n- `SQLSERVER_AUDIT`\n  - Includes `IAM_ROLE_ARN`\n  - Includes `S3_BUCKET_ARN`\n- `TDE`\n\nIt also creates the supporting S3 bucket, IAM role, and IAM policy needed for SQL Server Audit to write audit logs to S3.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"random_id\" \"bucket_suffix\" {\n  byte_length = 4\n}\n\nresource \"aws_s3_bucket\" \"sqlserver_audit_bucket\" {\n  bucket = \"sqlserver-audit-option-group-pike-${random_id.bucket_suffix.hex}\"\n\n  tags = {\n    Name        = \"sqlserver-audit-option-group-pike\"\n    Environment = \"example\"\n  }\n}\n\nresource \"aws_s3_bucket_public_access_block\" \"sqlserver_audit_bucket\" {\n  bucket = aws_s3_bucket.sqlserver_audit_bucket.id\n\n  block_public_acls       = true\n  block_public_policy     = true\n  ignore_public_acls      = true\n  restrict",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0352-llm-a887f386c8b6.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: defines an AWS RDS option group named \"option-group-pike\" with major engine version 11, and use the sqlserver-ee engine. It should have options for \"SQLSERVER_AUDIT\" and \"TDE\". IAM_ROLE_ARN and S3_BUCKET_ARN are included under SQLSERVER_AUDIT option",
+  "promptStrategy": "default",
+  "answer": "The Terraform configuration below creates an AWS RDS Option Group named `option-group-pike` for the `sqlserver-ee` engine with major engine version `11.00`. It configures two options:\n\n- `SQLSERVER_AUDIT`\n  - Includes `IAM_ROLE_ARN`\n  - Includes `S3_BUCKET_ARN`\n- `TDE`\n\nIt also creates the supporting S3 bucket, IAM role, and IAM policy needed for SQL Server Audit to write audit logs to S3.",
+  "failure_category": "",
+  "failure_reason": ""
+}

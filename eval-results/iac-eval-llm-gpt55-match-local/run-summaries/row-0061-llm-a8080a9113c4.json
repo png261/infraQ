@@ -1,0 +1,87 @@
+{
+  "index": 61,
+  "rowId": "61",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-a8080a9113c4",
+  "userId": "local-user",
+  "durationSeconds": 111.32,
+  "difficulty": "5",
+  "resource": "aws_elasticsearch_domain, aws_iam_role, aws_iam_role_policy, aws_kinesis_firehose_delivery_stream, aws_s3_bucket, aws_iam_policy_document, aws_iam_policy_document",
+  "prompt": "Generate a Kinesis Firehose Delivery Stream with a Elasticsearch destination with the appropriate iam role and bucket",
+  "intent": "Has one \"aws_iam_role\" resource, one \"aws_s3_bucket\" resource, one \"aws_elasticsearch_domain\" resource, and one \"aws_kinesis_firehose_delivery_stream\" resource with an \"elasticsearch_configuration\" block",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_s3_bucket\" \"januarythird\" {\n  bucket = \"januarythird\"\n}\n\nresource \"aws_elasticsearch_domain\" \"test_cluster\" {\n  domain_name = \"es-test-2\"\n\n  cluster_config {\n    instance_count         = 2\n    zone_awareness_enabled = true\n    instance_type          = \"t2.small.elasticsearch\"\n  }\n\n  ebs_options {\n    ebs_enabled = true\n    volume_size = 10\n  }\n}\n\ndata \"aws_iam_policy_document\" \"firehose_assume_role\" {\n  statement {\n    effect = \"Allow\"\n\n    principals {\n      type        = \"Service\"\n      identifiers = [\"firehose.amazonaws.com\"]\n    }\n\n    actions = [\"sts:AssumeRole\"]\n  }\n}\n\nresource \"aws_iam_role\" \"firehose_role\" {\n  name               = \"firehose_test_role\"\n  assume_role_policy = data.aws_iam_policy_document.firehose_assume_role.json\n}\n\ndata \"aws_iam_policy_document\" \"firehose-elasticsearch\" {\n  statement {\n    effect  = \"Allow\"\n    actions = [\"es:*\"]\n\n    resources = [\n      aws_elasticsearch_domain.test_cluster.arn,\n      \"${aws_elasticsearch_domain.test_cluster.arn}/*\",\n    ]\n  }\n}\n\nresource \"aws_iam_role_policy\" \"firehose-elasticsearch\" {\n  name   = \"elasticsearch\"\n  role   = aws_iam_role.firehose_role.id\n  policy = data.aws_iam_policy_document.firehose-elasticsearch.json\n}\n\nresource \"aws_elasticsearch_domain_policy\" \"main\" {\n  domain_name = aws_elasticsearch_domain.test_cluster.domain_name\n\n  access_policies = <<POLICIES\n{\n    \"Version\": \"2012-10-17\",\n    \"Statement\": [\n        {\n            \"Action\": \"es:*\",\n            \"Principal\": \"*\",\n            \"Effect\": \"Allow\",\n            \"Condition\": {\n                \"IpAddress\": {\"aws:SourceIp\": \"127.0.0.1/32\"}\n            },\n            \"Resource\": \"${aws_elasticsearch_domain.test_cluster.arn}/*\"\n        }\n    ]\n}\nPOLICIES\n}\n\nresource \"aws_kinesis_firehose_delivery_stream\" \"test\" {\n  name        = \"terraform-kinesis-firehose-es\"\n  destination = \"elasticsearch\"\n\n  elasticsearch_configuration {\n    domain_arn = aws_elasticsearch_domain.test_cluster.arn\n    role_arn   = aws_iam_role.firehose_role.arn\n    index_name = \"test\"\n    type_name  = \"test\"\n\n    s3_configuration {\n      role_arn   = aws_iam_role.firehose_role.arn\n      bucket_arn = aws_s3_bucket.januarythird.arn\n      buffering_size     = 10\n      buffering_interval = 400\n      compression_format = \"GZIP\"\n    }\n  }\n}",
+  "bleuScore": 0.121791,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-2/generated-source/row-0061-llm-a8080a9113c4",
+  "generatedSourceFiles": [
+    "generated-source/row-0061-llm-a8080a9113c4/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_elasticsearch_domain": true,
+    "aws_iam_role": true,
+    "aws_iam_role_policy": true,
+    "aws_kinesis_firehose_delivery_stream": true,
+    "aws_s3_bucket": true,
+    "aws_iam_policy_document": false
+  },
+  "missingMarkers": [
+    "aws_iam_policy_document"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "The following Terraform configuration creates:\n\n- An Amazon Kinesis Data Firehose delivery stream\n- An Amazon Elasticsearch Service domain as the Firehose destination\n- An S3 bucket for Firehose backup / failed delivery data\n- IAM role and policies allowing Firehose to write to Elasticsearch and S3\n- A domain access policy allowing the Firehose IAM role to write to Elasticsearch\n- A service-linked role for Amazon Elasticsearch Service\n\n```hcl\nterraform {\n  required_version = \">= 1.3.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region to deploy resources into.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"firehose_stream_name\" {\n  description = \"Name of the Kinesis Firehose delivery stream.\"\n  type        = string\n  default     = \"example-firehose-elasticsearch-stream\"\n}\n\nvariable \"elasticsearch_domain_name\" {\n  description = \"Name of the Amazon Elasticsearch domain.\"\n  type        = string\n  default     = \"example-firehose-es-doma",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-2/run-summaries/row-0061-llm-a8080a9113c4.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Generate a Kinesis Firehose Delivery Stream with a Elasticsearch destination with the appropriate iam role and bucket",
+  "promptStrategy": "default",
+  "answer": "The following Terraform configuration creates:\n\n- An Amazon Kinesis Data Firehose delivery stream\n- An Amazon Elasticsearch Service domain as the Firehose destination\n- An S3 bucket for Firehose backup / failed delivery data\n- IAM role and policies allowing Firehose to write to Elasticsearch and S3\n- A domain access policy allowing the Firehose IAM role to write to Elasticsearch\n- A service-linked role for Amazon Elasticsearch Service",
+  "failure_category": "",
+  "failure_reason": ""
+}

@@ -1,0 +1,64 @@
+terraform {
+  required_version = ">= 1.5.0"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = "us-east-1"
+}
+
+provider "aws" {
+  alias  = "us_west_2"
+  region = "us-west-2"
+}
+
+resource "aws_dynamodb_table" "east" {
+  name             = "iac-eval-global-table"
+  billing_mode     = "PAY_PER_REQUEST"
+  hash_key         = "id"
+  stream_enabled   = true
+  stream_view_type = "NEW_AND_OLD_IMAGES"
+
+  attribute {
+    name = "id"
+    type = "S"
+  }
+}
+
+resource "aws_dynamodb_table" "west" {
+  provider = aws.us_west_2
+
+  name             = aws_dynamodb_table.east.name
+  billing_mode     = "PAY_PER_REQUEST"
+  hash_key         = "id"
+  stream_enabled   = true
+  stream_view_type = "NEW_AND_OLD_IMAGES"
+
+  attribute {
+    name = "id"
+    type = "S"
+  }
+}
+
+resource "aws_dynamodb_global_table" "this" {
+  name = aws_dynamodb_table.east.name
+
+  replica {
+    region_name = "us-east-1"
+  }
+
+  replica {
+    region_name = "us-west-2"
+  }
+
+  depends_on = [
+    aws_dynamodb_table.east,
+    aws_dynamodb_table.west,
+  ]
+}

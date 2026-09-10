@@ -1,0 +1,90 @@
+{
+  "index": 309,
+  "rowId": "309",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-4edea2427bfe",
+  "userId": "local-user",
+  "durationSeconds": 58.7,
+  "difficulty": "5",
+  "resource": "aws_backup_plan, aws_backup_selection, aws_backup_vault, aws_iam_role, aws_iam_role_policy_attachment, aws_instance, aws_key_pair, aws_ami, aws_iam_policy_document",
+  "prompt": "An AWS EC2 key pair resource with public_key argument specified with a path to key file being \"./key.pub\". An AWS EC2 instance with the amazon linux 2023 x86-64 machine image with a key_name argument specified by the key pair resource and \"t2.micro\" instance_type. An AWS Backup plan resource, a rule argument block with a schedule of every day midnight, and an target_vault_name argument linking to the Backup vault resource, a lifecycle argument block with delete_after 7 days, and an advanced_back_up_setting argument block to specify the resource_type that is being backed up. A backup vault to use for the backup, and a backup selection according to the backup plan that backs up the EC2 instance. An IAM role for the backup selection, with an attached policy with ARN \"arn:aws:iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup\".",
+  "intent": "have one \"aws_ami\" resource\n  with \"filter\" argument block\n    with \"name\" argument\n    with \"values\" argument with value \"al2023-ami-2023.*-x86_64\"\nhave one \"aws_key_pair\" resource\n  with \"public_key\" argument\nhave one \"aws_instance\" resource\n  with \"ami\" argument linking to ami resource\n  with \"instance_type\" argument with value \"t2.micro\"\n  with \"key_name\" argument linking to key_pair resource\nhave one \"aws_backup_plan\" resource\n  with \"name\" argument\n  with \"rule\" argument block\n    with \"rule_name\" argument\n    with \"target_vault_name\" argument linking to backup_vault\n    with \"schedule\" argument with value \"cron(0 0 * * ? *)\"\n  with \"lifecycle\" argument block\n    with \"delete_after\" argument with value 7\n  with \"advanced_backup_setting\" argument block\n    with \"backup_options\" argument block\n      with \"WindowsVSS\" argument with value \"enabled\"\n    with \"resource_type\" argument with value \"EC2\"\nhave one \"aws_backup_vault\" resource\n  with \"name\" argument\nhave one \"aws_backup_selection\" resource\n  with \"iam_role_arn\" argument\n  with \"name\" argument\n  with \"plan_id\" argument linking to aws_backup_plan resource\n  with \"resources\" argument including the aws_instance resource",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\ndata \"aws_ami\" \"amzn-linux-2023-ami\" {\n  most_recent = true\n  owners      = [\"amazon\"]\n\n  filter {\n    name   = \"name\"\n    values = [\"al2023-ami-2023.*-x86_64\"]\n  }\n}\n\nresource \"aws_key_pair\" \"cloud_desktop\" {\n  public_key = file(\"./supplement/key.pub\")\n}\n\nresource \"aws_instance\" \"cloud_desktop\" {\n  ami           = data.aws_ami.amzn-linux-2023-ami.id\n  instance_type = \"t2.micro\"\n  key_name      = aws_key_pair.cloud_desktop.key_name\n}\n\nresource \"aws_backup_plan\" \"cloud_desktop_backup\" {\n  name = \"cloud_desktop_backup_plan\"\n  rule {\n    rule_name         = \"cloud_desktop_backup_rule\"\n    target_vault_name = aws_backup_vault.valut.name\n    schedule          = \"cron(0 0 * * ? *)\"\n\n    lifecycle {\n      delete_after = 7\n    }\n  }\n\n  advanced_backup_setting {\n    backup_options = {\n      WindowsVSS = \"enabled\"\n    }\n    resource_type = \"EC2\"\n  }\n}\n\nresource \"aws_backup_vault\" \"valut\" {\n  name = \"cloud_desktop_backup_valut\"\n}\n\nresource \"aws_backup_selection\" \"backup_ec2\" {\n  iam_role_arn = aws_iam_role.backup.arn\n\n  name    = \"backup_ec2\"\n  plan_id = aws_backup_plan.cloud_desktop_backup.id\n\n  resources = [\n    aws_instance.cloud_desktop.arn,\n  ]\n}\n\ndata \"aws_iam_policy_document\" \"backup_assume_role\" {\n  statement {\n    effect = \"Allow\"\n\n    principals {\n      type        = \"Service\"\n      identifiers = [\"backup.amazonaws.com\"]\n    }\n\n    actions = [\"sts:AssumeRole\"]\n  }\n}\n\nresource \"aws_iam_role\" \"backup\" {\n  name               = \"backup\"\n  assume_role_policy = data.aws_iam_policy_document.backup_assume_role.json\n}\n\nresource \"aws_iam_role_policy_attachment\" \"backup\" {\n  policy_arn = \"arn:aws:iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup\"\n  role       = aws_iam_role.backup.name\n}",
+  "bleuScore": 0.215143,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0309-llm-4edea2427bfe",
+  "generatedSourceFiles": [
+    "generated-source/row-0309-llm-4edea2427bfe/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: Invalid function argument\n\n  on main.tf line 73, in resource \"aws_key_pair\" \"ec2_key_pair\":\n  73:   public_key = file(\"./key.pub\")\n    ├────────────────\n    │ while calling file(path)\n\nInvalid value for \"path\" parameter: no file exists at \"./key.pub\"; this\nfunction works only with files that are distributed as part of the\nconfiguration source code, so if this file will be created by a resource in\nthis configuration you must instead obtain this result from an attribute of\nthat resource.\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_backup_plan": true,
+    "aws_backup_selection": true,
+    "aws_backup_vault": true,
+    "aws_iam_role": true,
+    "aws_iam_role_policy_attachment": true,
+    "aws_instance": true,
+    "aws_key_pair": true,
+    "aws_ami": true,
+    "aws_iam_policy_document": false
+  },
+  "missingMarkers": [
+    "aws_iam_policy_document"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates:\n\n- An AWS EC2 key pair using the public key file at `./key.pub`\n- An Amazon Linux 2023 x86-64 EC2 instance using that key pair\n- An AWS Backup vault\n- An AWS Backup plan that runs daily at midnight and retains backups for 7 days\n- An AWS Backup selection targeting the EC2 instance\n- An IAM role for AWS Backup with the required managed backup policy attached\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region to deploy resources into.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"key_pair_name\" {\n  description = \"Name of the EC2 key pair.\"\n  type        = string\n  default     = \"amazon-linux-2023-key\"\n}\n\nvariable \"instance_name\" {\n  description = \"Name tag for the EC2 instance.\"\n  type        = string\n  default     = \"amazon-linux-2023-instance\"\n}\n\nvariable \"backup_vault_name\" {\n  description = \"Name of the AWS Backup vault.\"\n  type        = string\n  default     = \"ec2-backup-vault\"\n}\n\nvariable \"backup_plan_name\" {\n  descripti",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0309-llm-4edea2427bfe.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: An AWS EC2 key pair resource with public_key argument specified with a path to key file being \"./key.pub\". An AWS EC2 instance with the amazon linux 2023 x86-64 machine image with a key_name argument specified by the key pair resource and \"t2.micro\" instance_type. An AWS Backup plan resource, a rule argument block with a schedule of every day midnight, and an target_vault_name argument linking to the Backup vault resource, a lifecycle argument block with delete_after 7 days, and an advanced_back_up_setting argument block to specify the resource_type that is being backed up. A backup vault to use for the backup, and a backup selection according to the backup plan that backs up the EC2 instance. An IAM role for the backup selection, with an attached policy with ARN \"arn:aws:iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup\".",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates:\n\n- An AWS EC2 key pair using the public key file at `./key.pub`\n- An Amazon Linux 2023 x86-64 EC2 instance using that key pair\n- An AWS Backup vault\n- An AWS Backup plan that runs daily at midnight and retains backups for 7 days\n- An AWS Backup selection targeting the EC2 instance\n- An IAM role for AWS Backup with the required managed backup policy attached",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: Invalid function argument on main.tf line 73, in resource \"aws_key_pair\" \"ec2_key_pair\": 73: public_key = file(\"./key.pub\") ├──────────────── │ while calling file(path) Invalid value for \"path\" parameter: no file exists at \"./key.pub\"; this function works only with files that are distributed as part of the configuration source code, so if this file will be created by a resource in this configuration you must instead obtain this result from an attribute of that resource."
+}

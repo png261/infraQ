@@ -1,0 +1,106 @@
+{
+  "index": 302,
+  "rowId": "302",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-324f83543a3c",
+  "userId": "local-user",
+  "durationSeconds": 115.5,
+  "difficulty": "6",
+  "resource": "aws_api_gateway_method, aws_api_gateway_method, aws_api_gateway_resource, aws_api_gateway_rest_api, aws_s3_bucket",
+  "prompt": "An AWS service that holds a web server which allows you to upload cat pictures and provides random cat pictures on demand. Accomplishes this with API Gateway and S3.",
+  "intent": "have one \"aws_api_gateway_rest_api\" resource\n    with \"name\" argument\nhave one \"aws_api_gateway_resource\" resource\n    with \"rest_api_id\" argument linking to aws_api_gateway_rest_api resource id\n    with \"parent_id\" argument linking to aws_api_gateway_rest_api resource root_resource_id\n    with \"path_part\" argument\nhave two \"aws_api_gateway_method\" resources\n    with \"rest_api_id\" argument linking to aws_api_gateway_rest_api resource\n    with \"resource_id\" argument linking to aws_api_gateway_resource\n    with \"http_method\" argument with values \"GET\" and \"PUT\"\n    with \"authorization\" argument\nhave one \"aws_s3_bucket\" resource",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_dynamodb_table\" \"caas\" {\n  name           = \"cat_names\"\n  hash_key       = \"name\"\n  billing_mode   = \"PAY_PER_REQUEST\"\n\n  attribute {\n    name = \"name\"\n    type = \"S\"\n  }\n}\n\nresource \"aws_s3_bucket\" \"caas\" {\n  bucket_prefix = \"cat-image\"\n}\n\nresource \"aws_iam_role\" \"lambda_role\" {\n  name = \"lambda_api_gateway_role\"\n\n  assume_role_policy = jsonencode({\n    Version = \"2012-10-17\"\n    Statement = [\n      {\n        Action = \"sts:AssumeRole\"\n        Effect = \"Allow\"\n        Principal = {\n          Service = \"lambda.amazonaws.com\"\n        }\n      }\n    ]\n  })\n}\n\nresource \"aws_iam_role_policy\" \"lambda_policy\" {\n  name   = \"lambda_policy\"\n  role   = aws_iam_role.lambda_role.id\n  policy = jsonencode({\n    Version = \"2012-10-17\"\n    Statement = [\n      {\n        Action = [\n          \"s3:GetObject\",\n          \"s3:PutObject\"\n        ]\n        Effect   = \"Allow\"\n        Resource = \"${aws_s3_bucket.caas.arn}/*\"\n      },\n      {\n        Action = [\n          \"dynamodb:PutItem\"\n        ]\n        Effect   = \"Allow\"\n        Resource = aws_dynamodb_table.caas.arn\n      }\n    ]\n  })\n}\n\nresource \"aws_api_gateway_rest_api\" \"caas\" {\n  name = \"caas\"\n}\n\nresource \"aws_api_gateway_resource\" \"caas_cat\" {\n  rest_api_id = aws_api_gateway_rest_api.caas.id\n  parent_id   = aws_api_gateway_rest_api.caas.root_resource_id\n  path_part   = \"cat\"\n}\n\nresource \"aws_api_gateway_method\" \"caas_cat_get\" {\n  rest_api_id   = aws_api_gateway_rest_api.caas.id\n  resource_id   = aws_api_gateway_resource.caas_cat.id\n  http_method   = \"GET\"\n  authorization = \"NONE\"\n}\n\nresource \"aws_api_gateway_method\" \"caas_cat_put\" {\n  rest_api_id   = aws_api_gateway_rest_api.caas.id\n  resource_id   = aws_api_gateway_resource.caas_cat.id\n  http_method   = \"PUT\"\n  authorization = \"NONE\"\n}\n\ndata \"archive_file\" \"caas_cat\" {\n  type        = \"zip\"\n  source_file = \"./supplement/caas_cat.py\"\n  output_path = \"./supplement/caas_cat.zip\"\n}\n\nresource \"aws_lambda_function\" \"caas_cat\" {\n  function_name = \"caas_cat\"\n  role          = aws_iam_role.lambda_role.arn\n  filename      = data.archive_file.caas_cat.output_path\n  source_code_hash = data.archive_file.caas_cat.output_base64sha256\n  handler       = \"caas_cat.handler\"\n  runtime       = \"python3.12\"\n\n  environment {\n    variables = {\n      CAAS_S3_BUCKET = \"${aws_s3_bucket.caas.id}\"\n      DYNAMODB_TABLE_NAME = \"${aws_dynamodb_table.caas.id}\"\n    }\n  }\n}\n\nresource \"aws_api_gateway_integration\" \"caas_cat_get\" {\n  rest_api_id             = aws_api_gateway_rest_api.caas.id\n  resource_id             = aws_api_gateway_resource.caas_cat.id\n  http_method             = aws_api_gateway_method.caas_cat_get.http_method\n  type                    = \"AWS_PROXY\"\n  integration_http_method = \"GET\"\n  uri                     = aws_lambda_function.caas_cat.invoke_arn\n}\n\nresource \"aws_api_gateway_integration\" \"caas_cat_put\" {\n  rest_api_id             = aws_api_gateway_rest_api.caas.id\n  resource_id             = aws_api_gateway_resource.caas_cat.id\n  http_method             = aws_api_gateway_method.caas_cat_put.http_method\n  type                    = \"AWS_PROXY\"\n  integration_http_method = \"PUT\"\n  uri                     = aws_lambda_function.caas_cat.invoke_arn\n}\n\nresource \"aws_lambda_permission\" \"caas_cat\" {\n  action        = \"lambda:InvokeFunction\"\n  principal     = \"apigateway.amazonaws.com\"\n  function_name = aws_lambda_function.caas_cat.function_name\n\n  source_arn = \"${aws_api_gateway_rest_api.caas.execution_arn}/*/*\"\n}\n\nresource \"aws_api_gateway_deployment\" \"api_deployment\" {\n  rest_api_id = aws_api_gateway_rest_api.caas.id\n  depends_on  = [aws_api_gateway_integration.caas_cat_get, \n                 aws_api_gateway_integration.caas_cat_put]\n}\n\nresource \"aws_api_gateway_stage\" \"api_stage\" {\n  deployment_id = aws_api_gateway_deployment.api_deployment.id\n  rest_api_id   = aws_api_gateway_rest_api.caas.id\n  stage_name    = \"dev\"\n}\n\noutput \"api_id\" {\n  value = aws_api_gateway_rest_api.caas.id\n  description = \"The API Gateway ID\"\n}",
+  "bleuScore": 0.105344,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0302-llm-324f83543a3c",
+  "generatedSourceFiles": [
+    "generated-source/row-0302-llm-324f83543a3c/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": false,
+    "missingPathModuleFiles": [
+      "lambda_function.py",
+      "lambda_function.zip"
+    ],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "lambda_function.py",
+        "line": "",
+        "finding": "missing_path_module_file"
+      },
+      {
+        "severity": "high",
+        "file": "lambda_function.zip",
+        "line": "",
+        "finding": "missing_path_module_file"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"caas_high\": {\"valid\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": [
+      "lambda_function.py",
+      "lambda_function.zip"
+    ]
+  },
+  "requiredMarkers": {
+    "aws_api_gateway_method": false,
+    "aws_api_gateway_resource": false,
+    "aws_api_gateway_rest_api": false,
+    "aws_s3_bucket": true
+  },
+  "missingMarkers": [
+    "aws_api_gateway_method",
+    "aws_api_gateway_resource",
+    "aws_api_gateway_rest_api"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform program deploys an AWS-backed cat picture web service using:\n\n- **Amazon API Gateway HTTP API** as the public web/API endpoint\n- **AWS Lambda** as the request handler\n- **Amazon S3** as the storage backend for uploaded cat pictures\n- **IAM roles and policies** allowing Lambda to read/write cat images in S3\n- A simple built-in HTML web page that lets users upload cat pictures and request a random cat picture\n\nThe deployed service supports:\n\n- `GET /` — serves a simple web UI\n- `POST /upload/{filename}` — uploads a cat picture to S3\n- `GET /random` — returns a random uploaded cat picture\n\n```hcl\nterraform {\n  required_version = \">= 1.4.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    archive = {\n      source  = \"hashicorp/archive\"\n      version = \">= 2.4\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be deployed.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"project_name\" {\n  description = \"Name prefix for all resources.\"\n  type",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0302-llm-324f83543a3c.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: An AWS service that holds a web server which allows you to upload cat pictures and provides random cat pictures on demand. Accomplishes this with API Gateway and S3.",
+  "promptStrategy": "default",
+  "answer": "This Terraform program deploys an AWS-backed cat picture web service using:\n\n- **Amazon API Gateway HTTP API** as the public web/API endpoint\n- **AWS Lambda** as the request handler\n- **Amazon S3** as the storage backend for uploaded cat pictures\n- **IAM roles and policies** allowing Lambda to read/write cat images in S3\n- A simple built-in HTML web page that lets users upload cat pictures and request a random cat picture\n\nThe deployed service supports:\n\n- `GET /` — serves a simple web UI\n- `POST /upload/{filename}` — uploads a cat picture to S3\n- `GET /random` — returns a random uploaded cat picture",
+  "failure_category": "artifact_incomplete",
+  "failure_reason": "Missing local files: lambda_function.py, lambda_function.zip"
+}

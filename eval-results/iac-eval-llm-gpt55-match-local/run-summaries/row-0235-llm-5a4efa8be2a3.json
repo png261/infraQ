@@ -1,0 +1,84 @@
+{
+  "index": 235,
+  "rowId": "235",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-5a4efa8be2a3",
+  "userId": "local-user",
+  "durationSeconds": 59.67,
+  "difficulty": "2",
+  "resource": "aws_egress_only_internet_gateway, aws_vpc",
+  "prompt": "Create an AWS VPC with an Egress-Only Internet Gateway attached to it",
+  "intent": "Has one resource \"aws_vpc\"\n\nHas one resource \"aws_egress_only_internet_gateway\"\nwith one \"vpc_id\" with value \"aws_vpc.{VPC NAME}.id\"",
+  "referenceOutput": "resource \"aws_vpc\" \"main\" {\n  cidr_block                       = \"10.0.0.0/16\"\n}\n\nresource \"aws_egress_only_internet_gateway\" \"example_egress_igw\" {\n  vpc_id = aws_vpc.main.id\n}",
+  "bleuScore": 0.035274,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0235-llm-5a4efa8be2a3",
+  "generatedSourceFiles": [
+    "generated-source/row-0235-llm-5a4efa8be2a3/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_egress_only_internet_gateway": true,
+    "aws_vpc": true,
+    "aws_vpc.{VPC NAME}.id": false
+  },
+  "missingMarkers": [
+    "aws_vpc.{VPC NAME}.id"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates an AWS VPC with an automatically assigned IPv6 CIDR block and attaches an Egress-Only Internet Gateway to it. It also creates an IPv6-enabled subnet and a route table with an outbound IPv6 default route through the Egress-Only Internet Gateway.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the VPC will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"vpc_cidr_block\" {\n  description = \"IPv4 CIDR block for the VPC.\"\n  type        = string\n  default     = \"10.0.0.0/16\"\n}\n\nvariable \"subnet_cidr_block\" {\n  description = \"IPv4 CIDR block for the subnet.\"\n  type        = string\n  default     = \"10.0.1.0/24\"\n}\n\nresource \"aws_vpc\" \"main\" {\n  cidr_block                       = var.vpc_cidr_block\n  assign_generated_ipv6_cidr_block = true\n  enable_dns_support               = true\n  enable_dns_hostnames             = true\n\n  tags = {\n    Name = \"egress-only-igw-vpc\"\n  }\n}\n\nresource \"aws_egress_only_internet_gateway\" \"m",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0235-llm-5a4efa8be2a3.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an AWS VPC with an Egress-Only Internet Gateway attached to it",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS VPC with an automatically assigned IPv6 CIDR block and attaches an Egress-Only Internet Gateway to it. It also creates an IPv6-enabled subnet and a route table with an outbound IPv6 default route through the Egress-Only Internet Gateway.",
+  "failure_category": "",
+  "failure_reason": ""
+}

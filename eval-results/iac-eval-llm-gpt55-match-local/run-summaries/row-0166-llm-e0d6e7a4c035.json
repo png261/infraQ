@@ -1,0 +1,81 @@
+{
+  "index": 166,
+  "rowId": "166",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-e0d6e7a4c035",
+  "userId": "local-user",
+  "durationSeconds": 78.3,
+  "difficulty": "3",
+  "resource": "aws_dynamodb_table, aws_dynamodb_table_item",
+  "prompt": "Provide a DynamoDB table item resource using terraform",
+  "intent": "dynamodb table -> hash_key, name, attribute (name, type), read_capacity = x, write_capacity = x, create a table_item using table name, hashkey, and json item object",
+  "referenceOutput": "resource \"aws_dynamodb_table_item\" \"example\" {\n  table_name = aws_dynamodb_table.example.name\n  hash_key   = aws_dynamodb_table.example.hash_key\n\n  item = <<ITEM\n{\n  \"exampleHashKey\": {\"S\": \"something\"},\n  \"one\": {\"N\": \"11111\"},\n  \"two\": {\"N\": \"22222\"},\n  \"three\": {\"N\": \"33333\"},\n  \"four\": {\"N\": \"44444\"}\n}\nITEM\n}\n\nresource \"aws_dynamodb_table\" \"example\" {\n  name           = \"example-name\"\n  read_capacity  = 10\n  write_capacity = 10\n  hash_key       = \"exampleHashKey\"\n\n  attribute {\n    name = \"exampleHashKey\"\n    type = \"S\"\n  }\n}",
+  "bleuScore": 0.163507,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0166-llm-e0d6e7a4c035",
+  "generatedSourceFiles": [
+    "generated-source/row-0166-llm-e0d6e7a4c035/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_dynamodb_table": true,
+    "aws_dynamodb_table_item": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS DynamoDB table and inserts a single item into it using the `aws_dynamodb_table_item` resource. The table uses a simple string partition key named `id`.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_dynamodb_table\" \"example\" {\n  name         = \"example-dynamodb-table\"\n  billing_mode = \"PAY_PER_REQUEST\"\n  hash_key     = \"id\"\n\n  attribute {\n    name = \"id\"\n    type = \"S\"\n  }\n\n  tags = {\n    Name        = \"example-dynamodb-table\"\n    Environment = \"dev\"\n  }\n}\n\nresource \"aws_dynamodb_table_item\" \"example_item\" {\n  table_name = aws_dynamodb_table.example.name\n  hash_key   = aws_dynamodb_table.example.hash_key\n\n  item = jsonencode({\n    id = {\n      S = \"item-001\"\n    }\n    name = {\n      S = \"Example Item\"\n    }\n    description = {\n      S = \"This is an example DynamoDB table item created with Terraform.\"\n    }\n    active = {\n      BOOL = true\n    }\n    count = {\n      N = \"1\"\n    }\n  })\n}\n```",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0166-llm-e0d6e7a4c035.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Provide a DynamoDB table item resource using terraform",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS DynamoDB table and inserts a single item into it using the `aws_dynamodb_table_item` resource. The table uses a simple string partition key named `id`.",
+  "failure_category": "",
+  "failure_reason": ""
+}

@@ -1,0 +1,84 @@
+{
+  "index": 43,
+  "rowId": "43",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-1a6ee6342e23",
+  "userId": "local-user",
+  "durationSeconds": 101.63,
+  "difficulty": "6",
+  "resource": "aws_lex_bot, aws_lex_intent",
+  "prompt": "create an aws_lex bot with multiple slots",
+  "intent": "Has one resource \"aws_lex_bot\" and one resource \"aws_lex_intent\"  with at least 2 slot blocks",
+  "referenceOutput": "terraform {  required_providers {    aws = {      source  = \"hashicorp/aws\"      version = \"~> 5.75\"    }  }  required_version = \"~> 1.9.8\"}provider \"aws\" {  region = \"us-east-1\"  profile = \"admin-1\"  assume_role {    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"  }}resource \"aws_lex_intent\" \"order_pizza_intent\" {  name                       = \"OrderPizzaIntent\"  description                = \"To order a pizza\"    sample_utterances = [    \"I would like to pick up a pizza\",    \"I would like to order some pizzas\",  ]  fulfillment_activity {    type = \"ReturnIntent\"  }  slot {    name                     = \"PizzaType\"    description              = \"Type of pizza to order\"    slot_constraint          = \"Required\"     slot_type                = \"AMAZON.AlphaNumeric\"    priority                 = 1    value_elicitation_prompt {      message {        content             = \"What type of pizza would you like?\"        content_type        = \"PlainText\"      }      max_attempts         = 2    }  }  slot {    name                     = \"PizzaSize\"    description              = \"Size of pizza to order\"    slot_constraint          = \"Required\"     slot_type                = \"AMAZON.NUMBER\"    priority                 = 2    value_elicitation_prompt {      message {        content             = \"What size of pizza would you like?\"        content_type        = \"PlainText\"      }      max_attempts         = 2    }  }  slot {    name                     = \"PizzaQuantity\"    description              = \"Number of pizzas to order\"    slot_constraint          = \"Required\"     slot_type                = \"AMAZON.NUMBER\"    priority                 = 3    value_elicitation_prompt {      message {        content             = \"How many pizzas do you want to order?\"        content_type        = \"PlainText\"      }      max_attempts         = 2    }  }  conclusion_statement {    message {      content              = \"Your pizza order has been received.\"      content_type         = \"PlainText\"    }  } }resource \"aws_lex_bot\" \"pizza_ordering_bot\" {  name                     = \"PizzaOrderingBot\"  description              = \"Bot to order pizzas\"  voice_id                 = \"Joanna\"  idle_session_ttl_in_seconds = 300  child_directed           = false  locale                  = \"en-US\"  process_behavior        = \"BUILD\"  clarification_prompt {    message {      content      = \"I didn't understand you, what type of pizza would you like to order?\"      content_type = \"PlainText\"    }    max_attempts = 5  }  abort_statement {    message {      content      = \"Sorry, I am unable to assist at the moment.\"      content_type = \"PlainText\"    }  }  intent {    intent_name    = aws_lex_intent.order_pizza_intent.name    intent_version = aws_lex_intent.order_pizza_intent.version  }}",
+  "bleuScore": 0.053284,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/generated-source/row-0043-llm-1a6ee6342e23",
+  "generatedSourceFiles": [
+    "generated-source/row-0043-llm-1a6ee6342e23/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: Invalid Attribute Value Match\n\n  with aws_lexv2models_slot_type.room_type,\n  on main.tf line 98, in resource \"aws_lexv2models_slot_type\" \"room_type\":\n  98:     resolution_strategy = \"ORIGINAL_VALUE\"\n\nAttribute value_selection_setting[0].resolution_strategy value must be one\nof: [\"OriginalValue\" \"TopResolution\" \"Concatenation\"], got: \"ORIGINAL_VALUE\"\n\nError: Invalid resource type\n\n  on main.tf line 336, in resource \"aws_lexv2models_bot_alias\" \"production\":\n 336: resource \"aws_lexv2models_bot_alias\" \"production\" {\n\nThe provider hashicorp/aws does not support resource type\n\"aws_lexv2models_bot_alias\".\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_lex_bot": false,
+    "aws_lex_intent": false
+  },
+  "missingMarkers": [
+    "aws_lex_bot",
+    "aws_lex_intent"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "Description: This Terraform configuration creates an AWS Lex V2 bot with multiple slots for a hotel booking workflow. The bot includes a custom slot type for room type, an intent with multiple required slots, a fallback intent, a bot version, and an alias. It also creates the IAM role required for AWS Lex to operate.\n\n```hcl\nterraform {\n  required_version = \">= 1.3.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Lex bot will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"bot_name\" {\n  description = \"Name of the Amazon Lex V2 bot.\"\n  type        = string\n  default     = \"hotel-booking-bot\"\n}\n\ndata \"aws_caller_identity\" \"current\" {}\n\nresource \"aws_iam_role\" \"lex_bot_role\" {\n  name = \"${var.bot_name}-lex-role\"\n\n  assume_role_policy = jsonencode({\n    Version = \"2012-10-17\"\n    Statement = [\n      {\n        Effect = \"Allow\"\n        Principal = {\n          Service = \"lexv2.amazonaws.com\"\n        }\n        Action = \"sts:AssumeRole\"\n      }\n    ]\n  })\n}\n\nresource \"aws_iam_role_policy\" \"lex_bot",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/run-summaries/row-0043-llm-1a6ee6342e23.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: create an aws_lex bot with multiple slots",
+  "promptStrategy": "default",
+  "answer": "Description: This Terraform configuration creates an AWS Lex V2 bot with multiple slots for a hotel booking workflow. The bot includes a custom slot type for room type, an intent with multiple required slots, a fallback intent, a bot version, and an alias. It also creates the IAM role required for AWS Lex to operate.",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: Invalid Attribute Value Match with aws_lexv2models_slot_type.room_type, on main.tf line 98, in resource \"aws_lexv2models_slot_type\" \"room_type\": 98: resolution_strategy = \"ORIGINAL_VALUE\" Attribute value_selection_setting[0].resolution_strategy value must be one of: [\"OriginalValue\" \"TopResolution\" \"Concatenation\"], got: \"ORIGINAL_VALUE\" Error: Invalid resource type on main.tf line 336, in resource \"aws_lexv2models_bot_alias\" \"production\": 336: resource \"aws_lexv2models_bot_alias\" \"produc... <truncated 94 chars>"
+}

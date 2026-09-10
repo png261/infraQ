@@ -1,0 +1,83 @@
+{
+  "index": 109,
+  "rowId": "109",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-6876354834cc",
+  "userId": "local-user",
+  "durationSeconds": 94.07,
+  "difficulty": "4",
+  "resource": "aws_s3_bucket, aws_s3_bucket_acl, aws_s3_bucket_lifecycle_configuration, aws_s3_bucket_versioning",
+  "prompt": "Create an AWS S3 bucket named 'wellcomecollection-platform-infra' with preventive destruction measures. Set the bucket ACL to 'private' and configure a lifecycle policy for automatic deletion of objects with a 'tmp/' prefix after 30 days. Implement versioning and set up lifecycle rules to transition old versions to the 'STANDARD_IA' storage class after 30 days and delete noncurrent versions after 90 days.",
+  "intent": "has one aws_s3_bucket resource\nwith bucket\n\nhas one aws_s3_bucket_acl resource\nwith bucket \nwith acl\n\nhas one aws_s3_bucket_lifecycle_configuration resource\nwith bucket\nwith rule\n     with id\n     with status\n     with action\n     with transition\n          with days\n          with storage_class\nwith expiration\n     with days\n\nhas one aws_s3_bucket_versioning resource\nwith bucket\nwith versioning_configuration\n     with status (can be \"Enabled\" or \"Suspended\")",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_s3_bucket\" \"platform_infra\" {\n  bucket_prefix = \"wellcomecollection-platform-infra-\"\n}\n\nresource \"aws_s3_bucket_ownership_controls\" \"example\" {\n    bucket = aws_s3_bucket.platform_infra.id\n    rule {\n        object_ownership = \"BucketOwnerPreferred\"\n    }\n}\n\nresource \"aws_s3_bucket_acl\" \"platform_infra\" {\n  depends_on = [ aws_s3_bucket_ownership_controls.example ]\n\n  bucket = aws_s3_bucket.platform_infra.id\n  acl    = \"private\"\n}\n\nresource \"aws_s3_bucket_lifecycle_configuration\" \"platform_infra\" {\n  bucket = aws_s3_bucket.platform_infra.id\n\n  rule {\n    id = \"tmp\"\n\n    filter {\n      prefix = \"tmp/\"\n    }\n\n    expiration {\n      days = 30\n    }\n\n    status = \"Enabled\"\n  }\n\n  rule {\n    id = \"expire_old_versions\"\n\n    transition {\n      days          = 30\n      storage_class = \"STANDARD_IA\"\n    }\n\n    noncurrent_version_expiration {\n      noncurrent_days = 90\n    }\n\n    status = \"Enabled\"\n  }\n}\n\nresource \"aws_s3_bucket_versioning\" \"platform_infra\" {\n  bucket = aws_s3_bucket.platform_infra.id\n\n  versioning_configuration {\n    status = \"Enabled\"\n  }\n}",
+  "bleuScore": 0.503119,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0109-llm-6876354834cc",
+  "generatedSourceFiles": [
+    "generated-source/row-0109-llm-6876354834cc/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_s3_bucket\": false, \"has_s3_bucket_acl\": true, \"has_s3_bucket_lifecycle_configuration_one\": true, \"has_s3_bucket_lifecycle_configuration_two\": false, \"has_s3_bucket_versioning\": true, \"valid_configuration\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_s3_bucket": true,
+    "aws_s3_bucket_acl": true,
+    "aws_s3_bucket_lifecycle_configuration": true,
+    "aws_s3_bucket_versioning": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "The Terraform configuration below creates an AWS S3 bucket named `wellcomecollection-platform-infra` with preventive destruction enabled using Terraform’s `prevent_destroy` lifecycle rule. It configures the bucket ACL as `private`, enables versioning, blocks public access, and applies lifecycle policies to:\n\n- Delete current objects under the `tmp/` prefix after 30 days.\n- Transition noncurrent object versions to `STANDARD_IA` after 30 days.\n- Delete noncurrent object versions after 90 days.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"eu-west-1\"\n}\n\nresource \"aws_s3_bucket\" \"platform_infra\" {\n  bucket        = \"wellcomecollection-platform-infra\"\n  force_destroy = false\n\n  lifecycle {\n    prevent_destroy = true\n  }\n\n  tags = {\n    Name        = \"wellcomecollection-platform-infra\"\n    ManagedBy   = \"Terraform\"\n    Environment = \"Platform\"\n  }\n}\n\nresource \"aws_s3_bucket_public_access_block\" \"platform_infra\" {\n  bucket = aws_s3_bucket.platform_infra.id\n\n  block_public_acls       = true\n  block_public_policy     = true\n  ignore_public_acls      = ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0109-llm-6876354834cc.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an AWS S3 bucket named 'wellcomecollection-platform-infra' with preventive destruction measures. Set the bucket ACL to 'private' and configure a lifecycle policy for automatic deletion of objects with a 'tmp/' prefix after 30 days. Implement versioning and set up lifecycle rules to transition old versions to the 'STANDARD_IA' storage class after 30 days and delete noncurrent versions after 90 days.",
+  "promptStrategy": "default",
+  "answer": "The Terraform configuration below creates an AWS S3 bucket named `wellcomecollection-platform-infra` with preventive destruction enabled using Terraform’s `prevent_destroy` lifecycle rule. It configures the bucket ACL as `private`, enables versioning, blocks public access, and applies lifecycle policies to:\n\n- Delete current objects under the `tmp/` prefix after 30 days.\n- Transition noncurrent object versions to `STANDARD_IA` after 30 days.\n- Delete noncurrent object versions after 90 days.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_s3_bucket\": false, \"has_s3_bucket_acl\": true, \"has_s3_bucket_lifecycle_configuration_one\": true, \"has_s3_bucket_lifecycle_configuration_two\": false, \"has_s3_bucket_versioning\": true, \"valid_configuration\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

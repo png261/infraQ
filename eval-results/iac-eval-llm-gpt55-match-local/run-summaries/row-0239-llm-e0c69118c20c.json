@@ -1,0 +1,85 @@
+{
+  "index": 239,
+  "rowId": "239",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-e0c69118c20c",
+  "userId": "local-user",
+  "durationSeconds": 75.66,
+  "difficulty": "2",
+  "resource": "aws_internet_gateway, aws_route_table, aws_vpc",
+  "prompt": "Create an AWS VPC resource with an Internet Gateway attached and a route to a custom route table directing traffic for a specific CIDR block through the Internet Gateway",
+  "intent": "Has one resource \"aws_vpc\"\n\nHas one resource \"aws_internet_gateway\"\nwith one \"vpc_id\" with value \"aws_vpc.{VPC NAME}.id\"\n\nHas one resource \"aws_route_table\"\nwith one \"vpc_id\" with value \"aws_vpc.{VPC NAME}.id\"\nwith one route",
+  "referenceOutput": "resource \"aws_vpc\" \"main\" {\n  cidr_block = \"10.0.0.0/16\"\n}\n\nresource \"aws_internet_gateway\" \"example_igw\" {\n  vpc_id = aws_vpc.main.id\n}\n\nresource \"aws_route_table\" \"example_public_rt\" {\n  vpc_id = aws_vpc.main.id\n\n  route {\n    cidr_block = \"10.0.1.0/24\"\n    gateway_id = aws_internet_gateway.example_igw.id\n  }\n}",
+  "bleuScore": 0.053946,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0239-llm-e0c69118c20c",
+  "generatedSourceFiles": [
+    "generated-source/row-0239-llm-e0c69118c20c/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"vpc_gateway_route\": {\"valid\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_internet_gateway": true,
+    "aws_route_table": true,
+    "aws_vpc": true,
+    "aws_vpc.{VPC NAME}.id": false
+  },
+  "missingMarkers": [
+    "aws_vpc.{VPC NAME}.id"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates an AWS VPC with:\n\n- A custom CIDR block\n- An attached Internet Gateway\n- A public subnet\n- A custom route table\n- A route directing traffic for a specific CIDR block through the Internet Gateway\n- A route table association linking the subnet to the custom route table\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"vpc_cidr_block\" {\n  description = \"CIDR block for the VPC.\"\n  type        = string\n  default     = \"10.0.0.0/16\"\n}\n\nvariable \"public_subnet_cidr_block\" {\n  description = \"CIDR block for the public subnet.\"\n  type        = string\n  default     = \"10.0.1.0/24\"\n}\n\nvariable \"route_destination_cidr_block\" {\n  description = \"Specific CIDR block whose traffic should be routed through the Internet Gateway.\"\n  type        = string\n  default     = \"0.0.0.0/0\"\n}\n\nresource \"aws_vpc\" \"main\" {\n  cidr_block           = var.vpc_cidr_block\n  enable_dns",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0239-llm-e0c69118c20c.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an AWS VPC resource with an Internet Gateway attached and a route to a custom route table directing traffic for a specific CIDR block through the Internet Gateway",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS VPC with:\n\n- A custom CIDR block\n- An attached Internet Gateway\n- A public subnet\n- A custom route table\n- A route directing traffic for a specific CIDR block through the Internet Gateway\n- A route table association linking the subnet to the custom route table",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"vpc_gateway_route\": {\"valid\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

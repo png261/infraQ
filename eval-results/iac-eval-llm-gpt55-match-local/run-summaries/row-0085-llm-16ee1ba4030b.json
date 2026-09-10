@@ -1,0 +1,81 @@
+{
+  "index": 85,
+  "rowId": "85",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-16ee1ba4030b",
+  "userId": "local-user",
+  "durationSeconds": 99.29,
+  "difficulty": "3",
+  "resource": "aws_route53_record, aws_route53_record, aws_route53_zone",
+  "prompt": "Configure a routing policy that utilizes a user's location to route them to the nearest endpoint of a route 53 zone using Route 53 resources. Call the zone \"primary\" and use \"US\" and \"EU\" continents",
+  "intent": "Has one \"aws_route53_zone\" resource\n    with \"name\"\n\nHas two \"aws_route53_record\" resources\n    The first \"aws_route53_record\" \n        with \"name\"\n        with \"type\"\n        with \"ttl\"\n        with \"records\"\n        with \"zone_id\" referencing the \"aws_route53_zone\" resource\n        with \"set_identifier\"\n        with \"geolocation_routing_policy\" block that contains \"continent\" set to \"NA\" \n    The second \"aws_route53_record\" \n        with \"name\"\n        with \"type\"\n        with \"ttl\"\n        with \"records\"\n        with \"zone_id\" referencing the \"aws_route53_zone\" resource\n        with \"set_identifier\"\n        with \"geolocation_routing_policy\" block that contains \"continent\" set to \"EU\"",
+  "referenceOutput": "provider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_route53_zone\" \"primary\" {\n  name = \"example53.com\"\n}\n\nresource \"aws_route53_record\" \"www\" {\n  zone_id = aws_route53_zone.primary.zone_id\n  name    = \"www.example.com\"\n  type    = \"CNAME\"\n  ttl     = 300\n  records = [\"192.0.2.101\"]\n  set_identifier = \"NA Endpoint\"\n  geolocation_routing_policy {\n    continent = \"NA\"\n  }\n}\n\nresource \"aws_route53_record\" \"eu_geolocation_record\" {\n  zone_id = aws_route53_zone.primary.zone_id\n  name    = \"service.example53.com\"\n  type    = \"A\"\n  ttl     = \"60\"\n  records = [\"192.0.2.102\"]\n  set_identifier = \"EU Endpoint\"\n\n  geolocation_routing_policy {\n    continent = \"EU\" \n  }\n}",
+  "bleuScore": 0.10886,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0085-llm-16ee1ba4030b",
+  "generatedSourceFiles": [
+    "generated-source/row-0085-llm-16ee1ba4030b/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_configuration_valid\": false, \"is_valid_r53_record_eu\": true, \"is_valid_r53_record_na\": false, \"is_valid_r53_zone\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_route53_record": true,
+    "aws_route53_zone": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a public Route 53 hosted zone named `primary` and defines geolocation-based DNS routing records. Users located in the United States are routed to the US endpoint, while users located in Europe are routed to the EU endpoint. A default record is also included so that users outside the specified locations still receive a valid DNS response.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region used by the provider. Route 53 is global, but AWS provider requires a region.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"zone_name\" {\n  description = \"Name of the Route 53 hosted zone.\"\n  type        = string\n  default     = \"primary\"\n}\n\nvariable \"record_name\" {\n  description = \"DNS record name used for geolocation routing.\"\n  type        = string\n  default     = \"app\"\n}\n\nvariable \"us_endpoint_ip\" {\n  description = \"IPv4 address of the US endpoint.\"\n  type        = string\n  default     = \"203.0.113.10\"\n}\n\nvariable \"eu_endpoint_ip\" {\n  desc",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0085-llm-16ee1ba4030b.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Configure a routing policy that utilizes a user's location to route them to the nearest endpoint of a route 53 zone using Route 53 resources. Call the zone \"primary\" and use \"US\" and \"EU\" continents",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a public Route 53 hosted zone named `primary` and defines geolocation-based DNS routing records. Users located in the United States are routed to the US endpoint, while users located in Europe are routed to the EU endpoint. A default record is also included so that users outside the specified locations still receive a valid DNS response.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_configuration_valid\": false, \"is_valid_r53_record_eu\": true, \"is_valid_r53_record_na\": false, \"is_valid_r53_zone\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

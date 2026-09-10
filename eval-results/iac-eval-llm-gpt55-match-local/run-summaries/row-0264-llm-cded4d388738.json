@@ -1,0 +1,80 @@
+{
+  "index": 264,
+  "rowId": "264",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-cded4d388738",
+  "userId": "local-user",
+  "durationSeconds": 54.96,
+  "difficulty": "1",
+  "resource": "aws_iam_group",
+  "prompt": "Create a basic AWS IAM group example",
+  "intent": "Has one \"aws_iam_group\" resource\nwith one \"name\" with any value",
+  "referenceOutput": "resource \"aws_iam_group\" \"group\" {\n  name = \"my-group\"\n  path = \"/users/\"\n}",
+  "bleuScore": 0.013938,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0264-llm-cded4d388738",
+  "generatedSourceFiles": [
+    "generated-source/row-0264-llm-cded4d388738/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_iam_group": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a basic AWS IAM group example. It defines:\n\n- An AWS provider configuration using the `us-east-1` region\n- An IAM group named `example-basic-iam-group`\n- Two IAM users\n- A group membership that adds the users to the IAM group\n- An AWS managed policy attachment granting the group `ReadOnlyAccess`\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_iam_group\" \"basic_group\" {\n  name = \"example-basic-iam-group\"\n  path = \"/\"\n}\n\nresource \"aws_iam_user\" \"user_one\" {\n  name          = \"example-basic-user-one\"\n  path          = \"/\"\n  force_destroy = true\n}\n\nresource \"aws_iam_user\" \"user_two\" {\n  name          = \"example-basic-user-two\"\n  path          = \"/\"\n  force_destroy = true\n}\n\nresource \"aws_iam_group_membership\" \"basic_group_membership\" {\n  name = \"example-basic-group-membership\"\n\n  users = [\n    aws_iam_user.user_one.name,\n    aws_iam_user.user_two.name\n  ]\n\n  group = aws_iam_group.basic_group.name\n}\n\nresource \"aws_iam_group_policy_attachment\" \"readonly_access\" {\n  group      = aws_iam_g",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0264-llm-cded4d388738.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a basic AWS IAM group example",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a basic AWS IAM group example. It defines:\n\n- An AWS provider configuration using the `us-east-1` region\n- An IAM group named `example-basic-iam-group`\n- Two IAM users\n- A group membership that adds the users to the IAM group\n- An AWS managed policy attachment granting the group `ReadOnlyAccess`",
+  "failure_category": "",
+  "failure_reason": ""
+}

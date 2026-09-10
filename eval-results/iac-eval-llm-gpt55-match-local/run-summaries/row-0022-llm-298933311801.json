@@ -1,0 +1,80 @@
+{
+  "index": 22,
+  "rowId": "22",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-298933311801",
+  "userId": "local-user",
+  "durationSeconds": 50.54,
+  "difficulty": "2",
+  "resource": "aws_route53_record, aws_route53_zone",
+  "prompt": "Set up a Pointer record for reverse DNS using Route 53 resources. The domain name should be \"host.example53.com\" and name the zone \"reverse_zone\"",
+  "intent": "Has one \"aws_route53_zone\" resource\n    with \"name\" ending in \".in-addr.arpa\"\n\nHas one \"aws_route53_record\" resource\n    with \"name\"\n    with \"type\" set to \"PTR\"\n    with \"ttl\"\n    with \"records\"\n    with \"zone_id\" referencing the \"aws_route53_zone\" resource",
+  "referenceOutput": "provider \"aws\" {\n  region = \"us-east-1\"\n}\n\n# Create Reverse DNS Hosted Zone\nresource \"aws_route53_zone\" \"reverse_zone\" {\n  name = \"2.0.192.in-addr.arpa\"\n}\n\n# Create a PTR Record for a specific IP address within that zone\nresource \"aws_route53_record\" \"ptr_record\" {\n  zone_id = aws_route53_zone.reverse_zone.zone_id\n  name    = \"53.2.0.192.in-addr.arpa\"\n  type    = \"PTR\"\n  ttl     = \"3600\"\n  records = [\"host.example.com\"]\n}",
+  "bleuScore": 0.13207,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/generated-source/row-0022-llm-298933311801",
+  "generatedSourceFiles": [
+    "generated-source/row-0022-llm-298933311801/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_configuration_valid\": false, \"is_valid_r53_record\": false, \"is_valid_r53_zone\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_route53_record": true,
+    "aws_route53_zone": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a Route 53 public hosted zone resource named `reverse_zone` for reverse DNS and adds a PTR record pointing the reverse IP name to `host.example53.com`.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nvariable \"reverse_zone_domain\" {\n  description = \"Reverse DNS hosted zone domain.\"\n  type        = string\n  default     = \"2.0.192.in-addr.arpa\"\n}\n\nvariable \"ptr_record_name\" {\n  description = \"PTR record name for the reverse DNS entry.\"\n  type        = string\n  default     = \"44.2.0.192.in-addr.arpa\"\n}\n\nvariable \"forward_domain_name\" {\n  description = \"Forward hostname that the PTR record resolves to.\"\n  type        = string\n  default     = \"host.example53.com\"\n}\n\nresource \"aws_route53_zone\" \"reverse_zone\" {\n  name = var.reverse_zone_domain\n\n  comment = \"Reverse DNS hosted zone for PTR records\"\n}\n\nresource \"aws_route53_record\" \"ptr_record\" {\n  zone_id = aws_route53_zone.reverse_zone.zone_id\n  name    = var.ptr_record_name\n  type    = \"PTR\"\n  ttl     = 300\n\n  records = [\n    \"${var.forward_domain_na",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/run-summaries/row-0022-llm-298933311801.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Set up a Pointer record for reverse DNS using Route 53 resources. The domain name should be \"host.example53.com\" and name the zone \"reverse_zone\"",
+  "answer": "This Terraform configuration creates a Route 53 public hosted zone resource named `reverse_zone` for reverse DNS and adds a PTR record pointing the reverse IP name to `host.example53.com`.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_configuration_valid\": false, \"is_valid_r53_record\": false, \"is_valid_r53_zone\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

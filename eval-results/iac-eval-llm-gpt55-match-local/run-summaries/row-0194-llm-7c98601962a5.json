@@ -1,0 +1,87 @@
+{
+  "index": 194,
+  "rowId": "194",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-7c98601962a5",
+  "userId": "local-user",
+  "durationSeconds": 76.28,
+  "difficulty": "1",
+  "resource": "aws_elasticache_user",
+  "prompt": "authenticate a elasticache user with redis",
+  "intent": "requires access string, engine = REDIS, user id and user name",
+  "referenceOutput": "resource \"aws_elasticache_user\" \"test\" {\n  user_id       = \"testUserId\"\n  user_name     = \"testUserName\"\n  access_string = \"on ~app::* -@all +@read +@hash +@bitmap +@geo -setbit -bitfield -hset -hsetnx -hmset -hincrby -hincrbyfloat -hdel -bitop -geoadd -georadius -georadiusbymember\"\n  engine        = \"REDIS\"\n  passwords     = [\"password123456789\"]\n}",
+  "bleuScore": 0.0078,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0194-llm-7c98601962a5",
+  "generatedSourceFiles": [
+    "generated-source/row-0194-llm-7c98601962a5/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "88",
+        "finding": "broad_ingress_or_egress_cidr"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_elasticache_user": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS ElastiCache for Redis replication group using Redis ACL authentication. It defines:\n\n- An ElastiCache Redis cluster with encryption in transit enabled\n- A Redis ACL user named `appuser` authenticated by password\n- A disabled/default Redis user required by ElastiCache user groups\n- An ElastiCache user group attached to the Redis replication group\n- A security group allowing Redis access from within the default VPC\n- A generated strong Redis password exposed as a sensitive Terraform output\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nprovider \"random\" {}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the ElastiCache Redis cluster will be deployed.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"redis_user_name\" {\n  description = \"Redis ACL username used for authentication.\"\n  type        = string\n  default     = \"appuser\"\n}\n\nvariable \"redis_replication_group_id\" {\n  descripti",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0194-llm-7c98601962a5.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: authenticate a elasticache user with redis",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS ElastiCache for Redis replication group using Redis ACL authentication. It defines:\n\n- An ElastiCache Redis cluster with encryption in transit enabled\n- A Redis ACL user named `appuser` authenticated by password\n- A disabled/default Redis user required by ElastiCache user groups\n- An ElastiCache user group attached to the Redis replication group\n- A security group allowing Redis access from within the default VPC\n- A generated strong Redis password exposed as a sensitive Terraform output",
+  "failure_category": "",
+  "failure_reason": ""
+}

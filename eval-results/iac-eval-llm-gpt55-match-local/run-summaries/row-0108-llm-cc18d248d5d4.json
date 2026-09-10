@@ -1,0 +1,84 @@
+{
+  "index": 108,
+  "rowId": "108",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-cc18d248d5d4",
+  "userId": "local-user",
+  "durationSeconds": 57.48,
+  "difficulty": "5",
+  "resource": "aws_dynamodb_table, aws_s3_bucket, aws_s3_bucket_public_access_block, aws_s3_bucket_server_side_encryption_configuration, aws_s3_bucket_versioning",
+  "prompt": "Set up an AWS S3 bucket and DynamoDB table for Terraform state management. Ensure the S3 bucket has preventive measures against accidental deletion and is configured with versioning enabled, server-side encryption using AES256, and public access restrictions. Create a DynamoDB table with a hash key named 'LockID' using 'PAY_PER_REQUEST' billing mode for Terraform locking.",
+  "intent": "has one aws_s3_bucket_versioning resource\nwith bucket    \nwith status\n\nhas one aws_dynamodb_table resource\nwith name\nwith hash_key\n\nhas one aws_s3_bucket_lifecycle_configuration resource\nwith bucket \nwith rule\n    with id\n    with status\n    with action\n    with transition\n        with days\n        with storage_class\n\nhas one aws_s3_bucket_server_side_encryption_configuration resource\nwith bucket\nwith rule\n    with apply_server_side_encryption_by_default\n    with sse_algorithm\n\nhas one aws_s3_bucket_public_access_block resource\nwith bucket\nwith block_public_acls (boolean)\nwith block_public_policy (boolean)\nwith ignore_public_acls (boolean)\nwith restrict_public_buckets(boolean)\n\nhas one aws_dynamodb_table resource\nwith name  \nwith hash_key  \nwith attribute\n    with name\n    with type",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_s3_bucket\" \"terraform_state\" {\n  bucket = \"iac-misc-terraform-state\"\n}\n\nresource \"aws_s3_bucket_versioning\" \"enabled\" {\n  bucket = aws_s3_bucket.terraform_state.id\n  versioning_configuration {\n    status = \"Enabled\"\n  }\n}\n\nresource \"aws_s3_bucket_server_side_encryption_configuration\" \"default\" {\n  bucket = aws_s3_bucket.terraform_state.id\n\n  rule {\n    apply_server_side_encryption_by_default {\n      sse_algorithm = \"AES256\"\n    }\n  }\n}\n\nresource \"aws_s3_bucket_public_access_block\" \"public_access\" {\n  bucket                  = aws_s3_bucket.terraform_state.id\n  block_public_acls       = true\n  block_public_policy     = true\n  ignore_public_acls      = true\n  restrict_public_buckets = true\n}\n\nresource \"aws_dynamodb_table\" \"terraform_locks\" {\n  name         = \"iac-misc-terraform-locks\"\n  billing_mode = \"PAY_PER_REQUEST\"\n  hash_key     = \"LockID\"\n\n  attribute {\n    name = \"LockID\"\n    type = \"S\"\n  }\n}",
+  "bleuScore": 0.250741,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0108-llm-cc18d248d5d4",
+  "generatedSourceFiles": [
+    "generated-source/row-0108-llm-cc18d248d5d4/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_dynamodb_table": true,
+    "aws_s3_bucket": true,
+    "aws_s3_bucket_public_access_block": true,
+    "aws_s3_bucket_server_side_encryption_configuration": true,
+    "aws_s3_bucket_versioning": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates AWS resources for Terraform remote state management:\n\n- An S3 bucket for storing Terraform state\n  - Versioning enabled\n  - Server-side encryption using AES256\n  - Public access fully blocked\n  - Lifecycle protection with `prevent_destroy = true`\n- A DynamoDB table for Terraform state locking\n  - Hash key: `LockID`\n  - Billing mode: `PAY_PER_REQUEST`\n- A randomized S3 bucket suffix to avoid global bucket name collisions\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Terraform state management resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"bucket_name_prefix\" {\n  description = \"Prefix for the Terraform state S3 bucket name. A random suffix will be added.\"\n  type        = string\n  default     = \"terraform-state\"\n}\n\nvariable \"dynamodb_table_name\" {\n  description = \"Name of the DynamoDB table used for Terrafor",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0108-llm-cc18d248d5d4.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Set up an AWS S3 bucket and DynamoDB table for Terraform state management. Ensure the S3 bucket has preventive measures against accidental deletion and is configured with versioning enabled, server-side encryption using AES256, and public access restrictions. Create a DynamoDB table with a hash key named 'LockID' using 'PAY_PER_REQUEST' billing mode for Terraform locking.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates AWS resources for Terraform remote state management:\n\n- An S3 bucket for storing Terraform state\n  - Versioning enabled\n  - Server-side encryption using AES256\n  - Public access fully blocked\n  - Lifecycle protection with `prevent_destroy = true`\n- A DynamoDB table for Terraform state locking\n  - Hash key: `LockID`\n  - Billing mode: `PAY_PER_REQUEST`\n- A randomized S3 bucket suffix to avoid global bucket name collisions",
+  "failure_category": "",
+  "failure_reason": ""
+}

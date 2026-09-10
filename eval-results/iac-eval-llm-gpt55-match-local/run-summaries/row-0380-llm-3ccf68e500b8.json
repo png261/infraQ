@@ -1,0 +1,82 @@
+{
+  "index": 380,
+  "rowId": "380",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-3ccf68e500b8",
+  "userId": "local-user",
+  "durationSeconds": 97.57,
+  "difficulty": "1",
+  "resource": "aws_glacier_vault",
+  "prompt": "generate a aws storage for long term data and backup",
+  "intent": "has one \"aws_glacier_vault\" resource\n     with \"name\" attribute",
+  "referenceOutput": "provider \"aws\" {\n  region = \"us-east-1\"  # Replace with your desired AWS region\n}\n\nresource \"aws_glacier_vault\" \"example\" {\n  name = \"my-glacier-vault\"\n}",
+  "bleuScore": 0.009006,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0380-llm-3ccf68e500b8",
+  "generatedSourceFiles": [
+    "generated-source/row-0380-llm-3ccf68e500b8/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_glacier_vault\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_glacier_vault": false
+  },
+  "missingMarkers": [
+    "aws_glacier_vault"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates AWS long-term storage and backup infrastructure using:\n\n- An encrypted S3 bucket for durable long-term data storage\n- S3 versioning for protection against accidental overwrite/delete\n- Lifecycle rules that transition objects to:\n  - Glacier Instant Retrieval\n  - Glacier Flexible Retrieval\n  - Glacier Deep Archive\n- A separate AWS Backup vault\n- An AWS Backup plan with scheduled daily backups and long-term retention\n- IAM role and managed policies required for AWS Backup to back up and restore S3 data\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where storage and backup resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"bucket_name_prefix\" {\n  description = \"Prefix for the long-term storage S3 bucket name.\"\n  type        = string\n  default     = \"long-term-data-backup\"\n}\n\nvariable \"backup_vault_name\" {\n  description = ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0380-llm-3ccf68e500b8.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: generate a aws storage for long term data and backup",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates AWS long-term storage and backup infrastructure using:\n\n- An encrypted S3 bucket for durable long-term data storage\n- S3 versioning for protection against accidental overwrite/delete\n- Lifecycle rules that transition objects to:\n  - Glacier Instant Retrieval\n  - Glacier Flexible Retrieval\n  - Glacier Deep Archive\n- A separate AWS Backup vault\n- An AWS Backup plan with scheduled daily backups and long-term retention\n- IAM role and managed policies required for AWS Backup to back up and restore S3 data",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_glacier_vault\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

@@ -1,0 +1,106 @@
+{
+  "index": 215,
+  "rowId": "215",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-030f72fbd2d3",
+  "userId": "local-user",
+  "durationSeconds": 96.59,
+  "difficulty": "3",
+  "resource": "aws_rds_cluster, aws_vpc",
+  "prompt": "Create an Aurora MySQL cluster.",
+  "intent": "Has a aws_rds_cluster with engine==\"aurora-mysql\"",
+  "referenceOutput": "terraform {\nrequired_providers {\naws = {\nsource = \"hashicorp/aws\"\nversion = \"~> 5.0\"\n}\n}\n}\n\n# Configure the AWS Provider\nprovider \"aws\" {\nregion = \"us-east-1\"\n}\n\nresource \"aws_vpc\" \"vpc\" {\ncidr_block = \"192.168.0.0/22\"\n}\n\nresource \"aws_rds_cluster\" \"default\" {\ncluster_identifier = \"aurora-cluster-demo\"\nengine = \"aurora-mysql\"\navailability_zones = [\"us-east-1a\", \"us-east-1b\", \"us-east-1c\"]\ndatabase_name = \"mydb\"\nmaster_username = \"USERNAME\"\nmaster_password = \"PASSWORD\"\nbackup_retention_period = 5\npreferred_backup_window = \"07:00-09:00\"\nskip_final_snapshot = true\n}",
+  "bleuScore": 0.045727,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0215-llm-030f72fbd2d3",
+  "generatedSourceFiles": [
+    "generated-source/row-0215-llm-030f72fbd2d3/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "138",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "203",
+        "finding": "rds_final_snapshot_disabled"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "219",
+        "finding": "public_rds_instance"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "235",
+        "finding": "public_rds_instance"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_rds_cluster": true,
+    "aws_vpc": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a complete Amazon Aurora MySQL deployment, including:\n\n- A new VPC with two public subnets across two Availability Zones\n- An Internet Gateway and route table for subnet connectivity\n- A security group allowing MySQL access on port `3306`\n- An Aurora MySQL DB subnet group\n- An Aurora MySQL cluster\n- Two Aurora MySQL cluster instances\n- Required provider configuration and default variables\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"vpc_cidr\" {\n  description = \"CIDR block for the Aurora VPC.\"\n  type        = string\n  default     = \"10.20.0.0/16\"\n}\n\nvariable \"db_name\" {\n  description = \"Initial database name.\"\n  type        = string\n  default     = \"appdb\"\n}\n\nvariable \"db_master_username\" {\n  description = \"Aurora MySQL master username.\"\n  type        = string\n  default     = \"adminuser\"\n}\n\nvariable \"db_master_password\" {\n  description = \"Auro",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0215-llm-030f72fbd2d3.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an Aurora MySQL cluster.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a complete Amazon Aurora MySQL deployment, including:\n\n- A new VPC with two public subnets across two Availability Zones\n- An Internet Gateway and route table for subnet connectivity\n- A security group allowing MySQL access on port `3306`\n- An Aurora MySQL DB subnet group\n- An Aurora MySQL cluster\n- Two Aurora MySQL cluster instances\n- Required provider configuration and default variables",
+  "failure_category": "",
+  "failure_reason": ""
+}

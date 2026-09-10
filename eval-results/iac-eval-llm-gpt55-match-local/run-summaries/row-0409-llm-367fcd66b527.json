@@ -1,0 +1,93 @@
+{
+  "index": 409,
+  "rowId": "409",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-367fcd66b527",
+  "userId": "local-user",
+  "durationSeconds": 82.47,
+  "difficulty": "1",
+  "resource": "aws_db_instance",
+  "prompt": "create a memory optimized PostgresSQL",
+  "intent": "Has one \"aws_db_instance\" resource\nwith one \"allocated_storage\" minimun value is 20\nwith one \"engine\" with value \"postgres\"\nwith one \"instance_class\" with valid memory-optimized class\nwith one \"password\"\nwith one \"username\"",
+  "referenceOutput": "resource \"aws_db_instance\" \"default\" {\n  allocated_storage    = 20\n  engine               = \"postgres\"\n  instance_class       = \"db.z1d.micro\"\n  username             = \"foo\"\n  password             = \"foobarbaz\"\n}",
+  "bleuScore": 0.004935,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0409-llm-367fcd66b527",
+  "generatedSourceFiles": [
+    "generated-source/row-0409-llm-367fcd66b527/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "133",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "191",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_db_instance\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_db_instance": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration deploys a memory-optimized PostgreSQL database on AWS using Amazon RDS. It creates:\n\n- A dedicated VPC\n- Two private subnets across separate Availability Zones\n- An RDS subnet group\n- A security group allowing PostgreSQL access\n- A randomly generated database password\n- A memory-optimized PostgreSQL RDS instance using `db.r6g.large`\n- Outputs for the database endpoint, port, username, and database name\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be deployed.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"db_name\" {\n  description = \"Initial PostgreSQL database name.\"\n  type        = string\n  default     = \"memoryoptimizeddb\"\n}\n\nvariable \"db_username\" {\n  description = \"Master username for the PostgreSQL database.\"\n  type        = string\n  default     = \"postgresadmin\"\n}\n\nvariable \"db_instance_class\" {\n  description = \"Memory-op",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0409-llm-367fcd66b527.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: create a memory optimized PostgresSQL",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration deploys a memory-optimized PostgreSQL database on AWS using Amazon RDS. It creates:\n\n- A dedicated VPC\n- Two private subnets across separate Availability Zones\n- An RDS subnet group\n- A security group allowing PostgreSQL access\n- A randomly generated database password\n- A memory-optimized PostgreSQL RDS instance using `db.r6g.large`\n- Outputs for the database endpoint, port, username, and database name",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_db_instance\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

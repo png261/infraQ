@@ -1,0 +1,80 @@
+{
+  "index": 68,
+  "rowId": "68",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-fb256e252806",
+  "userId": "local-user",
+  "durationSeconds": 59.24,
+  "difficulty": "2",
+  "resource": "aws_kinesis_video_stream",
+  "prompt": "Generate a basic Kinesis Video Stream resource",
+  "intent": "Has one \"aws_kinesis_video_stream\" resource",
+  "referenceOutput": "provider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_kinesis_video_stream\" \"default\" {\n  name                    = \"terraform-kinesis-video-stream\"\n  data_retention_in_hours = 1\n  device_name             = \"kinesis-video-device-name\"\n  media_type              = \"video/h264\"\n\n  tags = {\n    Name = \"terraform-kinesis-video-stream\"\n  }\n}",
+  "bleuScore": 0.112508,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-1/generated-source/row-0068-llm-fb256e252806",
+  "generatedSourceFiles": [
+    "generated-source/row-0068-llm-fb256e252806/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_kinesis_video_stream": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a basic AWS Kinesis Video Stream using the AWS provider. It includes a configurable region and stream name with defaults, and provisions a single `aws_kinesis_video_stream` resource.\n\n```hcl\nterraform {\n  required_version = \">= 1.0.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Kinesis Video Stream will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"stream_name\" {\n  description = \"Name of the Kinesis Video Stream.\"\n  type        = string\n  default     = \"basic-kinesis-video-stream\"\n}\n\nresource \"aws_kinesis_video_stream\" \"basic\" {\n  name                    = var.stream_name\n  data_retention_in_hours = 24\n  device_name             = \"basic-video-device\"\n  media_type              = \"video/h264\"\n\n  tags = {\n    Name        = var.stream_name\n    Environment = \"dev\"\n    ManagedBy   = \"Terraform\"\n  }\n}\n\noutput \"kinesis_video_stream_name\" {\n  description = \"The name of the Kinesis Video Stream.\"\n  value       = aws_kinesis_video_stream.basic.name\n}\n\noutput ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-1/run-summaries/row-0068-llm-fb256e252806.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Generate a basic Kinesis Video Stream resource",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a basic AWS Kinesis Video Stream using the AWS provider. It includes a configurable region and stream name with defaults, and provisions a single `aws_kinesis_video_stream` resource.",
+  "failure_category": "",
+  "failure_reason": ""
+}

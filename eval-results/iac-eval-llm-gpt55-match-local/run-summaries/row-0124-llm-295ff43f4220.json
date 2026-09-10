@@ -1,0 +1,80 @@
+{
+  "index": 124,
+  "rowId": "124",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-295ff43f4220",
+  "userId": "local-user",
+  "durationSeconds": 45.85,
+  "difficulty": "2",
+  "resource": "aws_ami",
+  "prompt": "Create an AWS aws_ami resource for the latest Amazon Linux 2 AMI",
+  "intent": "create aws_ami resource with name = any",
+  "referenceOutput": "provider \"aws\" {\n  region = \"us-east-1\"\n}\n\ndata \"aws_ami\" \"latest_amazon_linux_2\" {\n  most_recent = true\n  owners      = [\"amazon\"]\n\n  filter {\n    name   = \"name\"\n    values = [\"amzn2-ami-hvm-*-x86_64-gp2\"]\n  }\n}",
+  "bleuScore": 0.154591,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0124-llm-295ff43f4220",
+  "generatedSourceFiles": [
+    "generated-source/row-0124-llm-295ff43f4220/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_ami": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "The Terraform configuration below uses the AWS provider and defines a `data \"aws_ami\"` lookup to retrieve the latest Amazon Linux 2 AMI published by Amazon. It outputs the AMI ID so it can be used by other Terraform resources such as EC2 instances.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region to search for the latest Amazon Linux 2 AMI.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\ndata \"aws_ami\" \"latest_amazon_linux_2\" {\n  most_recent = true\n  owners      = [\"amazon\"]\n\n  filter {\n    name = \"name\"\n    values = [\n      \"amzn2-ami-hvm-*-x86_64-gp2\"\n    ]\n  }\n\n  filter {\n    name   = \"architecture\"\n    values = [\"x86_64\"]\n  }\n\n  filter {\n    name   = \"virtualization-type\"\n    values = [\"hvm\"]\n  }\n\n  filter {\n    name   = \"root-device-type\"\n    values = [\"ebs\"]\n  }\n\n  filter {\n    name   = \"state\"\n    values = [\"available\"]\n  }\n}\n\noutput \"latest_amazon_linux_2_ami_id\" {\n  description = \"The AMI ID of the latest Amazon Linux 2 AMI.\"\n  value       = data.aws_ami.latest_a",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0124-llm-295ff43f4220.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an AWS aws_ami resource for the latest Amazon Linux 2 AMI",
+  "promptStrategy": "default",
+  "answer": "The Terraform configuration below uses the AWS provider and defines a `data \"aws_ami\"` lookup to retrieve the latest Amazon Linux 2 AMI published by Amazon. It outputs the AMI ID so it can be used by other Terraform resources such as EC2 instances.",
+  "failure_category": "",
+  "failure_reason": ""
+}

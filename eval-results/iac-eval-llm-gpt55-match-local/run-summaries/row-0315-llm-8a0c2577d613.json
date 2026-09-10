@@ -1,0 +1,89 @@
+{
+  "index": 315,
+  "rowId": "315",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-8a0c2577d613",
+  "userId": "local-user",
+  "durationSeconds": 51.83,
+  "difficulty": "5",
+  "resource": "aws_cloudwatch_event_rule, aws_cloudwatch_event_target, aws_iam_role, aws_iam_role_policy_attachment, aws_lambda_function, aws_lambda_permission, archive_file, aws_iam_policy_document",
+  "prompt": "An AWS EventBridge event rule named \"cron\" with a schedule_expression argument with a cron expression to specify a schedule of everyday at 7 UTC. An AWS EventBridge event target linking to the event rule resource. An AWS Lambda function resource named \"cron\" with a function_name argument of value \"cron-lambda-function\", a filename argument of value \"./supplement/lambda_func.zip\", a handler argument of value \"lambda_func.lambda_handler\", and a runtime argument with value \"python3.12\". An AWS Lambda permission resource with a function_name argument linking to the lambda function resource function_name, an action argument with value \"lambda:InvokeFunction\", a principle argument with value \"events.amazonaws.com\", and a source_arn argument linking to the EventBridge event rule.",
+  "intent": "have one \"aws_cloudwatch_event_rule\" resource\n    with \"schedule_expression\" argument with value \"cron(0 7 ** ? *)\"\nhave one \"aws_cloudwatch_event_target\" resource\n    with \"rule\" argument\n    with \"arn\" argument\nhave one \"aws_lambda_function\" resource\n    with \"function_name\" argument with value \"cron-lambda-function\"\n    with \"filename\" argument with value \"cron.zip\"\n    with \"handler\" argument with value \"cron.lambda_handler\"\n    with \"runtime\" argument with value \"python3.12\"\nhave one \"aws_lambda_permission\" resource\n    with \"function_name\" argument with value aws_lambda_function.cron.function_name\n    with \"action\" argument with value \"lambda:InvokeFunction\"\n    with \"principal\" argument with value \"events.amazonaws.com\"\n    with \"source_arn\" argument with value aws_cloudwatch_event_rule.cron.arn",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_cloudwatch_event_rule\" \"cron\" {\n  schedule_expression = \"cron(0 7 * * ? *)\"\n\n  role_arn = aws_iam_role.cron.arn\n}\n\nresource \"aws_cloudwatch_event_target\" \"cron\" {\n  rule = aws_cloudwatch_event_rule.cron.name\n  arn  = aws_lambda_function.cron.arn\n}\n\ndata \"archive_file\" \"lambda-func\" {\n  type        = \"zip\"\n  source_file = \"./supplement/lambda_func.py\"\n  output_path = \"./supplement/lambda_func.zip\"\n}\n\nresource \"aws_lambda_function\" \"cron\" {\n  function_name = \"cron-lambda-function\"\n  role          = aws_iam_role.cron.arn\n  filename      = data.archive_file.lambda-func.output_path\n  source_code_hash = data.archive_file.lambda-func.output_base64sha256\n  handler       = \"lambda_func.handler\"\n  runtime       = \"python3.12\"\n}\n\nresource \"aws_lambda_permission\" \"cron\" {\n  function_name = aws_lambda_function.cron.function_name\n  action        = \"lambda:InvokeFunction\"\n  principal     = \"events.amazonaws.com\"\n  source_arn    = aws_cloudwatch_event_rule.cron.arn\n}\n\ndata \"aws_iam_policy_document\" \"cron_assume_role\" {\n  statement {\n    actions = [\"sts:AssumeRole\"]\n    principals {\n      type = \"Service\"\n      identifiers = [\n        \"lambda.amazonaws.com\",\n        \"events.amazonaws.com\"\n      ]\n    }\n  }\n}\n\nresource \"aws_iam_role\" \"cron\" {\n  name               = \"cron_assume_role\"\n  assume_role_policy = data.aws_iam_policy_document.cron_assume_role.json\n}\n\nresource \"aws_iam_role_policy_attachment\" \"cron\" {\n  role       = aws_iam_role.cron.name\n  policy_arn = \"arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole\"\n}",
+  "bleuScore": 0.396065,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0315-llm-8a0c2577d613",
+  "generatedSourceFiles": [
+    "generated-source/row-0315-llm-8a0c2577d613/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"job_scheduler\": {\"valid\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_cloudwatch_event_rule": true,
+    "aws_cloudwatch_event_target": true,
+    "aws_iam_role": true,
+    "aws_iam_role_policy_attachment": true,
+    "aws_lambda_function": true,
+    "aws_lambda_permission": true,
+    "aws_iam_policy_document": false,
+    "lambda:InvokeFunction": true
+  },
+  "missingMarkers": [
+    "aws_iam_policy_document"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates an AWS Lambda function named `cron-lambda-function`, an EventBridge scheduled rule named `cron` that runs every day at 07:00 UTC, and an EventBridge target that invokes the Lambda function on that schedule. It also creates the required IAM execution role for Lambda and grants EventBridge permission to invoke the Lambda function.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_iam_role\" \"lambda_exec_role\" {\n  name = \"cron-lambda-exec-role\"\n\n  assume_role_policy = jsonencode({\n    Version = \"2012-10-17\"\n    Statement = [\n      {\n        Effect = \"Allow\"\n        Principal = {\n          Service = \"lambda.amazonaws.com\"\n        }\n        Action = \"sts:AssumeRole\"\n      }\n    ]\n  })\n}\n\nresource \"aws_iam_role_policy_attachment\" \"lambda_basic_execution\" {\n  role       = aws_iam_role.lambda_exec_role.name\n  policy_arn = \"arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole\"\n}\n\nresource \"aws_lambda_function\" \"cron\" {\n  function_name = \"cron-lambda-function\"\n  filename      = \"./s",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0315-llm-8a0c2577d613.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: An AWS EventBridge event rule named \"cron\" with a schedule_expression argument with a cron expression to specify a schedule of everyday at 7 UTC. An AWS EventBridge event target linking to the event rule resource. An AWS Lambda function resource named \"cron\" with a function_name argument of value \"cron-lambda-function\", a filename argument of value \"./supplement/lambda_func.zip\", a handler argument of value \"lambda_func.lambda_handler\", and a runtime argument with value \"python3.12\". An AWS Lambda permission resource with a function_name argument linking to the lambda function resource function_name, an action argument with value \"lambda:InvokeFunction\", a principle argument with value \"events.amazonaws.com\", and a source_arn argument linking to the EventBridge event rule.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS Lambda function named `cron-lambda-function`, an EventBridge scheduled rule named `cron` that runs every day at 07:00 UTC, and an EventBridge target that invokes the Lambda function on that schedule. It also creates the required IAM execution role for Lambda and grants EventBridge permission to invoke the Lambda function.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"job_scheduler\": {\"valid\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

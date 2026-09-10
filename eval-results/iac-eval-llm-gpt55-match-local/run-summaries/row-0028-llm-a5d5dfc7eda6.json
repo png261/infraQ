@@ -1,0 +1,80 @@
+{
+  "index": 28,
+  "rowId": "28",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-a5d5dfc7eda6",
+  "userId": "local-user",
+  "durationSeconds": 67.91,
+  "difficulty": "2",
+  "resource": "aws_elastic_beanstalk_application, aws_elastic_beanstalk_configuration_template",
+  "prompt": "Create a template of an elastic beanstalk application",
+  "intent": "Has one \"aws_elastic_beanstalk_application\" resource\n    with \"name\"\n\nHas one \"aws_elastic_beanstalk_configuration_template\" resource\n    with \"name\"\n    with \"application\" referencing the \"aws_elastic_beanstalk_application\" resource\n    with \"solution_stack_name\"",
+  "referenceOutput": "provider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_elastic_beanstalk_application\" \"tftest\" {\n  name        = \"tf-test-name\"\n  description = \"tf-test-desc\"\n}\n\nresource \"aws_elastic_beanstalk_configuration_template\" \"tf_template\" {\n  name                = \"tf-test-template-config\"\n  application         = aws_elastic_beanstalk_application.tftest.name\n  solution_stack_name = \"64bit Amazon Linux 2023 v4.0.9 running Python 3.11\"\n}",
+  "bleuScore": 0.02877,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/generated-source/row-0028-llm-a5d5dfc7eda6",
+  "generatedSourceFiles": [
+    "generated-source/row-0028-llm-a5d5dfc7eda6/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_elastic_beanstalk_application": true,
+    "aws_elastic_beanstalk_configuration_template": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "The following Terraform configuration creates an AWS Elastic Beanstalk application and an Elastic Beanstalk configuration template. It also creates the required IAM service role and EC2 instance profile role that Elastic Beanstalk uses to manage the environment and EC2 instances.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Elastic Beanstalk application template will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"application_name\" {\n  description = \"Name of the Elastic Beanstalk application.\"\n  type        = string\n  default     = \"example-elastic-beanstalk-app\"\n}\n\nvariable \"configuration_template_name\" {\n  description = \"Name of the Elastic Beanstalk configuration template.\"\n  type        = string\n  default     = \"example-elastic-beanstalk-template\"\n}\n\nvariable \"solution_stack_name\" {\n  description = \"Elastic Beanstalk solution stack to use for the configuration template.\"\n  type        = string\n  default     = \"64bit Amazon Linux 202",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/run-summaries/row-0028-llm-a5d5dfc7eda6.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a template of an elastic beanstalk application",
+  "answer": "The following Terraform configuration creates an AWS Elastic Beanstalk application and an Elastic Beanstalk configuration template. It also creates the required IAM service role and EC2 instance profile role that Elastic Beanstalk uses to manage the environment and EC2 instances.",
+  "failure_category": "",
+  "failure_reason": ""
+}

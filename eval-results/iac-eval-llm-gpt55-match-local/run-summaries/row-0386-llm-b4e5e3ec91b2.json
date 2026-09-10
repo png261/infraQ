@@ -1,0 +1,82 @@
+{
+  "index": 386,
+  "rowId": "386",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-b4e5e3ec91b2",
+  "userId": "local-user",
+  "durationSeconds": 86.69,
+  "difficulty": "3",
+  "resource": "aws_glacier_vault, aws_glacier_vault_lock, aws_iam_policy_document",
+  "prompt": "generage an S3 Glacier vault with a access policy using \"aws_iam_policy_document\" data and lock the policy using \"aws_glacier_vault_lock\"",
+  "intent": "has one \"aws_glacier_vault\" resource\n     with \"name\" attribute\n     with \"access_policy\" attributr\n\nimplicit:\nhas one \"aws_iam_policy_document\" data\nhas one \"aws_glacier_vault_lock\" resource",
+  "referenceOutput": "provider \"aws\" {\n  region     = \"us-east-1\"\n}\n\nresource \"aws_glacier_vault\" \"example\" {\n  name = \"example\"\n}\n\ndata \"aws_iam_policy_document\" \"example\" {\n  statement {\n    actions   = [\"glacier:DeleteArchive\"]\n    effect    = \"Deny\"\n    resources = [aws_glacier_vault.example.arn]\n\n    condition {\n      test     = \"NumericLessThanEquals\"\n      variable = \"glacier:ArchiveAgeinDays\"\n      values   = [\"365\"]\n    }\n  }\n}\n\nresource \"aws_glacier_vault_lock\" \"example\" {\n  complete_lock = false\n  policy        = data.aws_iam_policy_document.example.json\n  vault_name    = aws_glacier_vault.example.name\n}",
+  "bleuScore": 0.061908,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0386-llm-b4e5e3ec91b2",
+  "generatedSourceFiles": [
+    "generated-source/row-0386-llm-b4e5e3ec91b2/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: Cycle: aws_glacier_vault.this, data.aws_iam_policy_document.vault_access_policy\n\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_glacier_vault": true,
+    "aws_glacier_vault_lock": true,
+    "aws_iam_policy_document": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "The following Terraform configuration creates an AWS S3 Glacier Vault, attaches a vault access policy generated with the `aws_iam_policy_document` data source, and applies a Glacier Vault Lock policy using `aws_glacier_vault_lock`.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Glacier vault will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"glacier_vault_name\" {\n  description = \"Name of the S3 Glacier vault.\"\n  type        = string\n  default     = \"example-locked-glacier-vault\"\n}\n\nvariable \"archive_retention_days\" {\n  description = \"Minimum archive age in days before archives can be deleted.\"\n  type        = number\n  default     = 365\n}\n\nvariable \"complete_vault_lock\" {\n  description = \"Whether to complete the Glacier Vault Lock. WARNING: Once completed, the lock policy cannot be changed or removed.\"\n  type        = bool\n  default     = false\n}\n\ndata \"aws_caller_identity\" \"current\" {}\n\ndata \"aws_partition\" \"current\" {}\n\ndata \"aws_iam_p",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0386-llm-b4e5e3ec91b2.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: generage an S3 Glacier vault with a access policy using \"aws_iam_policy_document\" data and lock the policy using \"aws_glacier_vault_lock\"",
+  "promptStrategy": "default",
+  "answer": "The following Terraform configuration creates an AWS S3 Glacier Vault, attaches a vault access policy generated with the `aws_iam_policy_document` data source, and applies a Glacier Vault Lock policy using `aws_glacier_vault_lock`.",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: Cycle: aws_glacier_vault.this, data.aws_iam_policy_document.vault_access_policy"
+}

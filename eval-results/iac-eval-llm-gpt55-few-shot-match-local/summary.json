@@ -1,0 +1,11 @@
+{
+  "avgBleuScore": 0.17864845,
+  "csv": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-few-shot-match-local/iac_eval_llm_results.csv",
+  "failed": 64,
+  "jsonl": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-few-shot-match-local/iac_eval_llm_results.jsonl",
+  "officialPassed": 19,
+  "opaPassed": 19,
+  "passed": 19,
+  "planPassed": 73,
+  "rows": 83
+}

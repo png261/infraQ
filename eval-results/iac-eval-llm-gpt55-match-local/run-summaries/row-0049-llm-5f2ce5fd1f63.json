@@ -1,0 +1,81 @@
+{
+  "index": 49,
+  "rowId": "49",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-5f2ce5fd1f63",
+  "userId": "local-user",
+  "durationSeconds": 303.24,
+  "difficulty": "4",
+  "resource": "aws_lex_bot, aws_lex_intent",
+  "prompt": "create an aws_lex_bot for ordering pizzas and set nlu_intent_confidence_threshold to 0.5",
+  "intent": "Has one resource \"aws_lex_bot\" with argument \"enable_model_improvements\" = true\n and argument \"nlu_intent_confidence_threshold\" = 0.5 and at least one resource \"aws_lex_intent\"",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_lex_intent\" \"order_pizza_intent\" {\n  name                       = \"OrderPizzaIntent\"\n  description                = \"To order a pizza\"\n  \n  sample_utterances = [\n    \"I would like to pick up a pizza\",\n    \"I would like to order some pizzas\",\n  ]\n\n  fulfillment_activity {\n    type = \"ReturnIntent\"\n  }\n\n  conclusion_statement {\n    message {\n      content              = \"Your pizza order has been received.\"\n      content_type         = \"PlainText\"\n    }\n  } \n}\n\nresource \"aws_lex_bot\" \"pizza_ordering_bot\" {\n  name                     = \"PizzaOrderingBot\"\n  description              = \"Bot to order pizzas\"\n  voice_id                 = \"Joanna\"\n  idle_session_ttl_in_seconds = \"300\"\n  child_directed           = false\n  enable_model_improvements = true\n  nlu_intent_confidence_threshold = 0.5\n  locale                  = \"en-US\"\n  process_behavior        = \"BUILD\"\n\n  clarification_prompt {\n    message {\n      content      = \"I didn't understand you, what type of pizza would you like to order?\"\n      content_type = \"PlainText\"\n    }\n    max_attempts = 5\n  }\n\n  abort_statement {\n    message {\n      content      = \"Sorry, I am unable to assist at the moment.\"\n      content_type = \"PlainText\"\n    }\n  }\n\n  intent {\n    intent_name    = aws_lex_intent.order_pizza_intent.name\n    intent_version = aws_lex_intent.order_pizza_intent.version\n  }\n}",
+  "bleuScore": 0.138306,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-2/generated-source/row-0049-llm-5f2ce5fd1f63",
+  "generatedSourceFiles": [
+    "generated-source/row-0049-llm-5f2ce5fd1f63/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_valid_lex_intents\": true, \"has_valid_resources\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_lex_bot": true,
+    "aws_lex_intent": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS Lex bot for ordering pizzas. It defines custom Lex slot types for pizza size, crust, and toppings, creates an `OrderPizza` intent with required slots, and attaches that intent to an AWS Lex bot. The bot uses an NLU intent confidence threshold of `0.5` as requested.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_lex_slot_type\" \"pizza_size\" {\n  name                     = \"PizzaSize\"\n  description              = \"Available pizza sizes\"\n  create_version           = true\n  value_selection_strategy = \"ORIGINAL_VALUE\"\n\n  enumeration_value {\n    value = \"small\"\n  }\n\n  enumeration_value {\n    value = \"medium\"\n  }\n\n  enumeration_value {\n    value = \"large\"\n  }\n}\n\nresource \"aws_lex_slot_type\" \"pizza_crust\" {\n  name                     = \"PizzaCrust\"\n  description              = \"Available pizza crust types\"\n  create_version           = true\n  value_selection_strategy = \"ORIGINAL_VALUE\"\n\n  enumeration_value {\n    value = \"thin\"\n  }\n\n  enumeration_value {\n    value = \"regular\"\n  }\n\n  en",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-2/run-summaries/row-0049-llm-5f2ce5fd1f63.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: create an aws_lex_bot for ordering pizzas and set nlu_intent_confidence_threshold to 0.5",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS Lex bot for ordering pizzas. It defines custom Lex slot types for pizza size, crust, and toppings, creates an `OrderPizza` intent with required slots, and attaches that intent to an AWS Lex bot. The bot uses an NLU intent confidence threshold of `0.5` as requested.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_valid_lex_intents\": true, \"has_valid_resources\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

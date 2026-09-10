@@ -1,0 +1,84 @@
+{
+  "index": 234,
+  "rowId": "234",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-c20b91b93925",
+  "userId": "local-user",
+  "durationSeconds": 58.76,
+  "difficulty": "2",
+  "resource": "aws_internet_gateway, aws_vpc",
+  "prompt": "Create an AWS VPC resource with an Internet Gateway attached to it",
+  "intent": "Has one resource \"aws_vpc\"\n\nHas one resource \"aws_internet_gateway\"\nwith one \"vpc_id\" with value \"aws_vpc.{VPC NAME}.id\"",
+  "referenceOutput": "resource \"aws_vpc\" \"main\" {\n  cidr_block = \"10.0.0.0/16\"\n}\n\nresource \"aws_internet_gateway\" \"example_igw\" {\n  vpc_id = aws_vpc.main.id\n}",
+  "bleuScore": 0.068058,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0234-llm-c20b91b93925",
+  "generatedSourceFiles": [
+    "generated-source/row-0234-llm-c20b91b93925/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_internet_gateway": true,
+    "aws_vpc": true,
+    "aws_vpc.{VPC NAME}.id": false
+  },
+  "missingMarkers": [
+    "aws_vpc.{VPC NAME}.id"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates a basic AWS networking setup consisting of:\n\n- An AWS provider configured for the `us-east-1` region\n- A VPC with DNS support and DNS hostnames enabled\n- An Internet Gateway attached to the VPC\n- Tags for easy identification\n\n```hcl\nterraform {\n  required_version = \">= 1.0.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nvariable \"vpc_cidr_block\" {\n  description = \"CIDR block for the VPC\"\n  type        = string\n  default     = \"10.0.0.0/16\"\n}\n\nvariable \"environment\" {\n  description = \"Environment name for tagging resources\"\n  type        = string\n  default     = \"dev\"\n}\n\nresource \"aws_vpc\" \"main\" {\n  cidr_block           = var.vpc_cidr_block\n  enable_dns_support   = true\n  enable_dns_hostnames = true\n\n  tags = {\n    Name        = \"${var.environment}-vpc\"\n    Environment = var.environment\n  }\n}\n\nresource \"aws_internet_gateway\" \"main\" {\n  vpc_id = aws_vpc.main.id\n\n  tags = {\n    Name        = \"${var.environment}-internet-gateway\"\n    Environment = var.environment\n  }\n}\n\noutput \"vpc_id\" {\n  description = \"ID of the created VPC\"\n  value       = aws",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0234-llm-c20b91b93925.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an AWS VPC resource with an Internet Gateway attached to it",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a basic AWS networking setup consisting of:\n\n- An AWS provider configured for the `us-east-1` region\n- A VPC with DNS support and DNS hostnames enabled\n- An Internet Gateway attached to the VPC\n- Tags for easy identification",
+  "failure_category": "",
+  "failure_reason": ""
+}

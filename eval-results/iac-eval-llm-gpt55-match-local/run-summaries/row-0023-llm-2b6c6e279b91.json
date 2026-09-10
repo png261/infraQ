@@ -1,0 +1,80 @@
+{
+  "index": 23,
+  "rowId": "23",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-2b6c6e279b91",
+  "userId": "local-user",
+  "durationSeconds": 55.47,
+  "difficulty": "2",
+  "resource": "aws_route53_record, aws_route53_zone",
+  "prompt": "Set up a TXT recordfor domain ownership verification purposes using Route 53 resources. The verification string should be \"passwordpassword\" and the name of the zone should be \"example\"",
+  "intent": "Has one \"aws_route53_zone\" resource\n    with \"name\" set to \"example53.com\"\n\nHas one \"aws_route53_record\" resource\n    with \"name\"\n    with \"type\" set to \"TXT\"\n    with \"ttl\"\n    with \"records\" set to a string\n    with \"zone_id\" referencing the \"aws_route53_zone\" resource",
+  "referenceOutput": "provider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_route53_zone\" \"example\" {\n  name = \"example53.com\"\n}\n\n# TXT Record for domain verification or other purposes\nresource \"aws_route53_record\" \"example_txt\" {\n  zone_id = aws_route53_zone.example.zone_id\n  name    = \"sub.example53.com\"\n  type    = \"TXT\"\n  ttl     = \"300\"\n  records = [\"passwordpassword\"] \n}",
+  "bleuScore": 0.330892,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/generated-source/row-0023-llm-2b6c6e279b91",
+  "generatedSourceFiles": [
+    "generated-source/row-0023-llm-2b6c6e279b91/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_configuration_valid\": false, \"is_valid_r53_record\": false, \"is_valid_r53_zone\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_route53_record": true,
+    "aws_route53_zone": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "Description: This Terraform configuration creates an AWS Route 53 hosted zone named `example` and adds a TXT record at the zone apex for domain ownership verification. The TXT record value is `passwordpassword`.\n\n```hcl\nterraform {\n  required_version = \">= 1.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_route53_zone\" \"example\" {\n  name = \"example\"\n\n  comment = \"Hosted zone for domain ownership verification\"\n}\n\nresource \"aws_route53_record\" \"domain_verification\" {\n  zone_id = aws_route53_zone.example.zone_id\n  name    = aws_route53_zone.example.name\n  type    = \"TXT\"\n  ttl     = 300\n\n  records = [\n    \"\\\"passwordpassword\\\"\"\n  ]\n}\n```",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/run-summaries/row-0023-llm-2b6c6e279b91.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Set up a TXT recordfor domain ownership verification purposes using Route 53 resources. The verification string should be \"passwordpassword\" and the name of the zone should be \"example\"",
+  "answer": "Description: This Terraform configuration creates an AWS Route 53 hosted zone named `example` and adds a TXT record at the zone apex for domain ownership verification. The TXT record value is `passwordpassword`.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_configuration_valid\": false, \"is_valid_r53_record\": false, \"is_valid_r53_zone\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

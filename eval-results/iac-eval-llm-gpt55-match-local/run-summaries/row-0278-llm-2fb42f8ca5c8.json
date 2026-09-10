@@ -1,0 +1,81 @@
+{
+  "index": 278,
+  "rowId": "278",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-2fb42f8ca5c8",
+  "userId": "local-user",
+  "durationSeconds": 53.59,
+  "difficulty": "2",
+  "resource": "aws_s3_bucket, aws_s3_object",
+  "prompt": "I have a PDF with path \"assets/test.pdf\". Make an AWS resource to store this PDF and upload it.",
+  "intent": "Has an aws_s3_bucket resource\n\nHas an aws_s3_object resource\nwith bucket = bucket id OR name\nwith source = \"assets/test.pdf\"",
+  "referenceOutput": "resource \"aws_s3_bucket\" \"example\" {\n  bucket = \"test-bucket\"\n}\n\nresource \"aws_s3_object\" \"object\" {\n  bucket = \"my-bucket\"\n  key    = \"new_object_key\"\n  source = \"assets/test.pdf\"\n}",
+  "bleuScore": 0.018362,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0278-llm-2fb42f8ca5c8",
+  "generatedSourceFiles": [
+    "generated-source/row-0278-llm-2fb42f8ca5c8/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: Error in function call\n\n  on main.tf line 78, in resource \"aws_s3_object\" \"pdf_file\":\n  78:   etag = filemd5(var.pdf_file_path)\n    ├────────────────\n    │ while calling filemd5(path)\n    │ var.pdf_file_path is \"assets/test.pdf\"\n\nCall to function \"filemd5\" failed: open assets/test.pdf: no such file or\ndirectory.\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_s3_bucket": true,
+    "aws_s3_object": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS S3 bucket to store your PDF file and uploads the local file at `assets/test.pdf` into that bucket as an S3 object. It also enables basic server-side encryption and blocks public access to the bucket.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the S3 bucket will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"pdf_file_path\" {\n  description = \"Local path to the PDF file to upload.\"\n  type        = string\n  default     = \"assets/test.pdf\"\n}\n\nvariable \"pdf_object_key\" {\n  description = \"The object key to use for the uploaded PDF in S3.\"\n  type        = string\n  default     = \"test.pdf\"\n}\n\nresource \"random_id\" \"bucket_suffix\" {\n  byte_length = 8\n}\n\nresource \"aws_s3_bucket\" \"pdf_storage\" {\n  bucket = \"pdf-storage-${random_id.bucket_suffix.hex}\"\n\n  tags = {\n    Name        = \"PDF Storage Bucket\"\n    Environment = \"dev\"\n  ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0278-llm-2fb42f8ca5c8.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: I have a PDF with path \"assets/test.pdf\". Make an AWS resource to store this PDF and upload it.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS S3 bucket to store your PDF file and uploads the local file at `assets/test.pdf` into that bucket as an S3 object. It also enables basic server-side encryption and blocks public access to the bucket.",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: Error in function call on main.tf line 78, in resource \"aws_s3_object\" \"pdf_file\": 78: etag = filemd5(var.pdf_file_path) ├──────────────── │ while calling filemd5(path) │ var.pdf_file_path is \"assets/test.pdf\" Call to function \"filemd5\" failed: open assets/test.pdf: no such file or directory."
+}

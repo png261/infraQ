@@ -1,0 +1,83 @@
+{
+  "index": 8,
+  "rowId": "8",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-0aa682daad59",
+  "userId": "local-user",
+  "durationSeconds": 70.49,
+  "difficulty": "5",
+  "resource": "aws_elastic_beanstalk_application, aws_elastic_beanstalk_environment, aws_elastic_beanstalk_environment, aws_iam_instance_profile, aws_iam_role, aws_iam_role_policy_attachment",
+  "prompt": "Create two elastic beanstalk environments that use the same elastic beanstalk application. Name the iam_role \"eb_ec2_role\", the instance profile \"eb_ec2_profile\", and the elastic beanstalk application \"my_application\"",
+  "intent": "Has one \"aws_iam_role\" resource\n    with \"name\"\n    with \"assume_role_policy\" and \"Service\" set to \"ec2.amazonaws.com\"\n\nHas one \"aws_iam_role_policy_attachment\" resource\n    with \"role\" referencing the \"aws_iam_role\"\n    with \"policy_arn\" set to \"arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier\"\n\nHas one \"aws_iam_instance_profile\" resource\n    with \"name\"\n    with \"role\" referencing the \"aws_iam_role\" resource\n\nHas one \"aws_elastic_beanstalk_application\" resource\n    with \"name\"\n\nHas two \"aws_elastic_beanstalk_environment\" resources\n    with \"name\"\n    with \"application\" referencing the \"aws_elastic_beanstalk_application\" resource\n    with \"solution_stack_name\"\n    with two \"setting\" blocks with \"namespace\" set to \"aws:autoscaling:asg\"\n    with one \"setting\" block which has a \"value\" that references the \"aws_iam_instance_profile\" resource",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_iam_role\" \"eb_ec2_role\" {\n  name = \"elastic_beanstalk_ec2_role\"\n\n  assume_role_policy = jsonencode({\n    Version = \"2012-10-17\",\n    Statement = [\n      {\n        Action = \"sts:AssumeRole\",\n        Effect = \"Allow\",\n        Principal = {\n          Service = \"ec2.amazonaws.com\"\n        },\n      },\n    ]\n  })\n}\n\n# Attach the AWS managed policy for Elastic Beanstalk to the role\nresource \"aws_iam_role_policy_attachment\" \"eb_managed_policy\" {\n  role       = aws_iam_role.eb_ec2_role.name\n  policy_arn = \"arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier\"\n}\n\n\n# Create an instance profile tied to the role\nresource \"aws_iam_instance_profile\" \"eb_ec2_profile\" {\n  name = \"elastic_beanstalk_ec2_profile\"\n  role = aws_iam_role.eb_ec2_role.name\n}\n\n\n# Common Elastic Beanstalk application for all microservices\nresource \"aws_elastic_beanstalk_application\" \"microservices_app\" {\n  name        = \"microservices-app\"\n}\n\n# First microservice environment\nresource \"aws_elastic_beanstalk_environment\" \"microservice_one_env\" {\n  name                = \"microservice-one\"\n  application         = aws_elastic_beanstalk_application.microservices_app.name\n  solution_stack_name = \"64bit Amazon Linux 2023 v4.3.0 running Python 3.9\"\n\n  setting {\n    namespace = \"aws:autoscaling:asg\"\n    name      = \"MinSize\"\n    value     = \"1\"\n  }\n\n  setting {\n    namespace = \"aws:autoscaling:asg\"\n    name      = \"MaxSize\"\n    value     = \"3\"\n  }\n\n  setting {\n      namespace = \"aws:autoscaling:launchconfiguration\"\n      name      = \"IamInstanceProfile\"\n      value     = aws_iam_instance_profile.eb_ec2_profile.name\n  }\n}\n\n# Second microservice environment\nresource \"aws_elastic_beanstalk_environment\" \"microservice_two_env\" {\n  name                = \"microservice-two\"\n  application         = aws_elastic_beanstalk_application.microservices_app.name\n  solution_stack_name = \"64bit Amazon Linux 2023 v4.3.0 running Python 3.9\"\n\n  setting {\n    namespace = \"aws:autoscaling:asg\"\n    name      = \"MinSize\"\n    value     = \"2\"\n  }\n\n  setting {\n    namespace = \"aws:autoscaling:asg\"\n    name      = \"MaxSize\"\n    value     = \"4\"\n  }\n\n  setting {\n    namespace = \"aws:autoscaling:launchconfiguration\"\n    name      = \"IamInstanceProfile\"\n    value     = aws_iam_instance_profile.eb_ec2_profile.name\n  }\n}",
+  "bleuScore": 0.252784,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/generated-source/row-0008-llm-0aa682daad59",
+  "generatedSourceFiles": [
+    "generated-source/row-0008-llm-0aa682daad59/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_configuration_valid\": false, \"is_valid_eb_app\": true, \"is_valid_eb_env\": false, \"is_valid_iam_instance_profile\": true, \"is_valid_iam_role\": true, \"is_valid_iam_role_policy_attachment\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_elastic_beanstalk_application": true,
+    "aws_elastic_beanstalk_environment": true,
+    "aws_iam_instance_profile": true,
+    "aws_iam_role": true,
+    "aws_iam_role_policy_attachment": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "Description: This Terraform configuration creates one AWS Elastic Beanstalk application named `my_application` and two Elastic Beanstalk environments that both use that same application. It also creates the required EC2 IAM role named `eb_ec2_role`, the instance profile named `eb_ec2_profile`, and an Elastic Beanstalk service role required for environment management.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Elastic Beanstalk resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\ndata \"aws_elastic_beanstalk_solution_stack\" \"python\" {\n  most_recent = true\n  name_regex  = \"^64bit Amazon Linux 2023 .* running Python 3\\\\.11$\"\n}\n\nresource \"aws_iam_role\" \"eb_ec2_role\" {\n  name = \"eb_ec2_role\"\n\n  assume_role_policy = jsonencode({\n    Version = \"2012-10-17\"\n    Statement = [\n      {\n        Effect = \"Allow\"\n        Principal = {\n          Service = \"ec2.amazonaws.com\"\n        }\n        Action = \"sts:AssumeRole\"\n      }\n    ]\n  })\n}\n\nresource \"",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/run-summaries/row-0008-llm-0aa682daad59.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create two elastic beanstalk environments that use the same elastic beanstalk application. Name the iam_role \"eb_ec2_role\", the instance profile \"eb_ec2_profile\", and the elastic beanstalk application \"my_application\"",
+  "answer": "Description: This Terraform configuration creates one AWS Elastic Beanstalk application named `my_application` and two Elastic Beanstalk environments that both use that same application. It also creates the required EC2 IAM role named `eb_ec2_role`, the instance profile named `eb_ec2_profile`, and an Elastic Beanstalk service role required for environment management.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_configuration_valid\": false, \"is_valid_eb_app\": true, \"is_valid_eb_env\": false, \"is_valid_iam_instance_profile\": true, \"is_valid_iam_role\": true, \"is_valid_iam_role_policy_attachment\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

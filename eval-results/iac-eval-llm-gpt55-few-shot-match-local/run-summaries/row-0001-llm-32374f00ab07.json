@@ -1,0 +1,85 @@
+{
+  "index": 1,
+  "rowId": "1",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-32374f00ab07",
+  "userId": "local-user",
+  "durationSeconds": 63.9,
+  "difficulty": "3",
+  "resource": "aws_route53_vpc_association_authorization, aws_route53_zone, aws_route53_zone_association, aws_vpc, aws_vpc",
+  "prompt": "Configure a valid Route 53 zone association resource",
+  "intent": "Has multiple \"aws_vpc\" resource    with a specified \"cidr_block\"    with \"enable_dns_hostnames\" equal to \"true\"    with \"enable_dns_support\" equal to \"true\"Has one \"aws_route53_zone\" resource    with \"name\"    with a \"vpc\" block that contains \"vpc_id\" that references the \"aws_vpc\" resourceHas one \"aws_route53_vpc_association_authorization\" resource    with \"vpc_id\" referencing the \"aws_vpc\" resource     with \"zone_id\" referencing the \"aws_route53_zone\" resourceHas one \"aws_route53_zone_association\" resource    with \"vpc_id\" referencing the \"aws_route53_vpc_association_authorization\" resource     with \"zone_id\" referencing the \"aws_route53_vpc_association_authorization\" resource",
+  "referenceOutput": "provider \"aws\" {    region = \"us-east-1\"}resource \"aws_vpc\" \"example\" {  cidr_block           = \"10.6.0.0/16\"  enable_dns_hostnames = true  enable_dns_support   = true}resource \"aws_route53_zone\" \"example\" {  name = \"example.com\"  vpc {    vpc_id = aws_vpc.example.id  }}resource \"aws_vpc\" \"alternate\" {  cidr_block           = \"10.7.0.0/16\"  enable_dns_hostnames = true  enable_dns_support   = true}resource \"aws_route53_vpc_association_authorization\" \"example\" {  vpc_id  = aws_vpc.alternate.id  zone_id = aws_route53_zone.example.id}resource \"aws_route53_zone_association\" \"example\" {  vpc_id  = aws_route53_vpc_association_authorization.example.vpc_id  zone_id = aws_route53_vpc_association_authorization.example.zone_id}",
+  "bleuScore": 0.211808,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-few-shot-match-local/generated-source/row-0001-llm-32374f00ab07",
+  "generatedSourceFiles": [
+    "generated-source/row-0001-llm-32374f00ab07/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Error",
+    "opaEvaluationError": "{\n  \"errors\": [\n    {\n      \"message\": \"var falsedefault is unsafe\",\n      \"code\": \"rego_unsafe_var_error\",\n      \"location\": {\n        \"file\": \"policy.rego\",\n        \"row\": 1,\n        \"col\": 62\n      }\n    },\n    {\n      \"message\": \"var falsedefault is unsafe\",\n      \"code\": \"rego_unsafe_var_error\",\n      \"location\": {\n        \"file\": \"policy.rego\",\n        \"row\": 1,\n        \"col\": 95\n      }\n    },\n    {\n      \"message\": \"var falsedefault is unsafe\",\n      \"code\": \"rego_unsafe_var_error\",\n      \"location\": {\n        \"file\": \"policy.rego\",\n        \"row\": 1,\n        \"col\": 123\n      }\n    },\n    {\n      \"message\": \"var falsedefault is unsafe\",\n      \"code\": \"rego_unsafe_var_error\",\n      \"location\": {\n        \"file\": \"policy.rego\",\n        \"row\": 1,\n        \"col\": 164\n      }\n    }\n  ]\n}\n",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_route53_vpc_association_authorization": false,
+    "aws_route53_zone": true,
+    "aws_route53_zone_association": true,
+    "aws_vpc": true
+  },
+  "missingMarkers": [
+    "aws_route53_vpc_association_authorization"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates an AWS VPC and a private Route 53 hosted zone, then configures a valid Route 53 zone association between them using `aws_route53_zone_association`.\n\n```hcl\nterraform {\n  required_version = \">= 1.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_vpc\" \"example\" {\n  cidr_block           = \"10.0.0.0/16\"\n  enable_dns_support   = true\n  enable_dns_hostnames = true\n\n  tags = {\n    Name = \"example-route53-association-vpc\"\n  }\n}\n\nresource \"aws_route53_zone\" \"example\" {\n  name = \"example.internal\"\n\n  vpc {\n    vpc_id     = aws_vpc.example.id\n    vpc_region = \"us-east-1\"\n  }\n\n  tags = {\n    Name = \"example-private-hosted-zone\"\n  }\n}\n\nresource \"aws_route53_zone_association\" \"example\" {\n  zone_id    = aws_route53_zone.example.zone_id\n  vpc_id     = aws_vpc.example.id\n  vpc_region = \"us-east-1\"\n}\n```",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-few-shot-match-local/run-summaries/row-0001-llm-32374f00ab07.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here are a few examples:\n\nExample prompt 1: Create an AWS RDS instance with randomly generated id and password\nExample output 1: \n```hcl\nresource \"random_id\" \"suffix\" {\n  byte_length = 4\n}\n\nresource \"random_password\" \"db\" {\n  length  = 16\n  special = false\n}\n\nresource \"aws_db_instance\" \"test\" {\n  identifier          = \"metricbeat-test-${random_id.suffix.hex}\"\n  allocated_storage   = 20 // Gigabytes\n  engine              = \"mysql\"\n  instance_class      = \"db.t2.micro\"\n  db_name                = \"metricbeattest\"\n  username            = \"foo\"\n  password            = random_password.db.result\n  skip_final_snapshot = true // Required for cleanup\n}\n```\n\nExample prompt 2: Create an 20GB MySQL instance on aws with randomly generated id and password\nExample output 2: \n```hcl\nresource \"random_id\" \"suffix\" {\n  byte_length = 4\n}\n\nresource \"random_password\" \"db\" {\n  length  = 16\n  special = false\n}\n\nresource \"aws_db_instance\" \"test\" {\n  identifier          = \"metricbeat-test-${random_id.suffix.hex}\"\n  allocated_storage   = 20 // Gigabytes\n  engine              = \"mysql\"\n  instance_class      = \"db.t2.micro\"\n  db_name                = \"metricbeattest\"\n  username            = \"foo\"\n  password            = random_password.db.result\n  skip_final_snapshot = true // Required for cleanup\n}\n```\n\nExample prompt 3: create a AWS EFS, and create a replica of an this created EFS file system using regional storage in us-west-3\nExample output 3: \n```hcl\nresource \"aws_efs_file_system\" \"example\" {}\n\nresource \"aws_efs_replication_configuration\" \"example\" {\n  source_file_system_id = aws_efs_file_system.example.id\n\n  destination {\n    availability_zone_name = \"us-west-2b\"\n    kms_key_id             = \"1234abcd-12ab-34cd-56ef-1234567890ab\"\n  }\n}\n```\n\nHere is the actual prompt to answer:\nConfigure a valid Route 53 zone association resource",
+  "promptStrategy": "few-shot",
+  "answer": "This Terraform configuration creates an AWS VPC and a private Route 53 hosted zone, then configures a valid Route 53 zone association between them using `aws_route53_zone_association`.",
+  "failure_category": "opa_error",
+  "failure_reason": "OPA policy parse/compile error from dataset Rego intent: { \"errors\": [ { \"message\": \"var falsedefault is unsafe\", \"code\": \"rego_unsafe_var_error\", \"location\": { \"file\": \"policy.rego\", \"row\": 1, \"col\": 62 } }, { \"message\": \"var falsedefault is unsafe\", \"code\": \"rego_unsafe_var_error\", \"location\": { \"file\": \"policy.rego\", \"row\": 1, \"col\": 95 } }, { \"message\": \"var falsedefault is unsafe\", \"code\": \"rego_unsafe_var_error\", \"location\": { \"file\": \"policy.rego\", \"row\": 1, \"col\": 123 } }, { \"message\": \"... <truncated 127 chars>"
+}

@@ -1,0 +1,81 @@
+{
+  "index": 253,
+  "rowId": "253",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-522b05bca8b7",
+  "userId": "local-user",
+  "durationSeconds": 87.19,
+  "difficulty": "2",
+  "resource": "aws_chime_voice_connector, aws_chime_voice_connector_streaming",
+  "prompt": "Create an AWS Chime Voice Connector with encryption. Then configure the streaming of the voice connector with retention period of 5 hours, notifications sent to SNS, and disable streaming to Amazon Kinesis.",
+  "intent": "Has one resource \"aws_chime_voice_connector\"\nwith require_encryption=true\n\nHas one resource \"aws_chime_voice_connector_streaming\"\nwith voice_connector_id equal to the id of the voice connector\nwith streaming_enabled = false\nwith data_retention = 5\nstreaming_notification_targets = [\"SNS\"]",
+  "referenceOutput": "resource \"aws_chime_voice_connector\" \"default\" {\n  name               = \"vc-name-test\"\n  require_encryption = true\n}\n\nresource \"aws_chime_voice_connector_streaming\" \"default\" {\n  disabled = false\n  voice_connector_id  = aws_chime_voice_connector.default.id\n  data_retention = 5\n  streaming_notification_targets = [\"SNS\"]\n}",
+  "bleuScore": 0.023011,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0253-llm-522b05bca8b7",
+  "generatedSourceFiles": [
+    "generated-source/row-0253-llm-522b05bca8b7/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: Missing required argument\n\n  on main.tf line 39, in resource \"aws_chime_voice_connector_streaming\" \"this\":\n  39: resource \"aws_chime_voice_connector_streaming\" \"this\" {\n\nThe argument \"data_retention\" is required, but no definition was found.\n\nError: Unsupported argument\n\n  on main.tf line 42, in resource \"aws_chime_voice_connector_streaming\" \"this\":\n  42:   data_retention_in_hours = 5\n\nAn argument named \"data_retention_in_hours\" is not expected here.\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_chime_voice_connector": true,
+    "aws_chime_voice_connector_streaming": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "The Terraform configuration below creates an AWS Chime Voice Connector with encryption required. It also configures Voice Connector streaming with a 5-hour retention period, enables streaming notifications to SNS, and disables media streaming to Amazon Kinesis Video Streams.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region for deploying the Chime Voice Connector.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"voice_connector_name\" {\n  description = \"Name of the AWS Chime Voice Connector.\"\n  type        = string\n  default     = \"encrypted-chime-voice-connector\"\n}\n\nresource \"aws_chime_voice_connector\" \"this\" {\n  name               = var.voice_connector_name\n  require_encryption = true\n\n  tags = {\n    Name        = var.voice_connector_name\n    Environment = \"example\"\n    ManagedBy   = \"terraform\"\n  }\n}\n\nresource \"aws_chime_voice_connector_streaming\" \"this\" {\n  voice_connector_id = aws_chime_voice_connector.this.id\n\n  data_retention_in_hours = 5\n\n  /*\n    Disables ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0253-llm-522b05bca8b7.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an AWS Chime Voice Connector with encryption. Then configure the streaming of the voice connector with retention period of 5 hours, notifications sent to SNS, and disable streaming to Amazon Kinesis.",
+  "promptStrategy": "default",
+  "answer": "The Terraform configuration below creates an AWS Chime Voice Connector with encryption required. It also configures Voice Connector streaming with a 5-hour retention period, enables streaming notifications to SNS, and disables media streaming to Amazon Kinesis Video Streams.",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: Missing required argument on main.tf line 39, in resource \"aws_chime_voice_connector_streaming\" \"this\": 39: resource \"aws_chime_voice_connector_streaming\" \"this\" { The argument \"data_retention\" is required, but no definition was found. Error: Unsupported argument on main.tf line 42, in resource \"aws_chime_voice_connector_streaming\" \"this\": 42: data_retention_in_hours = 5 An argument named \"data_retention_in_hours\" is not expected here."
+}

@@ -1,0 +1,81 @@
+{
+  "index": 441,
+  "rowId": "441",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-b5bd5e08c155",
+  "userId": "local-user",
+  "durationSeconds": 76.91,
+  "difficulty": "1",
+  "resource": "aws_egress_only_internet_gateway",
+  "prompt": "creates an egress-only internet gateway associated with a specified VPC, allowing IPv6-enabled instances to connect to the internet without allowing inbound internet traffic",
+  "intent": "Has one \"aws_egress_only_internet_gateway\" resource:\nAssociated with a specified \"aws_vpc\" resource\nDesigned to allow IPv6-enabled instances within the VPC to connect to the internet while preventing inbound internet traffic",
+  "referenceOutput": "resource \"aws_egress_only_internet_gateway\" \"pike\" {\n  vpc_id = \"vpc-0c33dc8cd64f408c4\"\n  tags = {\n    pike = \"permissions\"\n  }\n}",
+  "bleuScore": 0.008624,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0441-llm-b5bd5e08c155",
+  "generatedSourceFiles": [
+    "generated-source/row-0441-llm-b5bd5e08c155/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_egress_only_internet_gateway\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_egress_only_internet_gateway": true,
+    "aws_vpc": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS egress-only internet gateway for a VPC. By default, it creates a new IPv6-enabled VPC and attaches the egress-only internet gateway to it. The route table includes an IPv6 default route `::/0` through the egress-only internet gateway, allowing IPv6-enabled instances in associated subnets to initiate outbound internet connections while preventing unsolicited inbound internet traffic.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"vpc_id\" {\n  description = \"Optional existing VPC ID to attach the egress-only internet gateway to. If empty, a new IPv6-enabled VPC is created.\"\n  type        = string\n  default     = \"\"\n}\n\nvariable \"existing_route_table_id\" {\n  description = \"Optional existing route table ID to add the IPv6 default route to when using an existing VPC. If empty, no existing route table is modified.\"\n  type        = string\n  defau",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0441-llm-b5bd5e08c155.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: creates an egress-only internet gateway associated with a specified VPC, allowing IPv6-enabled instances to connect to the internet without allowing inbound internet traffic",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS egress-only internet gateway for a VPC. By default, it creates a new IPv6-enabled VPC and attaches the egress-only internet gateway to it. The route table includes an IPv6 default route `::/0` through the egress-only internet gateway, allowing IPv6-enabled instances in associated subnets to initiate outbound internet connections while preventing unsolicited inbound internet traffic.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_egress_only_internet_gateway\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

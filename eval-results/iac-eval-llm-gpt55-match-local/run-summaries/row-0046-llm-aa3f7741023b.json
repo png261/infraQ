@@ -1,0 +1,81 @@
+{
+  "index": 46,
+  "rowId": "46",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-aa3f7741023b",
+  "userId": "local-user",
+  "durationSeconds": 71.17,
+  "difficulty": "4",
+  "resource": "aws_lex_bot, aws_lex_intent",
+  "prompt": "create an aws_lex_bot for booking a trip with all arguments filled",
+  "intent": "Has one resource \"aws_lex_bot\" with all arguments initialized and at least one \"aws_lex_intent\" resource",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_lex_intent\" \"BookTrip\" {\n  description    = \"Book a trip\"\n  name           = \"BookTrip\"\n\n  sample_utterances = [\n    \"I want to book a trip\",\n    \"I would like to book a trip\",\n  ]\n\n  fulfillment_activity {\n    type = \"ReturnIntent\"\n  }\n}\n\nresource \"aws_lex_bot\" \"BookTripBot\" {\n  description                   = \"Bot for booking trips\"\n  idle_session_ttl_in_seconds   = 600\n  locale                        = \"en-US\"\n  name                          = \"BookTripBot\"\n  process_behavior              = \"BUILD\"\n  voice_id                      = \"Salli\"\n  detect_sentiment = false\n  enable_model_improvements = true\n  nlu_intent_confidence_threshold = 0\n  child_directed                = false\n\n  abort_statement {\n    message {\n      content      = \"Sorry, I cannot assist you to book the trip right now.\"\n      content_type = \"PlainText\"\n    }\n  }\n  \n  clarification_prompt {\n    max_attempts = 3\n\n    message {\n      content      = \"I'm sorry, I didn't understand. Could you please repeat that?\"\n      content_type = \"PlainText\"\n    }\n  }\n\n  intent {\n    intent_name    = aws_lex_intent.BookTrip.name\n    intent_version = aws_lex_intent.BookTrip.version\n  }\n}",
+  "bleuScore": 0.1052,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/generated-source/row-0046-llm-aa3f7741023b",
+  "generatedSourceFiles": [
+    "generated-source/row-0046-llm-aa3f7741023b/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_lex_bot": true,
+    "aws_lex_intent": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration deploys an AWS Lex V1 bot for booking a trip. It includes:\n\n- AWS provider configuration in `us-east-1`\n- A custom Lex slot type for trip type selection\n- A Lex intent for collecting trip booking details\n- Required prompts, statements, slots, and fulfillment behavior\n- An AWS Lex bot using the trip booking intent\n- Version creation for the Lex intent and bot\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_lex_slot_type\" \"trip_type\" {\n  name                     = \"TripType\"\n  description              = \"The type of trip the user wants to book.\"\n  create_version           = true\n  value_selection_strategy = \"ORIGINAL_VALUE\"\n\n  enumeration_value {\n    value    = \"flight\"\n    synonyms = [\"airplane\", \"plane\", \"air travel\"]\n  }\n\n  enumeration_value {\n    value    = \"hotel\"\n    synonyms = [\"room\", \"lodging\", \"accommodation\"]\n  }\n\n  enumeration_value {\n    value    = \"car\"\n    synonyms = [\"rental car\", \"vehicle\", \"auto\"]\n  }\n}\n\nresource \"aws_lex_intent\" \"book_trip\" {\n  name           = \"BookTrip\"\n",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/run-summaries/row-0046-llm-aa3f7741023b.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: create an aws_lex_bot for booking a trip with all arguments filled",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration deploys an AWS Lex V1 bot for booking a trip. It includes:\n\n- AWS provider configuration in `us-east-1`\n- A custom Lex slot type for trip type selection\n- A Lex intent for collecting trip booking details\n- Required prompts, statements, slots, and fulfillment behavior\n- An AWS Lex bot using the trip booking intent\n- Version creation for the Lex intent and bot",
+  "failure_category": "",
+  "failure_reason": ""
+}

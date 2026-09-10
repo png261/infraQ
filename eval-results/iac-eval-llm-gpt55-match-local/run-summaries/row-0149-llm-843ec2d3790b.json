@@ -1,0 +1,101 @@
+{
+  "index": 149,
+  "rowId": "149",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-843ec2d3790b",
+  "userId": "local-user",
+  "durationSeconds": 90.57,
+  "difficulty": "3",
+  "resource": "aws_iam_role, aws_lambda_function, archive_file, aws_iam_policy_document",
+  "prompt": "Create an AWS Lambda function with an IAM role, an IAM policy document for assuming the role, and an archive file for the Lambda function code. The Lambda function should be triggered by a nodejs18 runtime, have a specific handler, and use a \"lambda.js\" as the source file for the code.",
+  "intent": "Needs to have a defined IAM role. Data for a .zip file, with source file = lambda.js, function name can be anything. For the aws_lambda_function use the defined zip, function name, set handler to anything, and runtime to \"nodejs.18x\"",
+  "referenceOutput": "data \"aws_iam_policy_document\" \"assume_role\" {\n  statement {\n    effect = \"Allow\"\n\n    principals {\n      type        = \"Service\"\n      identifiers = [\"lambda.amazonaws.com\"]\n    }\n\n    actions = [\"sts:AssumeRole\"]\n  }\n}\n\nresource \"aws_iam_role\" \"iam_for_lambda\" {\n  name               = \"iam_for_lambda\"\n  assume_role_policy = data.aws_iam_policy_document.assume_role.json\n}\n\ndata \"archive_file\" \"lambda\" {\n  type        = \"zip\"\n  source_file = \"lambda.js\"\n  output_path = \"lambda_function_payload.zip\"\n}\n\nresource \"aws_lambda_function\" \"test_lambda\" {\n  filename      = \"lambda_function_payload.zip\"\n  function_name = \"lambda_function_name\"\n  role          = aws_iam_role.iam_for_lambda.arn\n  handler       = \"index.test\"\n\n  runtime = \"nodejs18.x\"\n}",
+  "bleuScore": 0.111988,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0149-llm-843ec2d3790b",
+  "generatedSourceFiles": [
+    "generated-source/row-0149-llm-843ec2d3790b/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": false,
+    "missingPathModuleFiles": [
+      "lambda.js",
+      "lambda_function.zip"
+    ],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "lambda.js",
+        "line": "",
+        "finding": "missing_path_module_file"
+      },
+      {
+        "severity": "high",
+        "file": "lambda_function.zip",
+        "line": "",
+        "finding": "missing_path_module_file"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"main\": {\"allow\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": [
+      "lambda.js",
+      "lambda_function.zip"
+    ]
+  },
+  "requiredMarkers": {
+    "aws_iam_role": true,
+    "aws_lambda_function": true,
+    "aws_iam_policy_document": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS Lambda function using the Node.js 18 runtime. It defines:\n\n- An AWS provider in a valid region.\n- A local `lambda.js` source file containing the Lambda handler code.\n- An archive file ZIP package for the Lambda deployment.\n- An IAM assume role policy document allowing Lambda to assume the role.\n- An IAM role for the Lambda function.\n- A basic IAM policy attachment allowing Lambda to write logs to CloudWatch.\n- The Lambda function using `lambda.js` as its source and `lambda.handler` as its handler.\n\n```hcl\nterraform {\n  required_version = \">= 1.3.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    archive = {\n      source  = \"hashicorp/archive\"\n      version = \">= 2.4\"\n    }\n\n    local = {\n      source  = \"hashicorp/local\"\n      version = \">= 2.4\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nvariable \"lambda_function_name\" {\n  description = \"Name of the Lambda function.\"\n  type        = string\n  default     = \"nodejs18-example-lambda\"\n}\n\nvariable \"lambda_handler\" {\n  description = \"Handler for the Lambda function.\"\n  type        = string\n  default     = \"lambda.handler\"\n}\n\nv",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0149-llm-843ec2d3790b.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an AWS Lambda function with an IAM role, an IAM policy document for assuming the role, and an archive file for the Lambda function code. The Lambda function should be triggered by a nodejs18 runtime, have a specific handler, and use a \"lambda.js\" as the source file for the code.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS Lambda function using the Node.js 18 runtime. It defines:\n\n- An AWS provider in a valid region.\n- A local `lambda.js` source file containing the Lambda handler code.\n- An archive file ZIP package for the Lambda deployment.\n- An IAM assume role policy document allowing Lambda to assume the role.\n- An IAM role for the Lambda function.\n- A basic IAM policy attachment allowing Lambda to write logs to CloudWatch.\n- The Lambda function using `lambda.js` as its source and `lambda.handler` as its handler.",
+  "failure_category": "artifact_incomplete",
+  "failure_reason": "Missing local files: lambda.js, lambda_function.zip"
+}

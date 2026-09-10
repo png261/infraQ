@@ -1,0 +1,80 @@
+{
+  "index": 78,
+  "rowId": "78",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-95c7cc6b872e",
+  "userId": "local-user",
+  "durationSeconds": 40.48,
+  "difficulty": "1",
+  "resource": "aws_route53_zone",
+  "prompt": "Set up an aws_route_53 zone named \"example53.com\"",
+  "intent": "Has one \"aws_route53_zone\" resource\n    with \"name\" set to \"example53.com\"",
+  "referenceOutput": "provider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_route53_zone\" \"primary\" {\n  name = \"example53.com\"\n}",
+  "bleuScore": 0.312255,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-3/generated-source/row-0078-llm-95c7cc6b872e",
+  "generatedSourceFiles": [
+    "generated-source/row-0078-llm-95c7cc6b872e/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_route53_zone": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a public AWS Route 53 hosted zone named `example53.com`. It includes the required AWS provider configuration using the `us-east-1` region.\n\n```hcl\nterraform {\n  required_version = \">= 1.0.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_route53_zone\" \"example53\" {\n  name = \"example53.com\"\n}\n```",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-3/run-summaries/row-0078-llm-95c7cc6b872e.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Set up an aws_route_53 zone named \"example53.com\"",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a public AWS Route 53 hosted zone named `example53.com`. It includes the required AWS provider configuration using the `us-east-1` region.",
+  "failure_category": "",
+  "failure_reason": ""
+}

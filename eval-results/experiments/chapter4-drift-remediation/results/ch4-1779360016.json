@@ -1,0 +1,187 @@
+{
+  "testcaseId": "CH4-DRIFT-SG-SSH-004",
+  "testcaseTitle": "Detect public SSH inside a broad administrative range",
+  "testId": "ch4-1779360016",
+  "webAppUrl": "https://main.d2zgeiauyfqrpp.amplifyapp.com",
+  "testUser": {
+    "username": "chapter4-08f9d68de4@example.com",
+    "password": "Ch4!XKbYcdjGJI3Nv0YiGL9iKvdCaA1!",
+    "userId": "890ae5cc-f061-7083-3290-b02945a42f1b"
+  },
+  "stateBackend": {
+    "backendId": "5db5e7a5-0ace-4170-9084-ebdb1d335dd2",
+    "name": "Chapter 4 Drift Demo ch4-1779360016",
+    "bucket": "infraq-ch4-drift-649519997247-ap-southeast-1",
+    "key": "chapter4/ch4-1779360016/terraform.tfstate",
+    "region": "ap-southeast-1",
+    "service": "ec2",
+    "sourcePrefix": "cloudrift-chapter4/ch4-1779360016/source"
+  },
+  "terraformOutputs": {
+    "security_group_id": {
+      "sensitive": false,
+      "type": "string",
+      "value": "sg-09b70e75dc3794fdb"
+    },
+    "vpc_id": {
+      "sensitive": false,
+      "type": "string",
+      "value": "vpc-0bbb8346ce25d682f"
+    }
+  },
+  "baseline": {
+    "scanId": "944280f5-2dfe-490e-bd76-278985b635d6",
+    "status": "SUCCEEDED",
+    "driftAlerts": 0,
+    "policyAlerts": 0,
+    "currentResources": 1,
+    "error": null,
+    "driftDetails": [],
+    "policyDetails": []
+  },
+  "driftMutation": {
+    "resource": "aws_security_group.chapter4_demo",
+    "securityGroupId": "sg-09b70e75dc3794fdb",
+    "change": "Added tcp/22-2222 ingress from 0.0.0.0/0 outside Terraform"
+  },
+  "drifted": {
+    "scanId": "4169bf82-ad91-41cc-9990-6201eb70810c",
+    "status": "SUCCEEDED",
+    "driftAlerts": 1,
+    "policyAlerts": 1,
+    "currentResources": 1,
+    "error": null,
+    "driftDetails": [
+      {
+        "missing": false,
+        "severity": "warning",
+        "source": "terraform_refresh",
+        "diffs": {
+          "ingress": [
+            [],
+            [
+              {
+                "to_port": 2222,
+                "from_port": 22,
+                "prefix_list_ids": [],
+                "ipv6_cidr_blocks": [],
+                "security_groups": [],
+                "cidr_blocks": [
+                  "0.0.0.0/0"
+                ],
+                "description": "Chapter 4 broad admin range drift",
+                "self": false,
+                "protocol": "tcp"
+              }
+            ]
+          ]
+        },
+        "resource_id": "chapter4_demo",
+        "message": "Terraform refresh detected live infrastructure drift",
+        "resource_address": "aws_security_group.chapter4_demo",
+        "resource_name": "chapter4_demo",
+        "expected_attributes": {
+          "ingress": []
+        },
+        "actual_attributes": {
+          "ingress": [
+            {
+              "self": false,
+              "from_port": 22,
+              "ipv6_cidr_blocks": [],
+              "security_groups": [],
+              "cidr_blocks": [
+                "0.0.0.0/0"
+              ],
+              "description": "Chapter 4 broad admin range drift",
+              "prefix_list_ids": [],
+              "protocol": "tcp",
+              "to_port": 2222
+            }
+          ]
+        },
+        "resource_type": "aws_security_group"
+      }
+    ],
+    "policyDetails": [
+      {
+        "type": "policy_violation",
+        "resource": "aws_security_group.chapter4_demo",
+        "severity": "critical",
+        "resource_id": "chapter4_demo",
+        "source": "terraform_refresh",
+        "framework": [
+          "SOC2",
+          "PCI-DSS"
+        ],
+        "resource_type": "aws_security_group",
+        "description": "Security group allows SSH ingress from 0.0.0.0/0",
+        "rule": {
+          "ipv6_cidr_blocks": [],
+          "cidr_blocks": [
+            "0.0.0.0/0"
+          ],
+          "security_groups": [],
+          "protocol": "tcp",
+          "self": false,
+          "to_port": 2222,
+          "description": "Chapter 4 broad admin range drift",
+          "prefix_list_ids": [],
+          "from_port": 22
+        },
+        "policy_id": "CKV_AWS_25"
+      }
+    ]
+  },
+  "agentDriftFix": {
+    "sessionId": "dc323d9e-6400-4cc8-acc3-60d98872f812",
+    "prompt": "Fix the Terraform drift issue found by Cloudrift in this Terraform repository.\n\nRepository: png261/test-thesis-v2\nState backend: Chapter 4 Drift Demo ch4-1779360016\nBackend: 5db5e7a5-0ace-4170-9084-ebdb1d335dd2\nScan ID: 4169bf82-ad91-41cc-9990-6201eb70810c\nState bucket: infraq-ch4-drift-649519997247-ap-southeast-1\nState key: chapter4/ch4-1779360016/terraform.tfstate\nState region: ap-southeast-1\n\nUse the Git repository and Terraform state backend context to make the minimum Terraform changes needed, then call the create_pull_request tool with a concise generated title and a markdown body summarizing what changed.\n\nFix only this issue context:\nIssue type: drift\n  Kind: drift\n  Message: Terraform refresh detected live infrastructure drift\n  Resource Id: chapter4_demo\n  Resource Type: aws_security_group\n  Resource Address: aws_security_group.chapter4_demo\n  Expected (Terraform state): {\"ingress\": []}\n  Actual (live AWS state): {\"ingress\": [{\"self\": false, \"from_port\": 22, \"ipv6_cidr_blocks\": [], \"security_groups\": [], \"cidr_blocks\": [\"0.0.0.0/0\"], \"description\": \"Chapter 4 broad admin range drift\", \"prefix_list_ids\": [], \"protocol\": \"tcp\", \"to_port\": 2222}]}\n  Attribute diffs (expected\u2192actual): {\"ingress\": [[], [{\"to_port\": 2222, \"from_port\": 22, \"prefix_list_ids\": [], \"ipv6_cidr_blocks\": [], \"security_groups\": [], \"cidr_blocks\": [\"0.0.0.0/0\"], \"description\": \"Chapter 4 broad admin range drift\", \"self\": false, \"protocol\": \"tcp\"}]]}\nScan status: SUCCEEDED",
+    "agentResponse": "Implemented the Terraform drift remediation and opened a pull request.\n\nPR: https://github.com/png261/test-thesis-v2/pull/10  \nBranch: `agentcore/dc323d9e`  \nTitle: `Remediate security group ingress drift`\n\nChanged files:\n- `main.tf`\n- `versions.tf`\n- `.terraform.lock.hcl`\n\nWhat changed:\n- Kept `aws_security_group.chapter4_demo` managed with explicit empty ingress (`ingress = []`) so Terraform/OpenTofu will remove the unauthorized live ingress rule instead of accepting it.\n- Added an empty `backend \"s3\" {}` block so the supplied S3 backend configuration is honored at init time without hardcoding bucket, key, or region in source.\n\nVerification performed:\n- Reviewer found no blocking issues.\n- `tofu validate -no-color`: passed.\n- `tflint --no-color`: passed.\n- `tofu init` with the supplied S3 backend succeeded and confirmed backend `s3` was configured with no missing-backend warning.\n\nNote:\n- Final `tofu plan` against live AWS was attempted but blocked by the runner role lacking `ec2:DescribeVpcs`. After granting the necessary EC2 read permissions, rerun plan to confirm it removes the unauthorized `tcp 22-2222` ingress from `0.0.0.0/0` before apply.",
+    "pullRequest": {
+      "created": true,
+      "updated": true,
+      "committed": true,
+      "headBranch": "agentcore/dc323d9e",
+      "baseBranch": "main",
+      "changedFiles": [
+        ".terraform.lock.hcl",
+        "main.tf",
+        "versions.tf"
+      ],
+      "number": 10,
+      "url": "https://github.com/png261/test-thesis-v2/pull/10",
+      "state": "open",
+      "title": "Remediate security group ingress drift",
+      "body": "## Summary\n- Kept `aws_security_group.chapter4_demo` managed with an explicit empty `ingress = []` so Terraform/OpenTofu will remove the unauthorized live ingress drift instead of codifying broad admin access.\n- Added an empty `backend \"s3\" {}` block to the root Terraform configuration so the supplied S3 backend configuration is honored during initialization without hardcoding bucket, key, or region in source.\n\n## Cloudrift issue addressed\n- Resource: `aws_security_group.chapter4_demo`\n- Drift: unexpected ingress rule `tcp` from port `22` to `2222` from `0.0.0.0/0`\n- Desired state: no ingress rules (`ingress = []`)\n\n## Changed files\n- `main.tf`\n- `versions.tf`\n\n## Verification\n- Reviewer confirmed no blocking findings and that the insecure ingress rule is not codified.\n- `tofu validate -no-color`: passed.\n- `tflint --no-color`: passed.\n- Backend verification: `tofu init` with the supplied S3 backend bucket/key/region succeeded and configured backend `s3` with no missing-backend warning.\n\n## Notes\n- A final `tofu plan` against live AWS was attempted but blocked by the execution role lacking `ec2:DescribeVpcs`. After granting the runner role the required EC2 read permissions, rerun plan to confirm the unauthorized ingress rule is removed before apply.",
+      "commitTitle": "Update 3 files: .terraform.lock.hcl, main.tf, versions.tf"
+    },
+    "pullRequestUrl": "https://github.com/png261/test-thesis-v2/pull/10"
+  },
+  "agentPolicyFix": {
+    "sessionId": "ec7720bb-985e-4752-bf02-e0e5d3f93b63",
+    "prompt": "Fix the policy compliance issue found by Cloudrift in this Terraform repository.\n\nRepository: png261/test-thesis-v2\nState backend: Chapter 4 Drift Demo ch4-1779360016\nBackend: 5db5e7a5-0ace-4170-9084-ebdb1d335dd2\nScan ID: 4169bf82-ad91-41cc-9990-6201eb70810c\nState bucket: infraq-ch4-drift-649519997247-ap-southeast-1\nState key: chapter4/ch4-1779360016/terraform.tfstate\nState region: ap-southeast-1\n\nUse the Git repository and Terraform state backend context to make the minimum Terraform changes needed, then call the create_pull_request tool with a concise generated title and a markdown body summarizing what changed.\n\nFix only this issue context:\nIssue type: policy\n  Kind: policy\n  Policy Id: CKV_AWS_25\n  Resource Id: chapter4_demo\n  Resource Type: aws_security_group\n  Violating rule: {\"ipv6_cidr_blocks\": [], \"cidr_blocks\": [\"0.0.0.0/0\"], \"security_groups\": [], \"protocol\": \"tcp\", \"self\": false, \"to_port\": 2222, \"description\": \"Chapter 4 broad admin range drift\", \"prefix_list_ids\": [], \"from_port\": 22}\n  Description: Security group allows SSH ingress from 0.0.0.0/0\nScan status: SUCCEEDED",
+    "agentResponse": "Implemented and reviewed the Cloudrift CKV_AWS_25 remediation workflow.\n\nSummary:\n- The Terraform source for `aws_security_group.chapter4_demo` already defines no ingress rules with `ingress = []`.\n- This remediates the reported policy issue in source: public SSH ingress from `0.0.0.0/0` on TCP ports `22-2222`.\n- The issue appears to be live/state drift rather than a missing Terraform source change.\n\nVerification:\n- Reviewer confirmed `aws_security_group.chapter4_demo` has no ingress rules and CKV_AWS_25 is remediated in source.\n- `tflint --no-color` passed.\n- `tofu validate -no-color` could not complete because cached provider plugins for `hashicorp/aws` and `hashicorp/random` were missing/corrupted locally.\n- Backend init/plan should be run before apply using:\n  - Bucket: `infraq-ch4-drift-649519997247-ap-southeast-1`\n  - Key: `chapter4/ch4-1779360016/terraform.tfstate`\n  - Region: `ap-southeast-1`\n\nPull request:\n- PR was not created because there were no repository changes to commit.\n- `create_pull_request` returned: `No repository changes to commit.`\n\nNext step:\n- Run `tofu init -reconfigure` and `tofu plan` against the provided backend, then apply to reconcile the drifted live security group rule.",
+    "pullRequest": {
+      "created": false,
+      "updated": false,
+      "committed": false,
+      "headBranch": "agentcore/ec7720bb",
+      "baseBranch": "main",
+      "changedFiles": [],
+      "message": "No repository changes to commit.",
+      "commitTitle": ""
+    },
+    "pullRequestUrl": null
+  },
+  "fixed": {
+    "scanId": "c56f1575-92ff-4baa-8593-b8cef3e59ed0",
+    "status": "SUCCEEDED",
+    "driftAlerts": 0,
+    "policyAlerts": 0,
+    "currentResources": 1,
+    "error": null,
+    "driftDetails": [],
+    "policyDetails": []
+  },
+  "destroyed": true
+}

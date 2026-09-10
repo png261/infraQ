@@ -1,0 +1,98 @@
+{
+  "index": 191,
+  "rowId": "191",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-426408e3e4cf",
+  "userId": "local-user",
+  "durationSeconds": 92.05,
+  "difficulty": "6",
+  "resource": "aws_efs_file_system, aws_efs_mount_target, aws_efs_mount_target, aws_instance, aws_instance, aws_security_group, aws_subnet, aws_subnet, aws_vpc",
+  "prompt": "Create 2 of the latest AWS Linux instances in private subnets sharing a EFS file system.",
+  "intent": "",
+  "referenceOutput": "# Define the provider (AWS in this case)\nterraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\n# Create a Virtual Private Cloud (VPC)\nresource \"aws_vpc\" \"my_vpc\" {\n  cidr_block = \"10.0.0.0/16\"\n}\n\ndata \"aws_availability_zones\" \"available\" {\n  state = \"available\"\n}\n\n# Create Private Subnet 1\nresource \"aws_subnet\" \"private_subnet_1\" {\n  vpc_id            = aws_vpc.my_vpc.id\n  cidr_block        = \"10.0.1.0/24\"\n  availability_zone = data.aws_availability_zones.available.names[0]\n}\n\n# Create Private Subnet 2\nresource \"aws_subnet\" \"private_subnet_2\" {\n  vpc_id            = aws_vpc.my_vpc.id\n  cidr_block        = \"10.0.2.0/24\"\n  availability_zone = data.aws_availability_zones.available.names[1]\n}\n\n# Create Security Group for EC2 instances\nresource \"aws_security_group\" \"ec2_sg\" {\n  vpc_id = aws_vpc.my_vpc.id\n  name   = \"ec2_sg\"\n}\n\nresource \"aws_vpc_security_group_ingress_rule\" \"ingress1\" {\n  security_group_id = aws_security_group.ec2_sg.id\n  cidr_ipv4 = \"0.0.0.0/0\"\n  from_port = 80\n  ip_protocol = \"tcp\"\n  to_port = 80\n}\n\nresource \"aws_vpc_security_group_ingress_rule\" \"ingress2\" {\n  security_group_id = aws_security_group.ec2_sg.id\n  cidr_ipv4 = \"0.0.0.0/0\"\n  from_port = 22\n  ip_protocol = \"tcp\"\n  to_port = 22\n}\n\n# Allow NFS traffic\nresource \"aws_vpc_security_group_ingress_rule\" \"ingress3\" {\n  security_group_id = aws_security_group.ec2_sg.id\n  cidr_ipv4 = \"0.0.0.0/0\"\n  from_port = 2049\n  ip_protocol = \"tcp\"\n  to_port = 2049\n}\n\nresource \"aws_vpc_security_group_egress_rule\" \"egress1\" {\n  security_group_id = aws_security_group.ec2_sg.id\n  cidr_ipv4         = \"0.0.0.0/0\"\n  ip_protocol       = \"-1\"\n}\n\n# Create EFS File System\nresource \"aws_efs_file_system\" \"efs\" {\n  creation_token = \"my-efs\"\n  lifecycle_policy {\n    transition_to_ia = \"AFTER_30_DAYS\"\n  }\n}\n\n# Create EFS Mount Target for Private Subnet 1\nresource \"aws_efs_mount_target\" \"mount_target_1\" {\n  file_system_id  = aws_efs_file_system.efs.id\n  subnet_id       = aws_subnet.private_subnet_1.id\n  security_groups = [aws_security_group.ec2_sg.id]\n}\n\n# Create EFS Mount Target for Private Subnet 2\nresource \"aws_efs_mount_target\" \"mount_target_2\" {\n  file_system_id  = aws_efs_file_system.efs.id\n  subnet_id       = aws_subnet.private_subnet_2.id\n  security_groups = [aws_security_group.ec2_sg.id]\n}\n\ndata \"aws_ami\" \"amzn2\" {\n  most_recent = true\n  owners      = [\"amazon\"]\n\n  filter {\n    name   = \"name\"\n    values = [\"*ubuntu-noble-24.04-amd64-server-*\"]\n  }\n}\n\n# Create EC2 instances in Private Subnet 1 and Subnet 2\nresource \"aws_instance\" \"ec2_instance_1\" {\n  ami             = data.aws_ami.amzn2.id\n  instance_type   = \"t2.micro\"\n  subnet_id       = aws_subnet.private_subnet_1.id\n  security_groups = [aws_security_group.ec2_sg.id]\n\n  user_data = <<-EOF\n              #!/bin/bash\n              mkdir /mnt/efs\n              mount -t efs ${aws_efs_file_system.efs.id}:/ /mnt/efs\n              EOF\n}\n\nresource \"aws_instance\" \"ec2_instance_2\" {\n  ami             = data.aws_ami.amzn2.id\n  instance_type   = \"t2.micro\"\n  subnet_id       = aws_subnet.private_subnet_2.id\n  security_groups = [aws_security_group.ec2_sg.id]\n\n  user_data = <<-EOF\n              #!/bin/bash\n              mkdir /mnt/efs\n              mount -t efs ${aws_efs_file_system.efs.id}:/ /mnt/efs\n              EOF\n}\n\noutput \"ami_id\" {\n  value = data.aws_ami.amzn2.id\n}\n\noutput \"ami_name\" {\n  value = data.aws_ami.amzn2.name\n}\n\noutput \"efs_id\" {\n  value = aws_efs_file_system.efs.id\n}",
+  "bleuScore": 0.094175,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0191-llm-426408e3e4cf",
+  "generatedSourceFiles": [
+    "generated-source/row-0191-llm-426408e3e4cf/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "202",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "228",
+        "finding": "broad_ingress_or_egress_cidr"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"main\": {\"allow\": false, \"aws_instances\": [], \"efs_exists\": true, \"private_subnet_1_exists\": true, \"private_subnet_2_exists\": true, \"vpc_exists\": true}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_efs_file_system": true,
+    "aws_efs_mount_target": true,
+    "aws_instance": true,
+    "aws_security_group": true,
+    "aws_subnet": true,
+    "aws_vpc": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "The following Terraform configuration creates a complete AWS environment with:\n\n- A new VPC\n- Two public subnets for NAT access\n- Two private subnets for EC2 instances\n- Internet Gateway and NAT Gateway\n- Two latest Amazon Linux 2023 EC2 instances in private subnets\n- An Amazon EFS file system shared by both instances\n- EFS mount targets in each private subnet\n- Security groups allowing EC2-to-EFS NFS traffic\n- IAM role and instance profile for EC2 Systems Manager access\n- User data to install EFS utilities and mount the shared EFS filesystem at `/mnt/efs`\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region to deploy resources into.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"project_name\" {\n  description = \"Name prefix for all resources.\"\n  type        = string\n  default     = \"private-efs-linux\"\n}\n\nvariable \"vpc_cidr\" {\n  description = \"CIDR block for the VPC.\"\n  type        = string\n  default     = \"10.0.0.0/16\"\n}\n\nvariable \"private_subnet_cidrs\" {\n  descrip",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0191-llm-426408e3e4cf.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create 2 of the latest AWS Linux instances in private subnets sharing a EFS file system.",
+  "promptStrategy": "default",
+  "answer": "The following Terraform configuration creates a complete AWS environment with:\n\n- A new VPC\n- Two public subnets for NAT access\n- Two private subnets for EC2 instances\n- Internet Gateway and NAT Gateway\n- Two latest Amazon Linux 2023 EC2 instances in private subnets\n- An Amazon EFS file system shared by both instances\n- EFS mount targets in each private subnet\n- Security groups allowing EC2-to-EFS NFS traffic\n- IAM role and instance profile for EC2 Systems Manager access\n- User data to install EFS utilities and mount the shared EFS filesystem at `/mnt/efs`",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"main\": {\"allow\": false, \"aws_instances\": [], \"efs_exists\": true, \"private_subnet_1_exists\": true, \"private_subnet_2_exists\": true, \"vpc_exists\": true}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

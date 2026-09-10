@@ -1,0 +1,80 @@
+{
+  "index": 162,
+  "rowId": "162",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-3ba8365378e4",
+  "userId": "local-user",
+  "durationSeconds": 53.25,
+  "difficulty": "1",
+  "resource": "aws_dynamodb_contributor_insights",
+  "prompt": "Create a DynamoDB Contributor Insights resource for a specific table with custom settings",
+  "intent": "Create a DynamoDB table and enable contributor insights",
+  "referenceOutput": "resource \"aws_dynamodb_contributor_insights\" \"test\" {\n  table_name = \"ExampleTableName\"\n}",
+  "bleuScore": 0.007084,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0162-llm-3ba8365378e4",
+  "generatedSourceFiles": [
+    "generated-source/row-0162-llm-3ba8365378e4/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: Unsupported argument\n\n  on main.tf line 82, in resource \"aws_dynamodb_contributor_insights\" \"this\":\n  82:   enabled    = var.contributor_insights_enabled\n\nAn argument named \"enabled\" is not expected here.\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_dynamodb_contributor_insights": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform program creates a DynamoDB table and enables DynamoDB Contributor Insights for that specific table. The table uses on-demand billing, server-side encryption, point-in-time recovery, TTL, and tags. Contributor Insights is enabled through the `aws_dynamodb_contributor_insights` resource with configurable defaults.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the DynamoDB table and Contributor Insights resource will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"table_name\" {\n  description = \"Name of the DynamoDB table for which Contributor Insights will be enabled.\"\n  type        = string\n  default     = \"custom-contributor-insights-table\"\n}\n\nvariable \"contributor_insights_enabled\" {\n  description = \"Whether DynamoDB Contributor Insights should be enabled for the table.\"\n  type        = bool\n  default     = true\n}\n\nvariable \"environment\" {\n  description = \"Deployment environment tag.\"\n  type        = string\n  default     = \"de",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0162-llm-3ba8365378e4.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a DynamoDB Contributor Insights resource for a specific table with custom settings",
+  "promptStrategy": "default",
+  "answer": "This Terraform program creates a DynamoDB table and enables DynamoDB Contributor Insights for that specific table. The table uses on-demand billing, server-side encryption, point-in-time recovery, TTL, and tags. Contributor Insights is enabled through the `aws_dynamodb_contributor_insights` resource with configurable defaults.",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: Unsupported argument on main.tf line 82, in resource \"aws_dynamodb_contributor_insights\" \"this\": 82: enabled = var.contributor_insights_enabled An argument named \"enabled\" is not expected here."
+}

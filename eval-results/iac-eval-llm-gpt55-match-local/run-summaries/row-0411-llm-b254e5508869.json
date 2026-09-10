@@ -1,0 +1,93 @@
+{
+  "index": 411,
+  "rowId": "411",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-b254e5508869",
+  "userId": "local-user",
+  "durationSeconds": 73.09,
+  "difficulty": "1",
+  "resource": "aws_db_instance",
+  "prompt": "Create an AWS mySQL instance that skips the final snapshot",
+  "intent": "Has one \"aws_db_instance\" resource\nwith one \"allocated_storage\"\nwith one \"engine\" with value \"mysql\"\nwith one \"instance_class\" \nwith one \"password\"\nwith one \"username\"\nwith one \"skip_final_snapshot\" set to true",
+  "referenceOutput": "resource \"aws_db_instance\" \"default\" {\n  allocated_storage    = 20\n  engine               = \"mysql\"\n  instance_class       = \"db.z1d.micro\"\n  username             = \"foo\"\n  password             = \"foobarbaz\"\n  skip_final_snapshot = true\n}",
+  "bleuScore": 0.009279,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0411-llm-b254e5508869",
+  "generatedSourceFiles": [
+    "generated-source/row-0411-llm-b254e5508869/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "127",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "166",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_db_instance\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_db_instance": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "The following Terraform configuration creates an AWS RDS MySQL database instance that skips the final snapshot when destroyed. It includes a dedicated VPC, two private subnets in separate Availability Zones, a DB subnet group, a security group allowing MySQL access from within the VPC, and a randomly generated master password.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"db_name\" {\n  description = \"Initial MySQL database name.\"\n  type        = string\n  default     = \"appdb\"\n}\n\nvariable \"db_username\" {\n  description = \"Master username for the MySQL database.\"\n  type        = string\n  default     = \"adminuser\"\n}\n\nvariable \"db_instance_class\" {\n  description = \"RDS instance class.\"\n  type        = string\n  default     = \"db.t3.micro\"\n}\n\nvariable \"db_allocated_storage\" {\n  description = \"Allocated stor",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0411-llm-b254e5508869.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an AWS mySQL instance that skips the final snapshot",
+  "promptStrategy": "default",
+  "answer": "The following Terraform configuration creates an AWS RDS MySQL database instance that skips the final snapshot when destroyed. It includes a dedicated VPC, two private subnets in separate Availability Zones, a DB subnet group, a security group allowing MySQL access from within the VPC, and a randomly generated master password.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_db_instance\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

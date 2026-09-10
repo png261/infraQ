@@ -1,0 +1,80 @@
+{
+  "index": 369,
+  "rowId": "369",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-4c87e45fa420",
+  "userId": "local-user",
+  "durationSeconds": 79.52,
+  "difficulty": "2",
+  "resource": "aws_lightsail_database",
+  "prompt": "AWS Lightsail that creates a postgres database, which enable creating a final snapshot of your database on deletion",
+  "intent": "\"have one \"\"aws_lightsail_database\"\" resource\n    with relational_database_name argument\n    with master_database_name \n    with master_password\n    with master_username\n    with blueprint_id = postgres_12\n    with bundle_id\n    with final_snapshot_name",
+  "referenceOutput": "resource \"aws_lightsail_database\" \"test\" {\n  relational_database_name     = \"test\"\n  availability_zone            = \"us-east-1a\"\n  master_database_name         = \"testdatabasename\"\n  master_password              = \"testdatabasepassword\"\n  master_username              = \"test\"\n  blueprint_id                 = \"postgres_12\"\n  bundle_id                    = \"micro_1_0\"\n  final_snapshot_name          = \"MyFinalSnapshot\"\n}",
+  "bleuScore": 0.010677,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0369-llm-4c87e45fa420",
+  "generatedSourceFiles": [
+    "generated-source/row-0369-llm-4c87e45fa420/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_valid_lightsail_database\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_lightsail_database": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "The following Terraform configuration deploys an AWS Lightsail PostgreSQL managed database and configures it to create a final snapshot when the database is deleted. It includes:\n\n- AWS provider configuration in `us-east-1`\n- A Lightsail PostgreSQL database\n- A generated secure master password\n- Final snapshot creation enabled via `skip_final_snapshot = false`\n- A unique final snapshot name using a random suffix\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Lightsail PostgreSQL database will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"availability_zone\" {\n  description = \"Availability Zone for the Lightsail database.\"\n  type        = string\n  default     = \"us-east-1a\"\n}\n\nvariable \"database_name\" {\n  description = \"Name of the Lightsail relational database resource.\"\n  type        = string\n  default     = \"lightsail-postgres-db\"\n}\n\nvariable \"master_data",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0369-llm-4c87e45fa420.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: AWS Lightsail that creates a postgres database, which enable creating a final snapshot of your database on deletion",
+  "promptStrategy": "default",
+  "answer": "The following Terraform configuration deploys an AWS Lightsail PostgreSQL managed database and configures it to create a final snapshot when the database is deleted. It includes:\n\n- AWS provider configuration in `us-east-1`\n- A Lightsail PostgreSQL database\n- A generated secure master password\n- Final snapshot creation enabled via `skip_final_snapshot = false`\n- A unique final snapshot name using a random suffix",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_valid_lightsail_database\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

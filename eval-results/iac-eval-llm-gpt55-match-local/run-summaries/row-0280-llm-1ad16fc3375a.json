@@ -1,0 +1,81 @@
+{
+  "index": 280,
+  "rowId": "280",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-1ad16fc3375a",
+  "userId": "local-user",
+  "durationSeconds": 87.11,
+  "difficulty": "2",
+  "resource": "aws_s3_bucket, aws_s3_bucket_ownership_controls",
+  "prompt": "Create a S3 bucket with bucket name = \"mybucket\". And create a bucket ownership controls resource to set object ownership to bucket owner preferred.",
+  "intent": "Has an aws_s3_bucket resource\n\nHas an aws_s3_bucket_ownership_controls\nwith bucket = bucket id OR name\nand rule with object_ownership = \"BucketOwnerPreferred\"",
+  "referenceOutput": "resource \"aws_s3_bucket\" \"example\" {\n  bucket = \"example\"\n}\n\nresource \"aws_s3_bucket_ownership_controls\" \"example\" {\n  bucket = aws_s3_bucket.example.id\n\n  rule {\n    object_ownership = \"BucketOwnerPreferred\"\n  }\n}",
+  "bleuScore": 0.191851,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0280-llm-1ad16fc3375a",
+  "generatedSourceFiles": [
+    "generated-source/row-0280-llm-1ad16fc3375a/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_s3_bucket": true,
+    "aws_s3_bucket_ownership_controls": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS S3 bucket named `mybucket` and configures S3 bucket ownership controls so that object ownership is set to `BucketOwnerPreferred`.\n\n```hcl\nterraform {\n  required_version = \">= 1.0.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_s3_bucket\" \"mybucket\" {\n  bucket = \"mybucket\"\n}\n\nresource \"aws_s3_bucket_ownership_controls\" \"mybucket_ownership_controls\" {\n  bucket = aws_s3_bucket.mybucket.id\n\n  rule {\n    object_ownership = \"BucketOwnerPreferred\"\n  }\n}\n```",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0280-llm-1ad16fc3375a.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a S3 bucket with bucket name = \"mybucket\". And create a bucket ownership controls resource to set object ownership to bucket owner preferred.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS S3 bucket named `mybucket` and configures S3 bucket ownership controls so that object ownership is set to `BucketOwnerPreferred`.",
+  "failure_category": "",
+  "failure_reason": ""
+}

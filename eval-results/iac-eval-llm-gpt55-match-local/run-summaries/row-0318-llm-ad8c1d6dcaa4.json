@@ -1,0 +1,84 @@
+{
+  "index": 318,
+  "rowId": "318",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-ad8c1d6dcaa4",
+  "userId": "local-user",
+  "durationSeconds": 98.15,
+  "difficulty": "4",
+  "resource": "aws_cloudfront_distribution, aws_cloudfront_origin_access_control, aws_route53_record, aws_route53_zone, aws_s3_bucket",
+  "prompt": "The infrastructure for a video streaming site that distribute video content globally. Accomplish this using the following resources: AWS CloudFront origin access control, AWS CloudFront distribution, AWS Route53 zone, and AWS S3 record. Add any necessary resources.",
+  "intent": "have one \"aws_cloudfront_origin_access_control\" resource\n    with \"name\" argument\n    with \"origin_access_control_origin_type\" with value \"s3\"\n    with \"signing_behavior\" argument\n    with \"signing_protocol\" argument\nhave one \"aws_cloudfront_distribution\" resource\n    with \"origin.domain_name\" argument linking to \"aws_s3_bucket\" resource\n    with \"origin.origin_access_control_id\" argument linking to \"aws_cloudfront_origin_access_control\" resource\n    with \"origin.origin_id\" argument\n    with \"default_cache_behavior.allowed_methods\" argument with value [\"GET\", \"HEAD\"]\n    with \"default_cache_behavior.cached_methods\" argument with value [\"GET\", \"HEAD\"]\n    with \"default_cache_behavior.target_origin_id\" argument having the same value as \"origin.origin_id\" argument\n    with \"default_cache_behavior.viewer_protocol_policy\" argument with value \"allow-all\"\n    with \"restrictions.geo_restriction.restriction_type\" argument\n    with \"restrictions.geo_restriction.locations\" argument\n    with \"viewer_certificate.cloudfront_default_certificate\" argument\nhave one \"aws_s3_bucket\" resource\nhave one \"aws_route53_zone\" resource\n    with \"name\" argument\nhave one \"aws_route53_record\" resource\n    with \"type\" argument\n    with \"name\" argument\n    with \"zone_id\" argument linking to \"aws_route53_zone\" resource\n    with \"alias.name\" argument linking to \"aws_cloudfront_distribution\" resource\n    with \"alias.zone_id\" argument linking to \"aws_cloudfront_distribution\" resource\n    with \"alias.evaluate_target_health\" argument",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_s3_bucket\" \"video_content\" {\n  bucket_prefix = \"video-content-\"\n}\n\nlocals {\n  s3_origin_id = \"s3_video_content_origin\"\n}\n\nresource \"aws_cloudfront_origin_access_control\" \"netflix_cf\" {\n  name                              = \"netflix_cf\"\n  origin_access_control_origin_type = \"s3\"\n  signing_behavior                  = \"always\"\n  signing_protocol                  = \"sigv4\"\n}\n\nresource \"aws_cloudfront_distribution\" \"my_distribution\" {\n  origin {\n    domain_name              = aws_s3_bucket.video_content.bucket_regional_domain_name\n    origin_access_control_id = aws_cloudfront_origin_access_control.netflix_cf.id\n    origin_id                = local.s3_origin_id\n  }\n\n  enabled             = true\n  default_root_object = \"index.html\"\n\n  default_cache_behavior {\n    allowed_methods  = [\"GET\", \"HEAD\"]\n    cached_methods   = [\"GET\", \"HEAD\"]\n    target_origin_id = local.s3_origin_id\n\n    forwarded_values {\n      query_string = false\n\n      cookies {\n        forward = \"none\"\n      }\n    }\n\n    viewer_protocol_policy = \"allow-all\"\n  }\n\n  restrictions {\n    geo_restriction {\n      restriction_type = \"whitelist\"\n      locations        = [\"US\", \"CA\", \"GB\", \"DE\"]\n    }\n  }\n\n  viewer_certificate {\n    cloudfront_default_certificate = true\n  }\n}\n\n# Route53\nresource \"aws_route53_zone\" \"my_zone\" {\n  name = \"my-test-cloudfront.com\"\n}\n\nresource \"aws_route53_record\" \"cdn_ipv4\" {\n  type    = \"A\"\n  name    = \"cdn\"\n  zone_id = aws_route53_zone.my_zone.zone_id\n\n  alias {\n    name                   = aws_cloudfront_distribution.my_distribution.domain_name\n    zone_id                = aws_cloudfront_distribution.my_distribution.hosted_zone_id\n    evaluate_target_health = true\n  }\n}",
+  "bleuScore": 0.113963,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0318-llm-ad8c1d6dcaa4",
+  "generatedSourceFiles": [
+    "generated-source/row-0318-llm-ad8c1d6dcaa4/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"netflix_middle\": {\"valid\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_cloudfront_distribution": true,
+    "aws_cloudfront_origin_access_control": true,
+    "aws_route53_record": true,
+    "aws_route53_zone": true,
+    "aws_s3_bucket": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration provisions a globally distributed video content delivery setup on AWS. It creates:\n\n- A private S3 bucket to store video assets.\n- An example uploaded video placeholder object.\n- A CloudFront Origin Access Control to securely allow CloudFront to access the private S3 bucket.\n- A CloudFront distribution for global video delivery.\n- A Route53 public hosted zone.\n- A Route53 DNS record pointing the video domain to CloudFront.\n- An ACM certificate in `us-east-1` for the CloudFront custom domain.\n- DNS validation records for the certificate.\n- An S3 bucket policy allowing only the CloudFront distribution to read objects.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nvariable \"root_domain_name\" {\n  description = \"The root domain name for the Route53 hosted zone.\"\n  type        = string\n  default     = \"example.com\"\n}\n\nvariable \"video_domain_name\" {\n  description = \"The DNS name used for the video streaming CloudFront distribution.\"\n  type        = string\n  default     = \"video.example.com\"\n}\n\nvariable \"buck",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0318-llm-ad8c1d6dcaa4.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: The infrastructure for a video streaming site that distribute video content globally. Accomplish this using the following resources: AWS CloudFront origin access control, AWS CloudFront distribution, AWS Route53 zone, and AWS S3 record. Add any necessary resources.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration provisions a globally distributed video content delivery setup on AWS. It creates:\n\n- A private S3 bucket to store video assets.\n- An example uploaded video placeholder object.\n- A CloudFront Origin Access Control to securely allow CloudFront to access the private S3 bucket.\n- A CloudFront distribution for global video delivery.\n- A Route53 public hosted zone.\n- A Route53 DNS record pointing the video domain to CloudFront.\n- An ACM certificate in `us-east-1` for the CloudFront custom domain.\n- DNS validation records for the certificate.\n- An S3 bucket policy allowing only the CloudFront distribution to read objects.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"netflix_middle\": {\"valid\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

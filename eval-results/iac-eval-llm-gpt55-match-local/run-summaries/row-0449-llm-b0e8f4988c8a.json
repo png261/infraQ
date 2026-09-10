@@ -1,0 +1,81 @@
+{
+  "index": 449,
+  "rowId": "449",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-b0e8f4988c8a",
+  "userId": "local-user",
+  "durationSeconds": 61.67,
+  "difficulty": "3",
+  "resource": "aws_nat_gateway",
+  "prompt": "creates a NAT Gateway associated with a specified subnet and Elastic IP allocation ID. The NAT Gateway is configured for public connectivity and tagged with a key-value pair (pike = \"permissions\"), indicating its purpose or ownership.",
+  "intent": "Has one \"aws_nat_gateway\" resource:\nAssociated with a specified \"aws_subnet\" resource for hosting the NAT Gateway.\nUtilizes an \"Elastic IP allocation ID\" to provide the NAT Gateway with a public IP address.\nConfigured for public connectivity, allowing resources within the private subnet to access the internet securely.\nTagged with a key-value pair: \"pike\" set to \"permissions\", which categorizes its role, purpose, or ownership within the infrastructure.",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 4.16\"\n    }\n  }\n\n  required_version = \">= 1.2.0\"\n}\n# Define the provider block for AWS\nprovider \"aws\" {\n  region = \"us-east-2\" # Set your desired AWS region\n}\n\nresource \"aws_nat_gateway\" \"pike\" {\n  subnet_id         = \"subnet-0562ef1d304b968f4\"\n  allocation_id     = \"eipalloc-0047fa56c40637c3b\"\n  connectivity_type = \"public\"\n  tags = {\n    pike = \"permissions\"\n  }\n}",
+  "bleuScore": 0.079487,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0449-llm-b0e8f4988c8a",
+  "generatedSourceFiles": [
+    "generated-source/row-0449-llm-b0e8f4988c8a/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_nat_gateway": true,
+    "aws_subnet": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a complete AWS networking setup for a public NAT Gateway. It defines a VPC, public subnet, Internet Gateway, public route table, Elastic IP, and a NAT Gateway associated with the subnet and Elastic IP allocation ID. The NAT Gateway is configured with `connectivity_type = \"public\"` and tagged with `pike = \"permissions\"`.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"vpc_cidr_block\" {\n  description = \"CIDR block for the VPC.\"\n  type        = string\n  default     = \"10.0.0.0/16\"\n}\n\nvariable \"public_subnet_cidr_block\" {\n  description = \"CIDR block for the public subnet where the NAT Gateway will be created.\"\n  type        = string\n  default     = \"10.0.1.0/24\"\n}\n\nvariable \"availability_zone\" {\n  description = \"Availability Zone for the public subnet.\"\n  type        = string\n  default     = \"us-east-1a\"\n}\n\nresource \"aws_vpc\" \"main\" {\n  cidr_block  ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0449-llm-b0e8f4988c8a.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: creates a NAT Gateway associated with a specified subnet and Elastic IP allocation ID. The NAT Gateway is configured for public connectivity and tagged with a key-value pair (pike = \"permissions\"), indicating its purpose or ownership.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a complete AWS networking setup for a public NAT Gateway. It defines a VPC, public subnet, Internet Gateway, public route table, Elastic IP, and a NAT Gateway associated with the subnet and Elastic IP allocation ID. The NAT Gateway is configured with `connectivity_type = \"public\"` and tagged with `pike = \"permissions\"`.",
+  "failure_category": "",
+  "failure_reason": ""
+}

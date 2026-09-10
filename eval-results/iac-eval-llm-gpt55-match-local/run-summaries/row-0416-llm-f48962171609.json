@@ -1,0 +1,93 @@
+{
+  "index": 416,
+  "rowId": "416",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-f48962171609",
+  "userId": "local-user",
+  "durationSeconds": 102.69,
+  "difficulty": "2",
+  "resource": "aws_db_instance",
+  "prompt": "create an aws database restored from s3",
+  "intent": "Has one \"aws_db_instance\" resource\n    with one \"allocated_storage\"\n    with one \"engine\" and a valid engine value\n    with one \"instance_class\" and a valid instance class type\n    with one \"password\"\n    with one \"username\"\n    with one s3_import\n        with one bucket_name\n        with one ingestion_role\n        with one source_engine\n        with one source_engine_verison",
+  "referenceOutput": "resource \"aws_db_instance\" \"default\" {\n  allocated_storage    = 20\n  engine               = \"mysql\"\n  instance_class       = \"db.t3.micro\"\n  username             = \"foo\"\n  password             = \"foobarbaz\"\n  s3_import {\n    bucket_name           = \"mybucket\"\n    ingestion_role        = \"arn:aws:iam::1234567890:role/role-xtrabackup-rds-restore\"\n    source_engine         = \"mysql\"\n    source_engine_version = \"5.6\"\n  }\n}",
+  "bleuScore": 0.014088,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0416-llm-f48962171609",
+  "generatedSourceFiles": [
+    "generated-source/row-0416-llm-f48962171609/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "176",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "208",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_db_instance\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_db_instance": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS RDS MySQL database instance using the `s3_import` feature, which restores database data from an S3 bucket during creation. It also creates the required S3 bucket, IAM role, IAM policy, subnet group, and security group needed for RDS to import data from S3.\n\n> Note: For the restore to succeed, the S3 bucket/prefix must contain a valid MySQL backup compatible with AWS RDS S3 import before applying this configuration.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"db_name\" {\n  description = \"Initial database name.\"\n  type        = string\n  default     = \"restoredappdb\"\n}\n\nvariable \"db_username\" {\n  description = \"Master username for the RDS instance.\"\n  type        = string\n  default     = \"adminuser\"\n}\n\nvariable \"db_password\" {\n  description = \"Master passwor",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0416-llm-f48962171609.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: create an aws database restored from s3",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS RDS MySQL database instance using the `s3_import` feature, which restores database data from an S3 bucket during creation. It also creates the required S3 bucket, IAM role, IAM policy, subnet group, and security group needed for RDS to import data from S3.\n\n> Note: For the restore to succeed, the S3 bucket/prefix must contain a valid MySQL backup compatible with AWS RDS S3 import before applying this configuration.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_db_instance\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

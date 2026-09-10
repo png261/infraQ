@@ -1,0 +1,80 @@
+{
+  "index": 379,
+  "rowId": "379",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-6a06056f1b64",
+  "userId": "local-user",
+  "durationSeconds": 59.05,
+  "difficulty": "1",
+  "resource": "aws_glacier_vault",
+  "prompt": "an S3 Glacier vault for long-term data archiving",
+  "intent": "has one \"aws_glacier_vault\" resource\n     with \"name\" attribute",
+  "referenceOutput": "provider \"aws\" {\n  region = \"us-east-1\"  # Replace with your desired AWS region\n}\n\nresource \"aws_glacier_vault\" \"example\" {\n  name = \"my-glacier-vault\"\n}",
+  "bleuScore": 0.019918,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0379-llm-6a06056f1b64",
+  "generatedSourceFiles": [
+    "generated-source/row-0379-llm-6a06056f1b64/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_glacier_vault": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration provisions an AWS S3 Glacier Vault for long-term archival storage. It also creates an IAM role and policy that can be assumed by AWS account principals to access and manage the vault, including uploading archives, initiating retrieval jobs, listing jobs, and deleting archives.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Glacier vault will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"vault_name\" {\n  description = \"Name of the S3 Glacier vault.\"\n  type        = string\n  default     = \"long-term-archive-vault\"\n}\n\nvariable \"iam_role_name\" {\n  description = \"Name of the IAM role for Glacier vault access.\"\n  type        = string\n  default     = \"glacier-archive-access-role\"\n}\n\ndata \"aws_caller_identity\" \"current\" {}\n\nresource \"aws_glacier_vault\" \"archive\" {\n  name = var.vault_name\n\n  tags = {\n    Name        = var.vault_name\n    Environment = \"archive\"\n    Purpose     = \"long-term-data-archiving\"\n    ManagedBy",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0379-llm-6a06056f1b64.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: an S3 Glacier vault for long-term data archiving",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration provisions an AWS S3 Glacier Vault for long-term archival storage. It also creates an IAM role and policy that can be assumed by AWS account principals to access and manage the vault, including uploading archives, initiating retrieval jobs, listing jobs, and deleting archives.",
+  "failure_category": "",
+  "failure_reason": ""
+}

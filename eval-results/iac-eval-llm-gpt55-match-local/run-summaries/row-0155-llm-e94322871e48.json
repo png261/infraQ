@@ -1,0 +1,98 @@
+{
+  "index": 155,
+  "rowId": "155",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-e94322871e48",
+  "userId": "local-user",
+  "durationSeconds": 81.83,
+  "difficulty": "4",
+  "resource": "aws_cloudwatch_event_rule, aws_cloudwatch_event_target, aws_iam_role, aws_lambda_function, aws_lambda_permission, archive_file, aws_iam_policy_document",
+  "prompt": "Create a Lambda function and invoke it every 15 minutes",
+  "intent": "Needs to have an aws_lambda_function defined. Create a aws_cloudwatch_event_rule to trigger every 15 minutes and aws_lambda_permission to have permission to run lambda function. Create a target to trigger the lambda function.",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_cloudwatch_event_rule\" \"lambda_schedule\" {\n  name        = \"lambda-schedule-rule\"\n  description = \"Invoke Lambda function every 15 minutes\"\n  schedule_expression = \"rate(15 minutes)\"\n  role_arn = aws_iam_role.cron.arn\n}\n\n# Create a CloudWatch Events Target to associate with the Lambda function\nresource \"aws_cloudwatch_event_target\" \"lambda_target\" {\n  rule = aws_cloudwatch_event_rule.lambda_schedule.name\n  arn = aws_lambda_function.cron.arn\n}\n\ndata \"archive_file\" \"lambda-func\" {\n  type        = \"zip\"\n  source_file = \"./supplement/lambda_func.py\"\n  output_path = \"./supplement/lambda_func.zip\"\n}\n\nresource \"aws_lambda_function\" \"cron\" {\n  function_name = \"cron-lambda-function\"\n  role          = aws_iam_role.cron.arn\n  filename      = data.archive_file.lambda-func.output_path\n  source_code_hash = data.archive_file.lambda-func.output_base64sha256\n  handler       = \"lambda_func.handler\"\n  runtime       = \"python3.12\"\n}\n\nresource \"aws_lambda_permission\" \"cron\" {\n  function_name = aws_lambda_function.cron.function_name\n  action        = \"lambda:InvokeFunction\"\n  principal     = \"events.amazonaws.com\"\n  source_arn    = aws_cloudwatch_event_rule.lambda_schedule.arn\n}\n\ndata \"aws_iam_policy_document\" \"cron_assume_role\" {\n  statement {\n    actions = [\"sts:AssumeRole\"]\n    principals {\n      type = \"Service\"\n      identifiers = [\n        \"lambda.amazonaws.com\",\n        \"events.amazonaws.com\"\n      ]\n    }\n  }\n}\n\nresource \"aws_iam_role\" \"cron\" {\n  name               = \"cron_assume_role\"\n  assume_role_policy = data.aws_iam_policy_document.cron_assume_role.json\n}\n\nresource \"aws_iam_role_policy_attachment\" \"cron\" {\n  role       = aws_iam_role.cron.name\n  policy_arn = \"arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole\"\n}",
+  "bleuScore": 0.150851,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0155-llm-e94322871e48",
+  "generatedSourceFiles": [
+    "generated-source/row-0155-llm-e94322871e48/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": false,
+    "missingPathModuleFiles": [
+      "lambda_function.zip"
+    ],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "lambda_function.zip",
+        "line": "",
+        "finding": "missing_path_module_file"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": [
+      "lambda_function.zip"
+    ]
+  },
+  "requiredMarkers": {
+    "aws_cloudwatch_event_rule": true,
+    "aws_cloudwatch_event_target": true,
+    "aws_iam_role": true,
+    "aws_lambda_function": true,
+    "aws_lambda_permission": true,
+    "aws_iam_policy_document": false
+  },
+  "missingMarkers": [
+    "aws_iam_policy_document"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates an AWS Lambda function and configures Amazon EventBridge to invoke it every 15 minutes. It includes:\n\n- AWS provider configuration\n- IAM role and policy for Lambda execution\n- Inline Python Lambda code packaged into a ZIP file\n- Lambda function resource\n- EventBridge scheduled rule using `rate(15 minutes)`\n- EventBridge target pointing to the Lambda function\n- Lambda permission allowing EventBridge to invoke the function\n\n```hcl\nterraform {\n  required_version = \">= 1.3.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    archive = {\n      source  = \"hashicorp/archive\"\n      version = \">= 2.4.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"lambda_function_name\" {\n  description = \"Name of the Lambda function.\"\n  type        = string\n  default     = \"invoke-every-15-minutes-lambda\"\n}\n\ndata \"archive_file\" \"lambda_zip\" {\n  type        = \"zip\"\n  output_path = \"${path.module}/lambda_function.zip\"\n\n  source {\n    filename = \"index.py\"\n    ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0155-llm-e94322871e48.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a Lambda function and invoke it every 15 minutes",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS Lambda function and configures Amazon EventBridge to invoke it every 15 minutes. It includes:\n\n- AWS provider configuration\n- IAM role and policy for Lambda execution\n- Inline Python Lambda code packaged into a ZIP file\n- Lambda function resource\n- EventBridge scheduled rule using `rate(15 minutes)`\n- EventBridge target pointing to the Lambda function\n- Lambda permission allowing EventBridge to invoke the function",
+  "failure_category": "",
+  "failure_reason": ""
+}

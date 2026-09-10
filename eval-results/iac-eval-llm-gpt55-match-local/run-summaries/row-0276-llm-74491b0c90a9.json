@@ -1,0 +1,83 @@
+{
+  "index": 276,
+  "rowId": "276",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-74491b0c90a9",
+  "userId": "local-user",
+  "durationSeconds": 109.29,
+  "difficulty": "2",
+  "resource": "aws_s3_bucket, aws_s3_bucket_notification, aws_sns_topic",
+  "prompt": "Create an AWS S3 bucket and send a SNS notification whenever a .log object is created in the bucket. Do not include policies required for this.",
+  "intent": "Has one resource \"aws_s3_bucket\"\n\nHas one resource \"aws_sns_topic\"\n\nHas one resource \"aws_s3_bucket_notification\"\nwith bucket = bucket id OR name\nwith topic\n    with topic arn = sns topic arn \n    and events = [\"s3:ObjectCreated:*\"]\n    and filter_suffix = \".log\"",
+  "referenceOutput": "resource \"aws_sns_topic\" \"topic\" {\n  name   = \"s3-event-notification-topic\"\n}\n\nresource \"aws_s3_bucket\" \"bucket\" {\n  bucket = \"your-bucket-name\"\n}\n\nresource \"aws_s3_bucket_notification\" \"bucket_notification\" {\n  bucket = aws_s3_bucket.bucket.id\n\n  topic {\n    topic_arn     = aws_sns_topic.topic.arn\n    events        = [\"s3:ObjectCreated:*\"]\n    filter_suffix = \".log\"\n  }\n}",
+  "bleuScore": 0.078738,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0276-llm-74491b0c90a9",
+  "generatedSourceFiles": [
+    "generated-source/row-0276-llm-74491b0c90a9/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_s3_bucket": true,
+    "aws_s3_bucket_notification": true,
+    "aws_sns_topic": true,
+    "s3:ObjectCreated:*": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS S3 bucket, an SNS topic, and configures the bucket to publish an SNS notification whenever a new object with the `.log` suffix is created in the bucket.\n\nPer your instruction, no IAM or SNS topic policies are included.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"bucket_name_prefix\" {\n  description = \"Prefix for the S3 bucket name.\"\n  type        = string\n  default     = \"log-notification-bucket\"\n}\n\nvariable \"sns_topic_name\" {\n  description = \"Name of the SNS topic.\"\n  type        = string\n  default     = \"s3-log-object-created-topic\"\n}\n\nresource \"random_id\" \"suffix\" {\n  byte_length = 4\n}\n\nresource \"aws_s3_bucket\" \"logs\" {\n  bucket = \"${var.bucket_name_prefix}-${random_id.suffix.hex}\"\n}\n\nresource \"aws_s3_bucket_public_access_block\" \"logs\" {\n  bucket = aws",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0276-llm-74491b0c90a9.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an AWS S3 bucket and send a SNS notification whenever a .log object is created in the bucket. Do not include policies required for this.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS S3 bucket, an SNS topic, and configures the bucket to publish an SNS notification whenever a new object with the `.log` suffix is created in the bucket.\n\nPer your instruction, no IAM or SNS topic policies are included.",
+  "failure_category": "",
+  "failure_reason": ""
+}

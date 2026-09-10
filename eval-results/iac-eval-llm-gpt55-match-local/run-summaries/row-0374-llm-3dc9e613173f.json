@@ -1,0 +1,85 @@
+{
+  "index": 374,
+  "rowId": "374",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-3dc9e613173f",
+  "userId": "local-user",
+  "durationSeconds": 69.41,
+  "difficulty": "4",
+  "resource": "aws_lightsail_disk, aws_lightsail_disk, aws_lightsail_disk_attachment, aws_lightsail_disk_attachment, aws_lightsail_instance, aws_availability_zones",
+  "prompt": "Create a Lightsail instance with multiple attached disks",
+  "intent": "have multiple aws_lightsail_disk resource\n    with name\n    with size_in_gb\n    with availability_zone\n\nhave multiple aws_lightsail_disk_attachment\n    with disk_name\n    with instance_name\n    with disk_path\n\nhave one \"aws_lightsail_instance\" resource\n    with \"name\" argument\n    with \"availability_zone\" argument\n    with \"blueprint_id\" argument\n    with \"bundle_id\" argument",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\ndata \"aws_availability_zones\" \"available\" {\n  state = \"available\"\n\n  filter {\n    name   = \"opt-in-status\"\n    values = [\"opt-in-not-required\"]\n  }\n}\n\nresource \"aws_lightsail_disk\" \"test1\" {\n  name              = \"test-disk-1\"\n  size_in_gb        = 8\n  availability_zone = data.aws_availability_zones.available.names[0]\n}\n\nresource \"aws_lightsail_disk\" \"test2\" {\n  name              = \"test-disk-2\"\n  size_in_gb        = 8\n  availability_zone = data.aws_availability_zones.available.names[0]\n}\n\nresource \"aws_lightsail_instance\" \"test\" {\n  name              = \"test-instance\"\n  availability_zone = data.aws_availability_zones.available.names[0]\n  blueprint_id      = \"amazon_linux_2\"\n  bundle_id         = \"nano_1_0\"\n}\n\nresource \"aws_lightsail_disk_attachment\" \"test1\" {\n  disk_name     = aws_lightsail_disk.test1.name\n  instance_name = aws_lightsail_instance.test.name\n  disk_path     = \"/dev/xvdf\"\n}\n\nresource \"aws_lightsail_disk_attachment\" \"test2\" {\n  disk_name     = aws_lightsail_disk.test2.name\n  instance_name = aws_lightsail_instance.test.name\n  disk_path     = \"/dev/xvdg\"\n}",
+  "bleuScore": 0.085364,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0374-llm-3dc9e613173f",
+  "generatedSourceFiles": [
+    "generated-source/row-0374-llm-3dc9e613173f/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_lightsail_disk": true,
+    "aws_lightsail_disk_attachment": true,
+    "aws_lightsail_instance": true,
+    "aws_availability_zones": false
+  },
+  "missingMarkers": [
+    "aws_availability_zones"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates an AWS Lightsail instance and attaches multiple persistent Lightsail disks to it. It defines the AWS provider, default variables for the region, instance settings, and a map of disks to create and attach. Each disk is created in the same Availability Zone as the instance and attached using a unique disk path.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Lightsail resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"availability_zone\" {\n  description = \"Availability Zone for the Lightsail instance and disks.\"\n  type        = string\n  default     = \"us-east-1a\"\n}\n\nvariable \"instance_name\" {\n  description = \"Name of the Lightsail instance.\"\n  type        = string\n  default     = \"example-lightsail-instance\"\n}\n\nvariable \"blueprint_id\" {\n  description = \"Lightsail blueprint ID for the instance operating system or application.\"\n  type        = string\n  default     = \"ubuntu_22_04\"\n}\n\nvariable \"bu",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0374-llm-3dc9e613173f.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a Lightsail instance with multiple attached disks",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS Lightsail instance and attaches multiple persistent Lightsail disks to it. It defines the AWS provider, default variables for the region, instance settings, and a map of disks to create and attach. Each disk is created in the same Availability Zone as the instance and attached using a unique disk path.",
+  "failure_category": "",
+  "failure_reason": ""
+}

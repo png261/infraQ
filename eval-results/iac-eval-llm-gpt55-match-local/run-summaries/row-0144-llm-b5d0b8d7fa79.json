@@ -1,0 +1,97 @@
+{
+  "index": 144,
+  "rowId": "144",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-b5d0b8d7fa79",
+  "userId": "local-user",
+  "durationSeconds": 87.36,
+  "difficulty": "4",
+  "resource": "aws_internet_gateway, aws_redshift_cluster, aws_redshift_subnet_group, aws_subnet, aws_subnet, aws_vpc",
+  "prompt": "Set up a highly available Amazon Redshift cluster across multiple us-east-1a and us-east-1b",
+  "intent": "Create a VPC, create internet_gateway,create 2 subnets (1 in east1a and 1 in east1b) then create a redshift_subnet_group",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_vpc\" \"example_vpc\" {\n  cidr_block          = \"10.0.0.0/16\"\n  enable_dns_support  = true\n  enable_dns_hostnames = true\n}\n\nresource \"aws_internet_gateway\" \"gw\" {\n  vpc_id = aws_vpc.example_vpc.id\n}\n\ndata \"aws_availability_zones\" \"azs\" {\n    state = \"available\"\n}\n\n# Create subnet in us-east-1a\nresource \"aws_subnet\" \"subnet_a\" {\n  vpc_id                = aws_vpc.example_vpc.id\n  cidr_block            = \"10.0.1.0/24\"\n  availability_zone     = data.aws_availability_zones.azs.names[0]\n  map_public_ip_on_launch = true\n}\n\n# Create subnet in us-east-1b\nresource \"aws_subnet\" \"subnet_b\" {\n  vpc_id                = aws_vpc.example_vpc.id\n  cidr_block            = \"10.0.2.0/24\"\n  availability_zone     = data.aws_availability_zones.azs.names[1]\n  map_public_ip_on_launch = true\n}\n\n# Create the Redshift subnet group\nresource \"aws_redshift_subnet_group\" \"example_subnet_group\" {\n  name        = \"example-subnet-group\"\n  description = \"Example Redshift subnet group\"\n\n  subnet_ids = [aws_subnet.subnet_a.id, aws_subnet.subnet_b.id]\n}\n\nresource \"aws_redshift_cluster\" \"example\" {\n  cluster_identifier = \"redshift-cluster-1\"\n  node_type          = \"dc2.large\"\n  cluster_type       = \"multi-node\"\n  number_of_nodes    = 2\n\n  database_name = \"mydb\"\n  master_username = \"foo\"\n  master_password = \"Mustbe8characters\"\n\n  cluster_subnet_group_name   = aws_redshift_subnet_group.example_subnet_group.name\n\n  skip_final_snapshot = true\n}",
+  "bleuScore": 0.075419,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0144-llm-b5d0b8d7fa79",
+  "generatedSourceFiles": [
+    "generated-source/row-0144-llm-b5d0b8d7fa79/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "145",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "254",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_internet_gateway": true,
+    "aws_redshift_cluster": true,
+    "aws_redshift_subnet_group": true,
+    "aws_subnet": true,
+    "aws_vpc": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "The following Terraform program provisions a highly available Amazon Redshift deployment in `us-east-1` using subnets in both `us-east-1a` and `us-east-1b`.\n\nIt creates:\n\n- A dedicated VPC\n- Two public subnets across `us-east-1a` and `us-east-1b`\n- Internet gateway and route table\n- Security group for Redshift\n- Redshift subnet group spanning both Availability Zones\n- Redshift IAM role\n- Encrypted Amazon Redshift cluster using RA3 nodes\n- Multi-AZ Redshift configuration\n- Randomly generated administrator password\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nvariable \"project_name\" {\n  description = \"Name prefix for all resources.\"\n  type        = string\n  default     = \"ha-redshift\"\n}\n\nvariable \"redshift_database_name\" {\n  description = \"Initial Redshift database name.\"\n  type        = string\n  default     = \"analytics\"\n}\n\nvariable \"redshift_master_username\" {\n  description = \"Master username for the Redshift cluster.\"\n  type        = string\n  defa",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0144-llm-b5d0b8d7fa79.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Set up a highly available Amazon Redshift cluster across multiple us-east-1a and us-east-1b",
+  "promptStrategy": "default",
+  "answer": "The following Terraform program provisions a highly available Amazon Redshift deployment in `us-east-1` using subnets in both `us-east-1a` and `us-east-1b`.\n\nIt creates:\n\n- A dedicated VPC\n- Two public subnets across `us-east-1a` and `us-east-1b`\n- Internet gateway and route table\n- Security group for Redshift\n- Redshift subnet group spanning both Availability Zones\n- Redshift IAM role\n- Encrypted Amazon Redshift cluster using RA3 nodes\n- Multi-AZ Redshift configuration\n- Randomly generated administrator password",
+  "failure_category": "",
+  "failure_reason": ""
+}

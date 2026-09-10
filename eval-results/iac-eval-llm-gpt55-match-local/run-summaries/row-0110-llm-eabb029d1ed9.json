@@ -1,0 +1,81 @@
+{
+  "index": 110,
+  "rowId": "110",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-eabb029d1ed9",
+  "userId": "local-user",
+  "durationSeconds": 91.59,
+  "difficulty": "2",
+  "resource": "aws_s3_bucket, aws_s3_bucket_logging",
+  "prompt": "Create a bucket \"a\". Then configure logging for the bucket to send access logs to another bucket named 'logging-680235478471' with a prefix of 'log/' in the target bucket.",
+  "intent": "has one aws_s3_bucket resource\nwith bucket\n\nhas one aws_s3_bucket_logging resource\nwith bucket\nwith target_bucket\nwith target_prefix",
+  "referenceOutput": "provider \"aws\" {\n    region = \"us-west-1\"\n}\n\nresource \"aws_s3_bucket\" \"a\" {\n  bucket = \"testbucketineu-west2\"\n}\n\nresource \"aws_s3_bucket_logging\" \"example\" {\n  bucket        = \"testbucketineu-west2\"\n  target_bucket = \"logging-680235478471\"\n  target_prefix = \"log/\"\n}",
+  "bleuScore": 0.048573,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0110-llm-eabb029d1ed9",
+  "generatedSourceFiles": [
+    "generated-source/row-0110-llm-eabb029d1ed9/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_s3_bucket\": true, \"has_s3_bucket_logging\": false, \"valid_configuration\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_s3_bucket": true,
+    "aws_s3_bucket_logging": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "Description: This Terraform configuration creates an S3 source bucket represented as `a`, creates a separate S3 bucket named `logging-680235478471` to receive access logs, grants the S3 logging service permission to write logs into the logging bucket, and configures server access logging on the source bucket using the `log/` prefix.\n\nNote: AWS S3 bucket names must be globally unique and at least 3 characters long, so the deployable bucket name defaults to `a-680235478471`. The Terraform resource itself is named `a`.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region to deploy resources into.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"source_bucket_name\" {\n  description = \"Name of the source S3 bucket. S3 bucket names must be globally unique and at least 3 characters.\"\n  type        = string\n  default     = \"a-680235478471\"\n}\n\nvariable \"logging_bucket_name\" {\n  description = \"Name of the target S3 bucket for access logs.\"\n  type        = string\n  default     =",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0110-llm-eabb029d1ed9.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a bucket \"a\". Then configure logging for the bucket to send access logs to another bucket named 'logging-680235478471' with a prefix of 'log/' in the target bucket.",
+  "promptStrategy": "default",
+  "answer": "Description: This Terraform configuration creates an S3 source bucket represented as `a`, creates a separate S3 bucket named `logging-680235478471` to receive access logs, grants the S3 logging service permission to write logs into the logging bucket, and configures server access logging on the source bucket using the `log/` prefix.\n\nNote: AWS S3 bucket names must be globally unique and at least 3 characters long, so the deployable bucket name defaults to `a-680235478471`. The Terraform resource itself is named `a`.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_s3_bucket\": true, \"has_s3_bucket_logging\": false, \"valid_configuration\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

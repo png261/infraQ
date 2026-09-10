@@ -1,0 +1,93 @@
+{
+  "index": 413,
+  "rowId": "413",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-df22bfaad7f4",
+  "userId": "local-user",
+  "durationSeconds": 90.63,
+  "difficulty": "1",
+  "resource": "aws_db_instance",
+  "prompt": "create a aws relational database from a snapshot",
+  "intent": "Has one \"aws_db_instance\" resource\n    with one \"allocated_storage\"\n    with one \"engine\" and a valid engine value\n    with one \"instance_class\" and a valid instance class type\n    with one \"password\"\n    with one \"username\"",
+  "referenceOutput": "resource \"aws_db_instance\" \"replica\" {\n  snapshot_identifier = \"your identifier\"\n  instance_class       = \"db.z1d.micro\"\n}",
+  "bleuScore": 0.002768,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0413-llm-df22bfaad7f4",
+  "generatedSourceFiles": [
+    "generated-source/row-0413-llm-df22bfaad7f4/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "149",
+        "finding": "rds_final_snapshot_disabled"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "180",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_db_instance\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_db_instance": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "Description: This Terraform program provisions an AWS RDS PostgreSQL database, creates a snapshot of it, and then creates a second RDS database restored from that snapshot. It also creates the required VPC, subnets, subnet group, and security group so the configuration is self-contained and deployable.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the RDS resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"db_username\" {\n  description = \"Master username for the source RDS database.\"\n  type        = string\n  default     = \"dbadmin\"\n}\n\nvariable \"db_password\" {\n  description = \"Master password for the source RDS database.\"\n  type        = string\n  sensitive   = true\n  default     = \"ChangeMe12345!\"\n}\n\nvariable \"db_instance_class\" {\n  description = \"Instance class for both source and restored RDS databases.\"\n  type        = string\n  default     = \"db.t3.micro\"\n}\n\nvariable \"db_allocated_storage\" {\n  description = \"Allocated storage in ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0413-llm-df22bfaad7f4.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: create a aws relational database from a snapshot",
+  "promptStrategy": "default",
+  "answer": "Description: This Terraform program provisions an AWS RDS PostgreSQL database, creates a snapshot of it, and then creates a second RDS database restored from that snapshot. It also creates the required VPC, subnets, subnet group, and security group so the configuration is self-contained and deployable.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_db_instance\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

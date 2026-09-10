@@ -1,0 +1,82 @@
+{
+  "index": 431,
+  "rowId": "431",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-26115ea50510",
+  "userId": "local-user",
+  "durationSeconds": 63.55,
+  "difficulty": "3",
+  "resource": "aws_internet_gateway, aws_route_table, aws_vpc",
+  "prompt": "sets up a dedicated-tenancy AWS VPC with DNS support and hostnames enabled, an internet gateway, and a route table for outbound internet access, all tagged with a variable name.",
+  "intent": "Has one \"aws_vpc\" resource\nwith a specified \"cidr_block\"\nwith \"enable_dns_support\" and \"enable_dns_hostnames\" set to true\n\nHas one \"aws_internet_gateway\" resource\nwith \"vpc_id\" referencing the \"aws_vpc\" resource\nwith a \"tags\" map including a \"Name\" key referencing a variable\n\nHas one \"aws_route_table\" resource\nwith \"vpc_id\" referencing the \"aws_vpc\" resource\ncontaining a default route for internet access through the \"aws_internet_gateway\"\nwith a \"tags\" map including a \"Name\" key referencing a variable",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 4.16\"\n    }\n  }\n\n  required_version = \">= 1.2.0\"\n}\n# Define the provider block for AWS\nprovider \"aws\" {\n  region = \"us-east-2\" # Set your desired AWS region\n}\n\nresource \"aws_vpc\" \"dgraph\" {\n  cidr_block           = \"10.0.0.0/16\"\n  enable_dns_support   = true\n  instance_tenancy     = \"dedicated\"\n\n  # For enabling assignment of private dns addresses within AWS.\n  enable_dns_hostnames = true\n\n  tags = {\n    Name = \"var.name\"\n  }\n}\n\nresource \"aws_internet_gateway\" \"dgraph_gw\" {\n  vpc_id = aws_vpc.dgraph.id\n\n  tags = {\n    Name = \"var.name\"\n  }\n}\n\nresource \"aws_route_table\" \"dgraph_igw\" {\n  vpc_id = aws_vpc.dgraph.id\n\n  route {\n    cidr_block = \"0.0.0.0/0\"\n    gateway_id = aws_internet_gateway.dgraph_gw.id\n  }\n\n  tags = {\n    Name = \"var.name\"\n  }\n}",
+  "bleuScore": 0.247982,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0431-llm-26115ea50510",
+  "generatedSourceFiles": [
+    "generated-source/row-0431-llm-26115ea50510/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_internet_gateway\": false, \"is_valid_route_table\": false, \"is_valid_vpc\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_internet_gateway": true,
+    "aws_route_table": true,
+    "aws_vpc": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a dedicated-tenancy AWS VPC with DNS support and DNS hostnames enabled. It also provisions an Internet Gateway and a route table with a default route for outbound internet access. All resources are tagged using a configurable `name` variable with a default value.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"name\" {\n  description = \"Name tag applied to all resources.\"\n  type        = string\n  default     = \"dedicated-tenancy-vpc\"\n}\n\nvariable \"vpc_cidr_block\" {\n  description = \"CIDR block for the dedicated-tenancy VPC.\"\n  type        = string\n  default     = \"10.0.0.0/16\"\n}\n\nresource \"aws_vpc\" \"dedicated\" {\n  cidr_block           = var.vpc_cidr_block\n  instance_tenancy     = \"dedicated\"\n  enable_dns_support   = true\n  enable_dns_hostnames = true\n\n  tags = {\n    Name = var.name\n  }\n}\n\nresource \"aws_internet_gateway\" \"main\" {\n  vpc_id = aws_vpc.d",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0431-llm-26115ea50510.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: sets up a dedicated-tenancy AWS VPC with DNS support and hostnames enabled, an internet gateway, and a route table for outbound internet access, all tagged with a variable name.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a dedicated-tenancy AWS VPC with DNS support and DNS hostnames enabled. It also provisions an Internet Gateway and a route table with a default route for outbound internet access. All resources are tagged using a configurable `name` variable with a default value.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_internet_gateway\": false, \"is_valid_route_table\": false, \"is_valid_vpc\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

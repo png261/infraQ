@@ -1,0 +1,94 @@
+{
+  "index": 2,
+  "rowId": "2",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-adb1f4243d37",
+  "userId": "local-user",
+  "durationSeconds": 60.38,
+  "difficulty": "3",
+  "resource": "aws_elb, aws_route53_record, aws_route53_zone",
+  "prompt": "Configure a Route 53 record with an Elastic Load Balancer resource. Call the zone \"primary\" and the elb \"main\"",
+  "intent": "Has one \"aws_route53_zone\" resource\n    with \"name\"\n\nHas a \"aws_elb\" resource\n    with \"name\"\n    with \"availability_zones\"\n    with a \"listener\" block with \"instance_port\", \"instance_protocol\", \"lb_port\", \"lb_protocol\"\n\nHas a \"aws_route53_record\" resource\n    with \"name\"\n    with \"type\"\n    with \"ttl\"\n    with \"zone_id\" referencing the \"aws_route53_zone\" resource\n    with an \"alias\" block with \"name\" and \"zone_id\" referencing the \"aws_elb\" and \"evaluate_target_health\" equal to true",
+  "referenceOutput": "provider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_route53_zone\" \"primary\" {\n  name = \"example53.com\"\n}\n\nresource \"aws_elb\" \"main\" {\n  name               = \"sample\"\n  availability_zones = [\"us-east-1c\"]\n\n  listener {\n    instance_port     = 80\n    instance_protocol = \"http\"\n    lb_port           = 80\n    lb_protocol       = \"http\"\n  }\n}\n\nresource \"aws_route53_record\" \"www\" {\n  zone_id = aws_route53_zone.primary.zone_id\n  name    = \"example53.com\"\n  type    = \"A\"\n\n  alias {\n    name                   = aws_elb.main.dns_name\n    zone_id                = aws_elb.main.zone_id\n    evaluate_target_health = true\n  }\n}",
+  "bleuScore": 0.116511,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/generated-source/row-0002-llm-adb1f4243d37",
+  "generatedSourceFiles": [
+    "generated-source/row-0002-llm-adb1f4243d37/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "105",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "113",
+        "finding": "broad_ingress_or_egress_cidr"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_configuration_valid\": false, \"is_valid_elb\": false, \"is_valid_r53_record\": true, \"is_valid_r53_zone\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_elb": true,
+    "aws_route53_record": true,
+    "aws_route53_zone": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates:\n\n- An AWS provider in `us-east-1`\n- A VPC with two public subnets\n- Internet gateway and route table for public access\n- A security group allowing HTTP traffic\n- A Classic Elastic Load Balancer named `main`\n- A Route 53 hosted zone named `primary`\n- A Route 53 alias `A` record pointing to the ELB\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  type    = string\n  default = \"us-east-1\"\n}\n\nvariable \"domain_name\" {\n  type    = string\n  default = \"example.com\"\n}\n\nvariable \"record_name\" {\n  type    = string\n  default = \"www\"\n}\n\nresource \"aws_vpc\" \"main\" {\n  cidr_block           = \"10.0.0.0/16\"\n  enable_dns_hostnames = true\n  enable_dns_support   = true\n\n  tags = {\n    Name = \"route53-elb-vpc\"\n  }\n}\n\nresource \"aws_internet_gateway\" \"main\" {\n  vpc_id = aws_vpc.main.id\n\n  tags = {\n    Name = \"route53-elb-igw\"\n  }\n}\n\nresource \"aws_subnet\" \"public_a\" {\n  vpc_id                  = aws_vpc.main.id\n  cidr_block              = \"10.0.1.0/24\"\n  availability_zone       = \"${var.aws_r",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/run-summaries/row-0002-llm-adb1f4243d37.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Configure a Route 53 record with an Elastic Load Balancer resource. Call the zone \"primary\" and the elb \"main\"",
+  "answer": "This Terraform configuration creates:\n\n- An AWS provider in `us-east-1`\n- A VPC with two public subnets\n- Internet gateway and route table for public access\n- A security group allowing HTTP traffic\n- A Classic Elastic Load Balancer named `main`\n- A Route 53 hosted zone named `primary`\n- A Route 53 alias `A` record pointing to the ELB",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_configuration_valid\": false, \"is_valid_elb\": false, \"is_valid_r53_record\": true, \"is_valid_r53_zone\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

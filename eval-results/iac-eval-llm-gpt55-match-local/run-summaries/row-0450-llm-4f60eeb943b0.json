@@ -1,0 +1,81 @@
+{
+  "index": 450,
+  "rowId": "450",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-4f60eeb943b0",
+  "userId": "local-user",
+  "durationSeconds": 71.42,
+  "difficulty": "3",
+  "resource": "aws_nat_gateway",
+  "prompt": "creates a NAT Gateway associated with a specified subnet and Elastic IP allocation ID. The NAT Gateway is configured for private connectivity and tagged with a key-value pair (pike = \"permissions\"), indicating its purpose or ownership.",
+  "intent": "Has one \"aws_nat_gateway\" resource:\nAssociated with a specified \"aws_subnet\" resource for hosting the NAT Gateway.\nUtilizes an \"Elastic IP allocation ID\" to provide the NAT Gateway with a public IP address.\nConfigured for private connectivity, allowing resources within the private subnet to access the internet securely.\nTagged with a key-value pair: \"pike\" set to \"permissions\", which categorizes its role, purpose, or ownership within the infrastructure.",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 4.16\"\n    }\n  }\n\n  required_version = \">= 1.2.0\"\n}\n# Define the provider block for AWS\nprovider \"aws\" {\n  region = \"us-east-2\" # Set your desired AWS region\n}\n\nresource \"aws_nat_gateway\" \"pike\" {\n  subnet_id         = \"subnet-0562ef1d304b968f4\"\n  allocation_id     = \"eipalloc-0047fa56c40637c3b\"\n  connectivity_type = \"private\"\n  tags = {\n    pike = \"permissions\"\n  }\n}",
+  "bleuScore": 0.078658,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0450-llm-4f60eeb943b0",
+  "generatedSourceFiles": [
+    "generated-source/row-0450-llm-4f60eeb943b0/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_nat_gateway\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_nat_gateway": true,
+    "aws_subnet": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "Description: This Terraform configuration creates an AWS Private NAT Gateway in a specified subnet. Because AWS Private NAT Gateways do not support Elastic IP allocation IDs, the configuration accepts an optional `elastic_ip_allocation_id` variable for documentation/input compatibility but does not attach it to the NAT Gateway. The NAT Gateway is tagged with `pike = \"permissions\"`.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"existing_subnet_id\" {\n  description = \"Optional existing subnet ID for the Private NAT Gateway. If empty, a new VPC and subnet are created.\"\n  type        = string\n  default     = \"\"\n}\n\nvariable \"elastic_ip_allocation_id\" {\n  description = \"Optional Elastic IP allocation ID. Note: AWS Private NAT Gateways do not support Elastic IP allocation IDs, so this value is not attached.\"\n  type        = string\n  default     = \"\"\n}\n\nvariable \"vpc_cidr_block\" {\n  descr",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0450-llm-4f60eeb943b0.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: creates a NAT Gateway associated with a specified subnet and Elastic IP allocation ID. The NAT Gateway is configured for private connectivity and tagged with a key-value pair (pike = \"permissions\"), indicating its purpose or ownership.",
+  "promptStrategy": "default",
+  "answer": "Description: This Terraform configuration creates an AWS Private NAT Gateway in a specified subnet. Because AWS Private NAT Gateways do not support Elastic IP allocation IDs, the configuration accepts an optional `elastic_ip_allocation_id` variable for documentation/input compatibility but does not attach it to the NAT Gateway. The NAT Gateway is tagged with `pike = \"permissions\"`.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_nat_gateway\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

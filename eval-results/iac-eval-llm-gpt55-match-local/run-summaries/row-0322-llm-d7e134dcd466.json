@@ -1,0 +1,120 @@
+{
+  "index": 322,
+  "rowId": "322",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-d7e134dcd466",
+  "userId": "local-user",
+  "durationSeconds": 125.68,
+  "difficulty": "6",
+  "resource": "aws_instance, aws_lb, aws_lb_listener, aws_lb_target_group, aws_lb_target_group_attachment, aws_route53_record, aws_route53_zone, aws_s3_bucket, aws_security_group, aws_subnet, aws_subnet, aws_vpc, aws_ami",
+  "prompt": "The infrastructure for a video streaming site that has multiple servers to balance load. Accomplish this using the following resources: AWS Load Balancing, AWS Load Balancing target group, AWS Route53 zone, AWS Route53 record, and AWS VPC module, AWS VPC subnet, AWS VPC security group, AWS EC2 instance. Add any necessary resources.",
+  "intent": "have one \"aws_s3_bucket\" resource\nhave one \"aws_lb\" resource\n  with \"subnets\" argument linking to aws_subnet resources\n  with \"security_groups\" argument linking aws_security_group resource\nhave one \"aws_lb_listener\" resource\n  with \"load_balancer_arn\" argument linking to the aws_lb resource\n  with \"default_action\" argument block\n    with \"type\" argument with value \"forward\"\n    with \"target_group_arn\" argument linking to aws_lb_target_group resource\nwith one \"aws_lb_target_group\" resource\n  with \"vpc_id\" argument linking to the aws_vpc resource\nwith one \"aws_lb_target_group_attachment\" resource\n  with \"target_group_arn\" argument linking to the aws_lb_target_group resource\n  with \"target_id\" argument linking to the aws_instance resource\nhave one \"aws_ami\" data resource\nhave one \"aws_instance\" resource\n  with \"instance_type\" argument\n  with \"ami\" argument linking to the aws_ami data resource\nhave one \"aws_vpc\" resource\n  with \"cidr_block\" argument\nhave two \"aws_subnet\" resources\n  with \"vpc_id\" argument linking to the aws_vpc resource\n  with \"cidr_block\" argument\nhave one \"aws_security_group\" resource\n  with \"vpc_id\" argument linking to the aws_vpc resource\nhave one \"aws_route53_zone\" resource\n  with \"name\" argument\nhave one \"aws_route53_record\" resources\n  with \"type\" argument\n  with \"name\" argument\n  with \"zone_id\" argument linking to the aws_route53_zone resource\n  with \"alias\" argument block\n    with \"name\" argument linking to the aws_lb dns_name\n    with \"zone_id\" argument linking to aws_lb zone_id\n    with \"evaluate_target_health\" argument",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\ndata \"aws_availability_zones\" \"available\" {\n  state = \"available\"\n}\n\nmodule \"vpc\" {\n  source  = \"terraform-aws-modules/vpc/aws\"\n\n  name = \"main-vpc\"\n  cidr = \"10.0.0.0/16\"\n\n  azs                  = data.aws_availability_zones.available.names\n  public_subnets       = [\"10.0.4.0/24\", \"10.0.5.0/24\", \"10.0.6.0/24\"]\n}\n\ndata \"aws_ami\" \"ubuntu\" {\n  most_recent = true\n  owners      = [\"amazon\"]\n\n  filter {\n    name   = \"name\"\n    values = [\"*ubuntu-noble-24.04-amd64-server-*\"]\n  }\n}\n\nresource \"aws_launch_configuration\" \"launch-config\" {\n  name_prefix     = \"aws-asg-launch-config-\"\n  image_id        = data.aws_ami.ubuntu.id\n  instance_type   = \"t2.micro\"\n  # user_data       = file(\"user-data.sh\")  # load your script if needed\n  security_groups = [aws_security_group.instance-sg.id]\n\n  lifecycle {\n    create_before_destroy = true\n  }\n}\n\nresource \"aws_autoscaling_group\" \"asg\" {\n  name                 = \"asg\"\n  min_size             = 1\n  max_size             = 3\n  desired_capacity     = 1\n  launch_configuration = aws_launch_configuration.launch-config.name\n  vpc_zone_identifier  = module.vpc.public_subnets\n\n  lifecycle { \n    ignore_changes = [desired_capacity, target_group_arns]\n  }\n\n  health_check_type    = \"ELB\"\n}\n\nresource \"aws_autoscaling_policy\" \"scale-down\" {\n  name                   = \"scale-down\"\n  autoscaling_group_name = aws_autoscaling_group.asg.name\n  adjustment_type        = \"ChangeInCapacity\"\n  scaling_adjustment     = -1\n  cooldown               = 120\n}\n\nresource \"aws_cloudwatch_metric_alarm\" \"scale-down\" {\n  alarm_description   = \"Monitors CPU utilization for Terramino ASG\"\n  alarm_actions       = [aws_autoscaling_policy.scale-down.arn]\n  alarm_name          = \"scale-down\"\n  comparison_operator = \"LessThanOrEqualToThreshold\"\n  namespace           = \"AWS/EC2\"\n  metric_name         = \"CPUUtilization\"\n  threshold           = \"10\"\n  evaluation_periods  = \"2\"\n  period              = \"120\"\n  statistic           = \"Average\"\n\n  dimensions = {\n    AutoScalingGroupName = aws_autoscaling_group.asg.name\n  }\n}\n\nresource \"aws_autoscaling_policy\" \"scale-up\" {\n  name                   = \"scale-up\"\n  autoscaling_group_name = aws_autoscaling_group.asg.name\n  adjustment_type        = \"ChangeInCapacity\"\n  scaling_adjustment     = 1\n  cooldown               = 120\n}\n\nresource \"aws_cloudwatch_metric_alarm\" \"scale-up\" {\n  alarm_description   = \"Monitors CPU utilization for Terramino ASG\"\n  alarm_actions       = [aws_autoscaling_policy.scale-up.arn]\n  alarm_name          = \"scale-up\"\n  comparison_operator = \"GreaterThanOrEqualToThreshold\"\n  namespace           = \"AWS/EC2\"\n  metric_name         = \"CPUUtilization\"\n  threshold           = \"80\"\n  evaluation_periods  = \"2\"\n  period              = \"120\"\n  statistic           = \"Average\"\n\n  dimensions = {\n    AutoScalingGroupName = aws_autoscaling_group.asg.name\n  }\n}\n\nresource \"aws_lb\" \"lb\" {\n  name               = \"my-lb\"\n  internal           = false\n  load_balancer_type = \"application\"\n  security_groups    = [aws_security_group.lb-sg.id]\n  subnets            = module.vpc.public_subnets\n}\n\nresource \"aws_lb_listener\" \"lb-listener\" {\n  load_balancer_arn = aws_lb.lb.arn\n  port              = \"80\"\n  protocol          = \"HTTP\"\n\n  default_action {\n    type             = \"forward\"\n    target_group_arn = aws_lb_target_group.target-group.arn\n  }\n}\n\nresource \"aws_lb_target_group\" \"target-group\" {\n  name     = \"my-lb-target-group\"\n  port     = 80\n  protocol = \"HTTP\"\n  vpc_id   = module.vpc.vpc_id\n}\n\nresource \"aws_autoscaling_attachment\" \"as-attachment\" {\n  autoscaling_group_name = aws_autoscaling_group.asg.id\n  lb_target_group_arn   = aws_lb_target_group.target-group.arn\n}\n\nresource \"aws_security_group\" \"instance-sg\" {\n  name = \"instance-sg\"\n  vpc_id = module.vpc.vpc_id\n}\n\nresource \"aws_vpc_security_group_ingress_rule\" \"instance-sg-ingress-rule\" {\n  from_port       = 80\n  to_port         = 80\n  ip_protocol     = \"tcp\"\n  referenced_security_group_id = aws_security_group.lb-sg.id\n  security_group_id = aws_security_group.instance-sg.id\n}\n\nresource \"aws_vpc_security_group_egress_rule\" \"instance-sg-egress-rule\" {\n  from_port       = 0\n  to_port         = 0\n  ip_protocol     = \"-1\"\n  cidr_ipv4       = \"0.0.0.0/0\"\n  security_group_id = aws_security_group.instance-sg.id\n}\n\nresource \"aws_security_group\" \"lb-sg\" {\n  name = \"lb-sg\"\n  vpc_id = module.vpc.vpc_id\n}\n\nresource \"aws_vpc_security_group_ingress_rule\" \"lb-sg-ingress-rule\" {\n  from_port   = 80\n  to_port     = 80\n  ip_protocol = \"tcp\"\n  cidr_ipv4   = \"0.0.0.0/0\"\n  security_group_id = aws_security_group.lb-sg.id\n}\n\nresource \"aws_vpc_security_group_egress_rule\" \"lb-sg-egress-rule\" {\n  from_port   = 0\n  to_port     = 0\n  ip_protocol = \"-1\"\n  cidr_ipv4   = \"0.0.0.0/0\"\n  security_group_id = aws_security_group.lb-sg.id\n}\n\nresource \"aws_route53_zone\" \"test-video-stream\" {\n  name = \"test-video-stream.com\"\n}\n\nresource \"aws_route53_record\" \"lb_ipv4\" {\n  type    = \"A\"\n  name    = \"lb\"\n  zone_id = aws_route53_zone.test-video-stream.zone_id\n\n  alias {\n    name                   = aws_lb.lb.dns_name\n    zone_id                = aws_lb.lb.zone_id\n    evaluate_target_health = true\n  }\n}\n\noutput \"lb_endpoint\" {\n  value = \"http://${aws_lb.lb.dns_name}\"\n}\n\noutput \"application_endpoint\" {\n  value = \"http://${aws_lb.lb.dns_name}/index.php\"\n}\n\noutput \"asg_name\" {\n  value = aws_autoscaling_group.asg.name\n}",
+  "bleuScore": 0.17971,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0322-llm-d7e134dcd466",
+  "generatedSourceFiles": [
+    "generated-source/row-0322-llm-d7e134dcd466/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "107",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "115",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "123",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "150",
+        "finding": "broad_ingress_or_egress_cidr"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"load_balancer_middle\": {\"valid\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_instance": true,
+    "aws_lb": true,
+    "aws_lb_listener": true,
+    "aws_lb_target_group": true,
+    "aws_lb_target_group_attachment": true,
+    "aws_route53_record": true,
+    "aws_route53_zone": true,
+    "aws_s3_bucket": false,
+    "aws_security_group": true,
+    "aws_subnet": false,
+    "aws_vpc": false,
+    "aws_ami": true
+  },
+  "missingMarkers": [
+    "aws_s3_bucket",
+    "aws_subnet",
+    "aws_vpc"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "Description: This Terraform configuration deploys a basic AWS-backed video streaming web infrastructure with multiple EC2 web servers behind an Application Load Balancer. It creates a VPC using the AWS VPC module, public subnets across two Availability Zones, security groups, IAM role/profile for EC2 instances, a target group, load balancer listener, Route53 hosted zone, and DNS alias record pointing to the load balancer.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region to deploy the infrastructure into.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"project_name\" {\n  description = \"Project name used for resource naming.\"\n  type        = string\n  default     = \"video-streaming\"\n}\n\nvariable \"domain_name\" {\n  description = \"Domain name for the Route53 hosted zone.\"\n  type        = string\n  default     = \"example-video-streaming.com\"\n}\n\nvariable \"instance_type\" {\n  description = \"EC2 instance type for streaming servers.\"\n  type        = string\n  default     = \"t3.",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0322-llm-d7e134dcd466.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: The infrastructure for a video streaming site that has multiple servers to balance load. Accomplish this using the following resources: AWS Load Balancing, AWS Load Balancing target group, AWS Route53 zone, AWS Route53 record, and AWS VPC module, AWS VPC subnet, AWS VPC security group, AWS EC2 instance. Add any necessary resources.",
+  "promptStrategy": "default",
+  "answer": "Description: This Terraform configuration deploys a basic AWS-backed video streaming web infrastructure with multiple EC2 web servers behind an Application Load Balancer. It creates a VPC using the AWS VPC module, public subnets across two Availability Zones, security groups, IAM role/profile for EC2 instances, a target group, load balancer listener, Route53 hosted zone, and DNS alias record pointing to the load balancer.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"load_balancer_middle\": {\"valid\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

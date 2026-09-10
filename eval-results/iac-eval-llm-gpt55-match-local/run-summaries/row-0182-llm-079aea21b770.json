@@ -1,0 +1,80 @@
+{
+  "index": 182,
+  "rowId": "182",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-079aea21b770",
+  "userId": "local-user",
+  "durationSeconds": 63.13,
+  "difficulty": "1",
+  "resource": "aws_sagemaker_human_task_ui",
+  "prompt": "Create a SageMaker Human Task UI resource from sagemaker-human-task-ui-template.html containing \"<h1>\n    TEST\n</h1>\"",
+  "intent": "",
+  "referenceOutput": "resource \"aws_sagemaker_human_task_ui\" \"example\" {\n  human_task_ui_name = \"example\"\n\n  ui_template {\n    content = file(\"sagemaker-human-task-ui-template.html\")\n  }\n}",
+  "bleuScore": 0.032354,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0182-llm-079aea21b770",
+  "generatedSourceFiles": [
+    "generated-source/row-0182-llm-079aea21b770/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"main\": {\"allow\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_sagemaker_human_task_ui": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "The Terraform configuration below creates an AWS SageMaker Human Task UI resource with an inline HTML template equivalent to a `sagemaker-human-task-ui-template.html` file containing:\n\n```html\n<h1>\n    TEST\n</h1>\n```\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the SageMaker Human Task UI will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"human_task_ui_name\" {\n  description = \"Name of the SageMaker Human Task UI.\"\n  type        = string\n  default     = \"test-human-task-ui\"\n}\n\nresource \"aws_sagemaker_human_task_ui\" \"test\" {\n  human_task_ui_name = var.human_task_ui_name\n\n  ui_template {\n    content = <<-HTML\n<h1>\n    TEST\n</h1>\nHTML\n  }\n}\n\noutput \"human_task_ui_arn\" {\n  description = \"ARN of the created SageMaker Human Task UI.\"\n  value       = aws_sagemaker_human_task_ui.test.arn\n}\n\noutput \"human_task_ui_name\" {\n  description = \"Name of the created SageMaker Human Task UI.\"\n  value       = aws_sagemaker_human_task_ui.test.human_task_ui_nam",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0182-llm-079aea21b770.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a SageMaker Human Task UI resource from sagemaker-human-task-ui-template.html containing \"<h1>\n    TEST\n</h1>\"",
+  "promptStrategy": "default",
+  "answer": "The Terraform configuration below creates an AWS SageMaker Human Task UI resource with an inline HTML template equivalent to a `sagemaker-human-task-ui-template.html` file containing:\n\n```html\n<h1>\n    TEST\n</h1>\n```",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"main\": {\"allow\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

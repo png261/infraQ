@@ -1,0 +1,81 @@
+{
+  "index": 384,
+  "rowId": "384",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-3ef4da08a36d",
+  "userId": "local-user",
+  "durationSeconds": 72.5,
+  "difficulty": "3",
+  "resource": "aws_glacier_vault, aws_iam_policy_document",
+  "prompt": "generage an S3 Glacier vault with a access policy",
+  "intent": "has one \"aws_glacier_vault\" resource\n     with \"name\" attribute\n     with \"access_policy\" attribute",
+  "referenceOutput": "provider \"aws\" {\n  region     = \"us-east-1\"\n}\n\ndata \"aws_iam_policy_document\" \"my_archive\" {\n  statement {\n    sid    = \"add-read-only-perm\"\n    effect = \"Allow\"\n\n    principals {\n      type        = \"*\"\n      identifiers = [\"*\"]\n    }\n\n    actions = [\n      \"glacier:InitiateJob\",\n      \"glacier:GetJobOutput\",\n    ]\n\n    resources = [\"arn:aws:glacier:eu-west-1:432981146916:vaults/MyArchive\"]\n  }\n}\n\nresource \"aws_glacier_vault\" \"my_archive\" {\n  name = \"MyArchive\"\n  access_policy = data.aws_iam_policy_document.my_archive.json\n\n  tags = {\n    Test = \"MyArchive\"\n  }\n}",
+  "bleuScore": 0.144054,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0384-llm-3ef4da08a36d",
+  "generatedSourceFiles": [
+    "generated-source/row-0384-llm-3ef4da08a36d/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_glacier_vault": true,
+    "aws_iam_policy_document": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "The following Terraform program creates an AWS S3 Glacier Vault with an access policy attached. The policy grants the current AWS account permissions to perform common Glacier vault and archive operations.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Glacier vault will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"glacier_vault_name\" {\n  description = \"Name of the S3 Glacier vault.\"\n  type        = string\n  default     = \"example-glacier-vault\"\n}\n\ndata \"aws_caller_identity\" \"current\" {}\n\ndata \"aws_iam_policy_document\" \"glacier_vault_access_policy\" {\n  statement {\n    sid    = \"AllowCurrentAccountGlacierVaultAccess\"\n    effect = \"Allow\"\n\n    principals {\n      type = \"AWS\"\n      identifiers = [\n        \"arn:aws:iam::${data.aws_caller_identity.current.account_id}:root\"\n      ]\n    }\n\n    actions = [\n      \"glacier:AbortMultipartUpload\",\n      \"glacier:CompleteMultipartUpload\",\n      \"glacier:DeleteArchive\",\n      \"glacier:DeleteVault\",\n",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0384-llm-3ef4da08a36d.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: generage an S3 Glacier vault with a access policy",
+  "promptStrategy": "default",
+  "answer": "The following Terraform program creates an AWS S3 Glacier Vault with an access policy attached. The policy grants the current AWS account permissions to perform common Glacier vault and archive operations.",
+  "failure_category": "",
+  "failure_reason": ""
+}

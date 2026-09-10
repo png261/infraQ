@@ -1,0 +1,81 @@
+{
+  "index": 238,
+  "rowId": "238",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-92038ac3a84d",
+  "userId": "local-user",
+  "durationSeconds": 68.81,
+  "difficulty": "2",
+  "resource": "aws_vpc, aws_vpc, aws_vpc_peering_connection",
+  "prompt": "Create two AWS VPCs and establish a peering connection between them",
+  "intent": "Has two resources \"aws_vpc\"\n\nHas one resource \"aws_vpc_peering_connection\"\nwith one \"vpc_id\" with value of one aws_vpc\nwith one \"peer_vpc_id\" with value of the other aws_vpc",
+  "referenceOutput": "resource \"aws_vpc\" \"example_vpc1\" {\n  cidr_block = \"10.0.0.0/16\"\n}\n\nresource \"aws_vpc\" \"example_vpc2\" {\n  cidr_block = \"10.1.0.0/16\"\n}\n\nresource \"aws_vpc_peering_connection\" \"example_peer\" {\n  vpc_id        = aws_vpc.example_vpc1.id\n  peer_vpc_id   = aws_vpc.example_vpc2.id\n  auto_accept   = true\n}",
+  "bleuScore": 0.015173,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0238-llm-92038ac3a84d",
+  "generatedSourceFiles": [
+    "generated-source/row-0238-llm-92038ac3a84d/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_vpc": true,
+    "aws_vpc_peering_connection": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates two AWS VPCs in the same region and establishes a VPC peering connection between them. Each VPC includes a public subnet, route table, and route table association. Routes are added to allow traffic between the two VPC CIDR blocks through the peering connection.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the VPCs will be created\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"vpc_a_cidr\" {\n  description = \"CIDR block for VPC A\"\n  type        = string\n  default     = \"10.10.0.0/16\"\n}\n\nvariable \"vpc_b_cidr\" {\n  description = \"CIDR block for VPC B\"\n  type        = string\n  default     = \"10.20.0.0/16\"\n}\n\nvariable \"vpc_a_subnet_cidr\" {\n  description = \"CIDR block for subnet in VPC A\"\n  type        = string\n  default     = \"10.10.1.0/24\"\n}\n\nvariable \"vpc_b_subnet_cidr\" {\n  description = \"CIDR block for subnet in VPC B\"\n  type        = string\n  default     = \"10.20.1.0/24\"\n}\n\ndata \"aws_availability_zones\" \"available\" {\n ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0238-llm-92038ac3a84d.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create two AWS VPCs and establish a peering connection between them",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates two AWS VPCs in the same region and establishes a VPC peering connection between them. Each VPC includes a public subnet, route table, and route table association. Routes are added to allow traffic between the two VPC CIDR blocks through the peering connection.",
+  "failure_category": "",
+  "failure_reason": ""
+}

@@ -1,0 +1,83 @@
+{
+  "index": 371,
+  "rowId": "371",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-93e08e0bd7e7",
+  "userId": "local-user",
+  "durationSeconds": 63.98,
+  "difficulty": "2",
+  "resource": "aws_lightsail_disk, aws_availability_zones",
+  "prompt": "create a Lightsail Disk resource",
+  "intent": "have one aws_lightsail_disk resource\n    with name\n    with size_in_gb\n    with availability_zone",
+  "referenceOutput": "provider \"aws\" {\n  region     = \"us-east-1\"\n}\n\ndata \"aws_availability_zones\" \"available\" {\n  state = \"available\"\n\n  filter {\n    name   = \"opt-in-status\"\n    values = [\"opt-in-not-required\"]\n  }\n}\n\nresource \"aws_lightsail_disk\" \"test\" {\n  name              = \"test\"\n  size_in_gb        = 8\n  availability_zone = data.aws_availability_zones.available.names[0]\n}",
+  "bleuScore": 0.044774,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0371-llm-93e08e0bd7e7",
+  "generatedSourceFiles": [
+    "generated-source/row-0371-llm-93e08e0bd7e7/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_lightsail_disk": true,
+    "aws_availability_zones": false
+  },
+  "missingMarkers": [
+    "aws_availability_zones"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates a standalone AWS Lightsail Disk in a valid AWS region and availability zone. It uses the AWS provider, defines default variables for region, availability zone, disk name, and disk size, and outputs the created disk name and ARN.\n\n```hcl\nterraform {\n  required_version = \">= 1.0.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Lightsail disk will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"availability_zone\" {\n  description = \"Availability zone for the Lightsail disk.\"\n  type        = string\n  default     = \"us-east-1a\"\n}\n\nvariable \"disk_name\" {\n  description = \"Name of the Lightsail disk.\"\n  type        = string\n  default     = \"example-lightsail-disk\"\n}\n\nvariable \"disk_size_gb\" {\n  description = \"Size of the Lightsail disk in GB.\"\n  type        = number\n  default     = 32\n}\n\nresource \"aws_lightsail_disk\" \"example\" {\n  name              = var.disk_name\n  size_in_gb        = var.disk_size_gb\n  availability_zone = var.availability_zone\n\n  tags = {\n   ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0371-llm-93e08e0bd7e7.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: create a Lightsail Disk resource",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a standalone AWS Lightsail Disk in a valid AWS region and availability zone. It uses the AWS provider, defines default variables for region, availability zone, disk name, and disk size, and outputs the created disk name and ARN.",
+  "failure_category": "",
+  "failure_reason": ""
+}

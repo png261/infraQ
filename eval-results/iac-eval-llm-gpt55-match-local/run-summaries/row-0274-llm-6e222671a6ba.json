@@ -1,0 +1,81 @@
+{
+  "index": 274,
+  "rowId": "274",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-6e222671a6ba",
+  "userId": "local-user",
+  "durationSeconds": 79.61,
+  "difficulty": "3",
+  "resource": "aws_s3_bucket, aws_s3_bucket, aws_s3_bucket_inventory",
+  "prompt": "Create an AWS S3 bucket and configure a CSV inventory report every week of all current object versions in the bucket and store it in another created bucket.",
+  "intent": "Has two resources \"aws_s3_bucket\"\n\nHas one resource \"aws_s3_bucket_inventory\"\nwith bucket = first bucket id OR name\nwith schedule with frequency = \"Weekly\"\nwith included_object_versions = \"Current\"\nwith destination with bucket with format = \"CSV\" and bucket_arn = other bucket arn",
+  "referenceOutput": "resource \"aws_s3_bucket\" \"test\" {\n  bucket = \"my-tf-test-bucket\"\n}\n\nresource \"aws_s3_bucket\" \"inventory\" {\n  bucket = \"my-tf-inventory-bucket\"\n}\n\nresource \"aws_s3_bucket_inventory\" \"test\" {\n  bucket = aws_s3_bucket.test.id\n  name   = \"EntireBucketWeekly\"\n\n  included_object_versions = \"Current\"\n\n  schedule {\n    frequency = \"Weekly\"\n  }\n\n  destination {\n    bucket {\n      format     = \"CSV\"\n      bucket_arn = aws_s3_bucket.inventory.arn\n    }\n  }\n}",
+  "bleuScore": 0.043783,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0274-llm-6e222671a6ba",
+  "generatedSourceFiles": [
+    "generated-source/row-0274-llm-6e222671a6ba/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: expected optional_fields to be one of [\"Size\" \"LastModifiedDate\" \"StorageClass\" \"ETag\" \"IsMultipartUploaded\" \"ReplicationStatus\" \"EncryptionStatus\" \"ObjectLockRetainUntilDate\" \"ObjectLockMode\" \"ObjectLockLegalHoldStatus\" \"IntelligentTieringAccessTier\" \"BucketKeyStatus\" \"ChecksumAlgorithm\" \"ObjectAccessControlList\" \"ObjectOwner\" \"LifecycleExpirationDate\"], got ObjectLockRetentionMode\n\n  with aws_s3_bucket_inventory.weekly_current_versions_csv,\n  on main.tf line 173, in resource \"aws_s3_bucket_inventory\" \"weekly_current_versions_csv\":\n 173:   optional_fields = [\n 174:     \"Size\",\n 175:     \"LastModifiedDate\",\n 176:     \"StorageClass\",\n 177:     \"ETag\",\n 178:     \"IsMultipartUploaded\",\n 179:     \"ReplicationStatus\",\n 180:     \"EncryptionStatus\",\n 181:     \"ObjectLockRetainUntilDate\",\n 182:     \"ObjectLockRetentionMode\",\n 183:     \"ObjectLockLegalHoldStatus\",\n 184:     \"IntelligentTieringAccessTier\",\n 185:     \"BucketKeyStatus\",\n 186:     \"ChecksumAlgorithm\"\n 187:   ]\n\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_s3_bucket": true,
+    "aws_s3_bucket_inventory": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates two AWS S3 buckets:\n\n- A source bucket that stores your objects.\n- A destination bucket that stores weekly S3 Inventory reports.\n\nIt configures an S3 Inventory report on the source bucket that:\n\n- Runs weekly.\n- Reports only current object versions.\n- Outputs the report in CSV format.\n- Stores the report in the destination bucket under an `inventory/` prefix.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the S3 buckets will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"source_bucket_name_prefix\" {\n  description = \"Prefix for the source S3 bucket name.\"\n  type        = string\n  default     = \"weekly-inventory-source\"\n}\n\nvariable \"inventory_bucket_name_prefix\" {\n  description = \"Prefix for the destination S3 bucket that stores inventory reports.\"\n  type        = string\n  default     = \"weekly-inventory-destination\"\n}\n\ndata \"a",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0274-llm-6e222671a6ba.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an AWS S3 bucket and configure a CSV inventory report every week of all current object versions in the bucket and store it in another created bucket.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates two AWS S3 buckets:\n\n- A source bucket that stores your objects.\n- A destination bucket that stores weekly S3 Inventory reports.\n\nIt configures an S3 Inventory report on the source bucket that:\n\n- Runs weekly.\n- Reports only current object versions.\n- Outputs the report in CSV format.\n- Stores the report in the destination bucket under an `inventory/` prefix.",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: expected optional_fields to be one of [\"Size\" \"LastModifiedDate\" \"StorageClass\" \"ETag\" \"IsMultipartUploaded\" \"ReplicationStatus\" \"EncryptionStatus\" \"ObjectLockRetainUntilDate\" \"ObjectLockMode\" \"ObjectLockLegalHoldStatus\" \"IntelligentTieringAccessTier\" \"BucketKeyStatus\" \"ChecksumAlgorithm\" \"ObjectAccessControlList\" \"ObjectOwner\" \"LifecycleExpirationDate\"], got ObjectLockRetentionMode with aws_s3_bucket_inventory.weekly_current_versions_csv, on main.tf line 173, in resource \"aws_s3_bucket_i... <truncated 409 chars>"
+}

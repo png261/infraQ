@@ -1,0 +1,84 @@
+{
+  "index": 254,
+  "rowId": "254",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-a82ed96795de",
+  "userId": "local-user",
+  "durationSeconds": 72.36,
+  "difficulty": "2",
+  "resource": "aws_chime_voice_connector, aws_chime_voice_connector_streaming",
+  "prompt": "Create an AWS Chime Voice Connector. Then set up a configuration to stream media to Amazon Kinesis.",
+  "intent": "Has one resource \"aws_chime_voice_connector\"\n\nHas one resource \"aws_chime_voice_connector_streaming\"\nwith voice_connector_id equal to the id of the voice connector\nwith data_retention to some number",
+  "referenceOutput": "resource \"aws_chime_voice_connector\" \"default\" {\n  name               = \"vc-name-test\"\n  require_encryption = true\n}\n\nresource \"aws_chime_voice_connector_streaming\" \"default\" {\n  voice_connector_id  = aws_chime_voice_connector.default.id\n  data_retention = 5\n}",
+  "bleuScore": 0.013693,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0254-llm-a82ed96795de",
+  "generatedSourceFiles": [
+    "generated-source/row-0254-llm-a82ed96795de/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: Invalid resource type\n\n  on main.tf line 58, in resource \"aws_chimesdkvoice_voice_connector\" \"this\":\n  58: resource \"aws_chimesdkvoice_voice_connector\" \"this\" {\n\nThe provider hashicorp/aws does not support resource type\n\"aws_chimesdkvoice_voice_connector\".\n\nError: Invalid resource type\n\n  on main.tf line 70, in resource \"aws_chimesdkvoice_voice_connector_streaming\" \"this\":\n  70: resource \"aws_chimesdkvoice_voice_connector_streaming\" \"this\" {\n\nThe provider hashicorp/aws does not support resource type\n\"aws_chimesdkvoice_voice_connector_streaming\".\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_chime_voice_connector": false,
+    "aws_chime_voice_connector_streaming": false
+  },
+  "missingMarkers": [
+    "aws_chime_voice_connector",
+    "aws_chime_voice_connector_streaming"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "The following Terraform configuration creates an AWS Chime SDK Voice Connector and enables media streaming for it to Amazon Kinesis Video Streams. It also creates an example Kinesis Video Stream with retention configured, along with the required AWS provider configuration and default variables.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"voice_connector_name\" {\n  description = \"Name of the AWS Chime SDK Voice Connector.\"\n  type        = string\n  default     = \"example-chime-voice-connector\"\n}\n\nvariable \"kinesis_video_stream_name\" {\n  description = \"Name of the Amazon Kinesis Video Stream for media streaming.\"\n  type        = string\n  default     = \"example-chime-media-stream\"\n}\n\nvariable \"media_retention_hours\" {\n  description = \"Retention period in hours for the Kinesis Video Stream.\"\n  type        = number\n  default     = 24\n}\n\nvariable \"voice_connector_stream_retention_days\"",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0254-llm-a82ed96795de.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an AWS Chime Voice Connector. Then set up a configuration to stream media to Amazon Kinesis.",
+  "promptStrategy": "default",
+  "answer": "The following Terraform configuration creates an AWS Chime SDK Voice Connector and enables media streaming for it to Amazon Kinesis Video Streams. It also creates an example Kinesis Video Stream with retention configured, along with the required AWS provider configuration and default variables.",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: Invalid resource type on main.tf line 58, in resource \"aws_chimesdkvoice_voice_connector\" \"this\": 58: resource \"aws_chimesdkvoice_voice_connector\" \"this\" { The provider hashicorp/aws does not support resource type \"aws_chimesdkvoice_voice_connector\". Error: Invalid resource type on main.tf line 70, in resource \"aws_chimesdkvoice_voice_connector_streaming\" \"this\": 70: resource \"aws_chimesdkvoice_voice_connector_streaming\" \"this\" { The provider hashicorp/aws does not support resource type \"... <truncated 45 chars>"
+}

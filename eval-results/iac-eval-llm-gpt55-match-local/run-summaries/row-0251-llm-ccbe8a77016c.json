@@ -1,0 +1,81 @@
+{
+  "index": 251,
+  "rowId": "251",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-ccbe8a77016c",
+  "userId": "local-user",
+  "durationSeconds": 53.85,
+  "difficulty": "2",
+  "resource": "aws_chime_voice_connector, aws_chime_voice_connector_logging",
+  "prompt": "Create an AWS Chime Voice Connector. Then create an AWS Chime Voice Connector Logging resource with logging of ONLY media metrics",
+  "intent": "Has one resource \"aws_chime_voice_connector\"\n\nHas one resource \"aws_chime_voice_connector_logging\"\nwith voice_connector_id equal to the id of the voice connector\nwith enable_sip_logs false\nwith enable_media_metric_logs true",
+  "referenceOutput": "resource \"aws_chime_voice_connector\" \"default\" {\n  name               = \"vc-name-test\"\n  require_encryption = true\n}\n\nresource \"aws_chime_voice_connector_logging\" \"default\" {\n  enable_sip_logs          = false\n  enable_media_metric_logs = true\n  voice_connector_id       = aws_chime_voice_connector.default.id\n}",
+  "bleuScore": 0.105509,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0251-llm-ccbe8a77016c",
+  "generatedSourceFiles": [
+    "generated-source/row-0251-llm-ccbe8a77016c/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: Unsupported block type\n\n  on main.tf line 43, in resource \"aws_chime_voice_connector_logging\" \"this\":\n  43:   logging_configuration {\n\nBlocks of type \"logging_configuration\" are not expected here.\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_chime_voice_connector": true,
+    "aws_chime_voice_connector_logging": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS Chime Voice Connector and enables logging for **media metrics only**. SIP logging is explicitly disabled.\n\n```hcl\nterraform {\n  required_version = \">= 1.3.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region used by the Terraform AWS provider.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"voice_connector_name\" {\n  description = \"Name of the AWS Chime Voice Connector.\"\n  type        = string\n  default     = \"example-chime-voice-connector\"\n}\n\nvariable \"voice_connector_region\" {\n  description = \"AWS region for the Chime Voice Connector.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nresource \"aws_chime_voice_connector\" \"this\" {\n  name               = var.voice_connector_name\n  aws_region         = var.voice_connector_region\n  require_encryption = true\n}\n\nresource \"aws_chime_voice_connector_logging\" \"this\" {\n  voice_connector_id = aws_chime_voice_connector.this.id\n\n  logging_configuration {\n    enable_sip_logs          = false\n    enable_media_metric_logs = true\n  ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0251-llm-ccbe8a77016c.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an AWS Chime Voice Connector. Then create an AWS Chime Voice Connector Logging resource with logging of ONLY media metrics",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS Chime Voice Connector and enables logging for **media metrics only**. SIP logging is explicitly disabled.",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: Unsupported block type on main.tf line 43, in resource \"aws_chime_voice_connector_logging\" \"this\": 43: logging_configuration { Blocks of type \"logging_configuration\" are not expected here."
+}

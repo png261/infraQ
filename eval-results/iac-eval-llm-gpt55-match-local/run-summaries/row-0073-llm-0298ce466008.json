@@ -1,0 +1,90 @@
+{
+  "index": 73,
+  "rowId": "73",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-0298ce466008",
+  "userId": "local-user",
+  "durationSeconds": 94.65,
+  "difficulty": "3",
+  "resource": "aws_iam_role, aws_kinesisanalyticsv2_application, aws_iam_policy_document",
+  "prompt": "Generate a basic Amazon Kinesis Analytics Application with a CloudWatch log stream",
+  "intent": "Has one \"aws_cloudwatch_log_group\" resource, one \"aws_cloudwatch_log_stream\" resource, one \"aws_iam_role\" resource, one \"aws_s3_bucket\" resource, and one \"aws_kinesis_analytics_application\" resource with a \"cloudwatch_logging_options\" block",
+  "referenceOutput": "provider \"aws\" {\n  region = \"us-west-2\"\n}\n\ndata \"aws_iam_policy_document\" \"KinesisAssume\" {\n  statement {\n    effect  = \"Allow\"\n    actions = [\"sts:AssumeRole\"]\n    principals {\n      type        = \"Service\"\n      identifiers = [\"kinesisanalytics.amazonaws.com\"]\n    }\n  }\n}\n\n\nresource \"aws_iam_role\" \"kinesis_role\" {\n  name               = \"kinesis_role\"\n  assume_role_policy = data.aws_iam_policy_document.KinesisAssume.json\n}\n\nresource \"aws_kinesisanalyticsv2_application\" \"flink_app\" {\n  name                 = \"example-application1\"\n  runtime_environment  = \"SQL-1_0\"\n  service_execution_role = aws_iam_role.kinesis_role.arn\n}",
+  "bleuScore": 0.030754,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-2/generated-source/row-0073-llm-0298ce466008",
+  "generatedSourceFiles": [
+    "generated-source/row-0073-llm-0298ce466008/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_valid_cloudwatch_log_group\": true, \"has_valid_cloudwatch_log_stream\": true, \"has_valid_kinesis_analytics_application\": true, \"has_valid_resources\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_iam_role": true,
+    "aws_kinesisanalyticsv2_application": false,
+    "aws_iam_policy_document": false,
+    "aws_cloudwatch_log_group": true,
+    "aws_cloudwatch_log_stream": true,
+    "aws_s3_bucket": false,
+    "aws_kinesis_analytics_application": true
+  },
+  "missingMarkers": [
+    "aws_kinesisanalyticsv2_application",
+    "aws_iam_policy_document",
+    "aws_s3_bucket"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates a basic Amazon Kinesis Analytics SQL application and configures it to write logs to a CloudWatch Log Stream. It includes:\n\n- AWS provider configuration in `us-east-1`\n- A CloudWatch Log Group and Log Stream\n- An IAM role assumed by Amazon Kinesis Analytics\n- An IAM policy allowing the application to write logs to CloudWatch\n- A basic Kinesis Analytics application with CloudWatch logging enabled\n\n```hcl\nterraform {\n  required_version = \">= 1.0.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"application_name\" {\n  description = \"Name of the Kinesis Analytics application.\"\n  type        = string\n  default     = \"basic-kinesis-analytics-app\"\n}\n\nvariable \"log_group_name\" {\n  description = \"Name of the CloudWatch Log Group.\"\n  type        = string\n  default     = \"/aws/kinesis-analytics/basic-app\"\n}\n\nvariable \"log_stream_name\" {\n  description = \"Name of the CloudWatch Log Stream.\"\n  type        = str",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-2/run-summaries/row-0073-llm-0298ce466008.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Generate a basic Amazon Kinesis Analytics Application with a CloudWatch log stream",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a basic Amazon Kinesis Analytics SQL application and configures it to write logs to a CloudWatch Log Stream. It includes:\n\n- AWS provider configuration in `us-east-1`\n- A CloudWatch Log Group and Log Stream\n- An IAM role assumed by Amazon Kinesis Analytics\n- An IAM policy allowing the application to write logs to CloudWatch\n- A basic Kinesis Analytics application with CloudWatch logging enabled",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_valid_cloudwatch_log_group\": true, \"has_valid_cloudwatch_log_stream\": true, \"has_valid_kinesis_analytics_application\": true, \"has_valid_resources\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

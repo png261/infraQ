@@ -1,0 +1,83 @@
+{
+  "index": 106,
+  "rowId": "106",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-20ab467013ff",
+  "userId": "local-user",
+  "durationSeconds": 52.26,
+  "difficulty": "4",
+  "resource": "aws_s3_bucket, aws_s3_bucket_acl, aws_s3_bucket_public_access_block, aws_s3_bucket_server_side_encryption_configuration",
+  "prompt": "Create an AWS S3 bucket named 'test-bucket' with preventive destruction measures, private ACLs, AES256 server-side encryption, and a public access block restricting public access.",
+  "intent": "has one \"aws_s3_bucket\" resource\n    with one \"bucket\"\n\nhas one \"aws_s3_bucket_acl\"\n    with one \"bucket\"\n    with one \"acl\" or \"access_control_policy\"\n\nhas one \"aws_s3_bucket_public_access_block\"\n    with one \"bucket\"\n\nhas one \"aws_s3_bucket_server_side_encryption_configuration\"\n    with one \"bucket\"\n    with one \"rule\"",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_s3_bucket\" \"backstage\" {\n  bucket_prefix = \"test-bucket-\"\n}\n\nresource \"aws_s3_bucket_ownership_controls\" \"example\" {\n    bucket = aws_s3_bucket.backstage.id\n    rule {\n        object_ownership = \"BucketOwnerPreferred\"\n    }\n}\n\nresource \"aws_s3_bucket_acl\" \"backstage_acl\" {\n  depends_on = [ aws_s3_bucket_ownership_controls.example ]\n  bucket = aws_s3_bucket.backstage.id\n  acl    = \"private\"\n}\n\nresource \"aws_s3_bucket_server_side_encryption_configuration\" \"backstage_server_side_encription\" {\n  bucket = aws_s3_bucket.backstage.id\n\n  rule {\n    apply_server_side_encryption_by_default {\n      sse_algorithm = \"AES256\"\n    }\n  }\n}\n\nresource \"aws_s3_bucket_public_access_block\" \"backstage\" {\n  bucket = aws_s3_bucket.backstage.id\n\n  block_public_acls   = true\n  block_public_policy = true\n  ignore_public_acls = true\n  restrict_public_buckets = true\n}",
+  "bleuScore": 0.447912,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0106-llm-20ab467013ff",
+  "generatedSourceFiles": [
+    "generated-source/row-0106-llm-20ab467013ff/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_aws_s3_bucket_acl\": false, \"has_aws_s3_bucket_public_access_block\": true, \"has_aws_s3_bucket_server_side_encryption_configuration\": false, \"has_s3_bucket\": false, \"valid_configuration\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_s3_bucket": true,
+    "aws_s3_bucket_acl": true,
+    "aws_s3_bucket_public_access_block": true,
+    "aws_s3_bucket_server_side_encryption_configuration": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS S3 bucket named `test-bucket` with:\n\n- Terraform `prevent_destroy` lifecycle protection\n- `force_destroy = false` to prevent accidental deletion of non-empty buckets\n- Private ACL configuration\n- AES256 server-side encryption by default\n- S3 Public Access Block enabled to restrict all public access\n- Bucket ownership controls to allow ACL management\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_s3_bucket\" \"test_bucket\" {\n  bucket        = \"test-bucket\"\n  force_destroy = false\n\n  lifecycle {\n    prevent_destroy = true\n  }\n\n  tags = {\n    Name        = \"test-bucket\"\n    Environment = \"default\"\n    ManagedBy   = \"Terraform\"\n  }\n}\n\nresource \"aws_s3_bucket_ownership_controls\" \"test_bucket\" {\n  bucket = aws_s3_bucket.test_bucket.id\n\n  rule {\n    object_ownership = \"BucketOwnerPreferred\"\n  }\n}\n\nresource \"aws_s3_bucket_acl\" \"test_bucket\" {\n  bucket = aws_s3_bucket.test_bucket.id\n  acl    = \"private\"\n\n  depends_on = [\n    aws_s3_bucket_ownership_controls.test_bucket,\n    aws_s3_buc",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0106-llm-20ab467013ff.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an AWS S3 bucket named 'test-bucket' with preventive destruction measures, private ACLs, AES256 server-side encryption, and a public access block restricting public access.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS S3 bucket named `test-bucket` with:\n\n- Terraform `prevent_destroy` lifecycle protection\n- `force_destroy = false` to prevent accidental deletion of non-empty buckets\n- Private ACL configuration\n- AES256 server-side encryption by default\n- S3 Public Access Block enabled to restrict all public access\n- Bucket ownership controls to allow ACL management",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_aws_s3_bucket_acl\": false, \"has_aws_s3_bucket_public_access_block\": true, \"has_aws_s3_bucket_server_side_encryption_configuration\": false, \"has_s3_bucket\": false, \"valid_configuration\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

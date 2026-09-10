@@ -1,0 +1,114 @@
+{
+  "index": 398,
+  "rowId": "398",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-a8c9dd7d871d",
+  "userId": "local-user",
+  "durationSeconds": 161.69,
+  "difficulty": "6",
+  "resource": "aws_cognito_user_pool, aws_cognito_user_pool_client, aws_cognito_user_pool_domain, aws_instance, aws_lb, aws_lb_listener, aws_lb_target_group, aws_lb_target_group_attachment, aws_subnet, aws_subnet, aws_vpc",
+  "prompt": "generate an Load Balancer with \"authenticate-cognito\" Action",
+  "intent": "has one \"aws_lb\" resource\n    with one of either \"subnets\" or \"subnet_mapping\"\n    with load_balancer_type = \"application\"\n\nhas at least two aws_subnet\n    has one of cidr_block, ipv6_cidr_block argument\n\nhas one aws_vpc\n    has one of cider_block, ipv4_ipam_pool_id \n\nhas one \"aws_lb_listener\" resource\n    with one load_balancer_arn argument\n     with default_action block:\n        with type =  \"authenticate-cognito\" attribute\n        with \"authenticate_cognito\" block\n            with user_pool_arn argument\n            with user_pool_client_id argument\n            with user_pool_domain argument\n\nhave one aws_cognito_user_pool resource\n    with name argument\n\nhave one aws_cognito_user_pool_client resource\n    with name argument\n    with user_pool_id argument\n\nhave one aws_cognito_user_pool_domain resource\n    with domain argument\n    with user_pool_id argument\n\nhas one \"aws_lb_target_group\"\n    with port\n    with protocol\n    with vpc_id\n\nhas one aws_lb_target_group_attachment\n    with one target_group_arn\n    with one target_id\n\nhas at least one \"aws_instance\"\n    with either launch_template or (ami and instance_type) argument",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\ndata \"aws_availability_zones\" \"azs\" {\n    state = \"available\"\n}\n\nmodule \"vpc\" {\n  source  = \"terraform-aws-modules/vpc/aws\"\n\n  name = \"main-vpc\"\n  cidr = \"10.0.0.0/16\"\n\n  azs                  = data.aws_availability_zones.azs.names\n  public_subnets       = [\"10.0.4.0/24\", \"10.0.5.0/24\", \"10.0.6.0/24\"]\n}\n\ndata \"aws_ami\" \"ubuntu\" {\n  most_recent = true\n  owners      = [\"amazon\"]\n\n  filter {\n    name   = \"name\"\n    values = [\"*ubuntu-noble-24.04-amd64-server-*\"]\n  }\n}\n\nresource \"aws_instance\" \"my_instance\" {\n  ami           = data.aws_ami.ubuntu.id\n  instance_type = \"t2.micro\"     # Replace with your desired instance type\n  subnet_id     = module.vpc.public_subnets[0]\n}\n\nresource \"aws_lb\" \"test\" {\n  subnets            = module.vpc.public_subnets\n}\n\nresource \"aws_lb_listener\" \"my_listener\" {\n  load_balancer_arn = aws_lb.test.arn\n  port              = \"80\"\n  protocol          = \"HTTP\"\n\n  default_action {\n    type = \"authenticate-cognito\"\n\n    authenticate_cognito {\n      user_pool_arn       = aws_cognito_user_pool.pool.arn\n      user_pool_client_id = aws_cognito_user_pool_client.client.id\n      user_pool_domain    = aws_cognito_user_pool_domain.domain.domain\n    }\n  }\n}\n\nresource \"aws_lb_target_group\" \"target_group\" {\n  port     = 80\n  protocol = \"HTTP\"\n  vpc_id   = module.vpc.vpc_id\n}\n\nresource \"aws_lb_target_group_attachment\" \"ec2_attach\" {\n  target_group_arn = aws_lb_target_group.target_group.arn\n  target_id = aws_instance.my_instance.id\n}\n\nresource \"aws_cognito_user_pool\" \"pool\" {\n  name = \"mypool\"\n}\n\nresource \"aws_cognito_user_pool_client\" \"client\" {\n  name = \"client\"\n  user_pool_id = aws_cognito_user_pool.pool.id\n}\n\nresource \"aws_cognito_user_pool_domain\" \"domain\" {\n  domain       = \"example-domain\"\n  user_pool_id = aws_cognito_user_pool.pool.id\n}",
+  "bleuScore": 0.070252,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0398-llm-a8c9dd7d871d",
+  "generatedSourceFiles": [
+    "generated-source/row-0398-llm-a8c9dd7d871d/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "160",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "168",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "176",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "202",
+        "finding": "broad_ingress_or_egress_cidr"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_valid_subnet\": true, \"have_required_subnet_argument\": true, \"is_valid_app_lb\": true, \"is_valid_configuration\": false, \"is_valid_instance\": true, \"is_valid_lb\": true, \"is_valid_lb_listener\": true, \"is_valid_lb_target_group\": true, \"is_valid_lb_target_group_attachment\": true, \"is_valid_subnet\": true, \"valid_instances\": [{\"address\": \"aws_instance.web\", \"expressions\": {\"ami\": {\"references\": [\"data.aws_ami.amazon_linux_2023.id\", \"data.aws_ami.amazon_linux_2023\"]}, \"associate_public_ip_address\": {\"constant_value\": true}, \"iam_instance_profile\": {\"references\": [\"aws_iam_instance_profile.ec2_profile.name\", \"aws_iam_instance_profile.ec2_profile\"]}, \"instance_type\": {\"references\": [\"var.instance_type\"]}, \"subnet_id\": {\"references\": [\"aws_subnet.public_a.id\", \"aws_subnet.public_a\"]}, \"tags\": {\"references\": [\"local.name_prefix\"]}, \"user_data\": {\"constant_value\": \"#!/bin/bash\\ndnf install -y httpd\\nsystemctl enable httpd\\ncat > /var/www/html/index.html <<HTML\\n<!DOCTYPE html>\\n<html>\\n  <head>\\n    <title>Authenticated ALB Backend</title>\\n  </head>\\n  <body>\\n    <h1>Hello from the authenticated backend</h1>\\n    <p>This page is served after Cognito authentication through the Application Load Balancer.</p>\\n  </body>\\n</html>\\nHTML\\nsystemctl start httpd\\n\"}, \"vpc_security_group_ids\": {\"references\": [\"aws_security_group.web.id\", \"aws_security_group.web\"]}}, \"mode\": \"managed\", \"name\": \"web\", \"provider_config_key\": \"aws\", \"schema_version\": 2, \"type\": \"aws_instance\"}]}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_cognito_user_pool": true,
+    "aws_cognito_user_pool_client": true,
+    "aws_cognito_user_pool_domain": true,
+    "aws_instance": true,
+    "aws_lb": true,
+    "aws_lb_listener": true,
+    "aws_lb_target_group": true,
+    "aws_lb_target_group_attachment": true,
+    "aws_subnet": true,
+    "aws_vpc": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "Below is a deployable Terraform configuration that creates:\n\n- A new AWS VPC with two public subnets\n- An Internet-facing Application Load Balancer\n- An HTTPS listener using an `authenticate-cognito` action\n- A Cognito User Pool, User Pool Client, and Cognito hosted UI domain\n- A self-signed ACM certificate for the ALB HTTPS listener\n- A simple EC2 web server registered behind the ALB target group\n- IAM role/profile for the EC2 instance\n\nAfter deployment, accessing the ALB over HTTPS redirects unauthenticated users to Cognito before forwarding authenticated requests to the backend EC2 instance.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    tls = {\n      source  = \"hashicorp/tls\"\n      version = \">= 4.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nprovider \"tls\" {}\n\nprovider \"random\" {}\n\nvariable \"aws_region\" {\n  description = \"AWS region to deploy resources into.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"project_name\" {\n  description = \"Project name used f",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0398-llm-a8c9dd7d871d.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: generate an Load Balancer with \"authenticate-cognito\" Action",
+  "promptStrategy": "default",
+  "answer": "Below is a deployable Terraform configuration that creates:\n\n- A new AWS VPC with two public subnets\n- An Internet-facing Application Load Balancer\n- An HTTPS listener using an `authenticate-cognito` action\n- A Cognito User Pool, User Pool Client, and Cognito hosted UI domain\n- A self-signed ACM certificate for the ALB HTTPS listener\n- A simple EC2 web server registered behind the ALB target group\n- IAM role/profile for the EC2 instance\n\nAfter deployment, accessing the ALB over HTTPS redirects unauthenticated users to Cognito before forwarding authenticated requests to the backend EC2 instance.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_valid_subnet\": true, \"have_required_subnet_argument\": true, \"is_valid_app_lb\": true, \"is_valid_configuration\": false, \"is_valid_instance\": true, \"is_valid_lb\": true, \"is_valid_lb_listener\": true, \"is_valid_lb_target_group\": true, \"is_valid_lb_target_group_attachment\": true, \"is_valid_subnet\": true, \"valid_instances\": [{\"address\": \"aws_instance.web\", \"expressions\": {\"ami\": {\"references\": [\"data.aws_ami.amazon_linux_2023.id\"... <truncated 1096 chars>"
+}

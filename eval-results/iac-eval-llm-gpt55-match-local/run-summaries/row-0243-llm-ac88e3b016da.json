@@ -1,0 +1,91 @@
+{
+  "index": 243,
+  "rowId": "243",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-ac88e3b016da",
+  "userId": "local-user",
+  "durationSeconds": 101.67,
+  "difficulty": "4",
+  "resource": "aws_neptune_cluster, aws_neptune_cluster_parameter_group, aws_neptune_subnet_group, aws_subnet, aws_subnet, aws_vpc",
+  "prompt": "Set up a basic AWS Neptune cluster with a custom parameter group that only allows connection from two example subnets",
+  "intent": "Has \"aws_vpc\"\n\nHas two \"aws_subnet\"\n\nHas \"aws_neptune_subnet_group\"\nwith subnet_ids = array with both \"aws_subnet\"\n\nHas \"aws_neptune_cluster\"\nwith \"neptune_cluster_parameter_group_name\"\nwith \"neptune_cluster_subnet_group\"\n\nHas \"aws_neptune_cluster_parameter_group\"\nwith family = \"neptune1.2\"",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_neptune_cluster_parameter_group\" \"example\" {\n  family      = \"neptune1.3\"\n  name        = \"example\"\n\n  parameter {\n    name  = \"neptune_enable_audit_log\"\n    value = 1\n  }\n}\n\nresource \"aws_neptune_cluster\" \"default\" {\n  cluster_identifier                  = \"neptune-cluster-demo\"\n  engine                              = \"neptune\"\n  backup_retention_period             = 5\n  preferred_backup_window             = \"07:00-09:00\"\n  skip_final_snapshot                 = true\n  iam_database_authentication_enabled = true\n  apply_immediately                   = true\n  neptune_cluster_parameter_group_name = aws_neptune_cluster_parameter_group.example.id\n  neptune_subnet_group_name = aws_neptune_subnet_group.default.id\n}\n\nresource \"aws_vpc\" \"example_vpc\" {\n  cidr_block = \"10.0.0.0/16\"\n}\n\ndata \"aws_availability_zones\" \"azs\" {\n    state = \"available\"\n}\n\nresource \"aws_subnet\" \"subnet1\" {\n  vpc_id     = aws_vpc.example_vpc.id\n  cidr_block = \"10.0.1.0/24\"\n  availability_zone = data.aws_availability_zones.azs.names[0]\n}\n\nresource \"aws_subnet\" \"subnet2\" {\n  vpc_id     = aws_vpc.example_vpc.id\n  cidr_block = \"10.0.2.0/24\"\n  availability_zone = data.aws_availability_zones.azs.names[1]\n}\nresource \"aws_neptune_subnet_group\" \"default\" {\n  name       = \"main\"\n  subnet_ids = [aws_subnet.subnet1.id, aws_subnet.subnet2.id]\n}",
+  "bleuScore": 0.083881,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0243-llm-ac88e3b016da",
+  "generatedSourceFiles": [
+    "generated-source/row-0243-llm-ac88e3b016da/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "192",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"aws_neptune_cluster\": {\"cluster_parameter_group_valid\": false, \"valid\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_neptune_cluster": true,
+    "aws_neptune_cluster_parameter_group": true,
+    "aws_neptune_subnet_group": true,
+    "aws_subnet": true,
+    "aws_vpc": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "Description: This Terraform program creates a basic AWS Neptune deployment in a new VPC. It defines two example private subnets, places the Neptune cluster into a Neptune subnet group using only those two subnets, and attaches a security group that allows inbound Neptune traffic on port `8182` only from the CIDR ranges of those two subnets. It also creates a custom Neptune cluster parameter group and a single Neptune cluster instance.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Neptune cluster will be deployed.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"project_name\" {\n  description = \"Name prefix for all created resources.\"\n  type        = string\n  default     = \"basic-neptune\"\n}\n\nvariable \"vpc_cidr\" {\n  description = \"CIDR block for the VPC.\"\n  type        = string\n  default     = \"10.0.0.0/16\"\n}\n\nvariable \"subnet_1_cidr\" {\n  description = \"CIDR block for the first example subnet allowed to connect to Neptune.\"\n  type        = string\n  defa",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0243-llm-ac88e3b016da.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Set up a basic AWS Neptune cluster with a custom parameter group that only allows connection from two example subnets",
+  "promptStrategy": "default",
+  "answer": "Description: This Terraform program creates a basic AWS Neptune deployment in a new VPC. It defines two example private subnets, places the Neptune cluster into a Neptune subnet group using only those two subnets, and attaches a security group that allows inbound Neptune traffic on port `8182` only from the CIDR ranges of those two subnets. It also creates a custom Neptune cluster parameter group and a single Neptune cluster instance.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"aws_neptune_cluster\": {\"cluster_parameter_group_valid\": false, \"valid\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

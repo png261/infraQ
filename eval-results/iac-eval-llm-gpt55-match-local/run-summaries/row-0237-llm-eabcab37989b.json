@@ -1,0 +1,85 @@
+{
+  "index": 237,
+  "rowId": "237",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-eabcab37989b",
+  "userId": "local-user",
+  "durationSeconds": 72.92,
+  "difficulty": "3",
+  "resource": "aws_network_acl, aws_subnet, aws_vpc",
+  "prompt": "Create an AWS VPC resource with a subnet and associated network ACLs to control both ingress and egress traffic",
+  "intent": "Has one resource \"aws_vpc\"\n\nHas one resource \"aws_subnet\"\nwith one \"vpc_id\" with value \"aws_vpc.{VPC NAME}.id\"\n\nHas one resource \"aws_network_acl\"\nwith one \"vpc_id\" with value \"aws_vpc.{VPC NAME}.id\"\nwith one \"egress\" with correct parameters\nwith one \"ingress\" with correct parameters",
+  "referenceOutput": "resource \"aws_vpc\" \"main\" {\n  cidr_block = \"10.0.0.0/16\"\n}\n\nresource \"aws_subnet\" \"snet\" {\n  vpc_id     = aws_vpc.main.id\n  cidr_block = \"10.0.1.0/24\"\n}\n\nresource \"aws_network_acl\" \"ntwk_acl\" {\n  vpc_id      = aws_vpc.main.id\n\n  egress {\n    protocol   = \"tcp\"\n    rule_no    = 200\n    action     = \"allow\"\n    cidr_block = \"10.3.0.0/18\"\n    from_port  = 443\n    to_port    = 443\n   }\n\n   ingress {\n    protocol   = \"tcp\"\n    rule_no    = 100\n    action     = \"allow\"\n    cidr_block = \"10.3.0.0/18\"\n    from_port  = 80\n    to_port    = 80\n  }\n}",
+  "bleuScore": 0.075721,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0237-llm-eabcab37989b",
+  "generatedSourceFiles": [
+    "generated-source/row-0237-llm-eabcab37989b/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"vpc_net_acl\": {\"valid\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_network_acl": true,
+    "aws_subnet": true,
+    "aws_vpc": true,
+    "aws_vpc.{VPC NAME}.id": false
+  },
+  "missingMarkers": [
+    "aws_vpc.{VPC NAME}.id"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates an AWS VPC with a single public subnet and a dedicated Network ACL associated with that subnet. The Network ACL includes explicit ingress and egress rules to allow common traffic such as SSH, HTTP, HTTPS, and ephemeral return traffic, while denying all other traffic by default.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"vpc_cidr_block\" {\n  description = \"CIDR block for the VPC.\"\n  type        = string\n  default     = \"10.0.0.0/16\"\n}\n\nvariable \"subnet_cidr_block\" {\n  description = \"CIDR block for the subnet.\"\n  type        = string\n  default     = \"10.0.1.0/24\"\n}\n\nvariable \"allowed_ssh_cidr\" {\n  description = \"CIDR block allowed to access SSH.\"\n  type        = string\n  default     = \"0.0.0.0/0\"\n}\n\nvariable \"allowed_http_cidr\" {\n  description = \"CIDR block allowed to access HTTP.\"\n  type        = string\n  default     = \"0.0.0.0/0\"\n}\n\nvariable",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0237-llm-eabcab37989b.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an AWS VPC resource with a subnet and associated network ACLs to control both ingress and egress traffic",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS VPC with a single public subnet and a dedicated Network ACL associated with that subnet. The Network ACL includes explicit ingress and egress rules to allow common traffic such as SSH, HTTP, HTTPS, and ephemeral return traffic, while denying all other traffic by default.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"vpc_net_acl\": {\"valid\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

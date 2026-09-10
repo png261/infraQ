@@ -1,0 +1,84 @@
+{
+  "index": 319,
+  "rowId": "319",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-1d841b110258",
+  "userId": "local-user",
+  "durationSeconds": 90.86,
+  "difficulty": "6",
+  "resource": "aws_cloudfront_distribution, aws_cloudfront_origin_access_control, aws_route53_record, aws_route53_record, aws_route53_zone, aws_s3_bucket",
+  "prompt": "An AWS CloudFront distribution resource with an origin argument block with the following arguments (1) a domain_name argument linking to the S3 backet domain name; (2) an origin_access_control_id argument linking to a CloudFront origin access control resource; (3) an origin_id argument with value \"s3_video_content_origin\", a default_cache_behavior argument with the following arguments (a) an allowed_methods argument with values [\"GET\", \"HEAD\"]; (b) a cached_methods with values [\"GET\", \"HEAD\"]; (c) a target_origin_id argument with value \"s3_video_content_origin\" (same as origin_id in the origin argument block); (d) a viewer_protocol_policy argument with value \"allow-all\"; (4) a price_class argument with value \"PriceClass_200\"; (5) a restrictions argument block with a geo_restriction argument block with a restriction_type argument of value \"whitelist\" and locations argument with values [\"US\", \"CA\", \"GB\", \"DE\"]; (6) a viewer_certificate argument block with cloudfront_default_certificate set to true. An AWS Route53 zone resource with a name argument of value \"netflix.com\". Two AWS Route53 record resources linking to the Route53 hosted zone. A CloudFront origin access control resource with (1) a name argument; (2) an origin_access_control_origin_type argument of value \"s3\"; (3) a signing_behavior argument of value \"always\"; (4) a signing_protocol argument of value \"sigv4\".",
+  "intent": "have one \"aws_cloudfront_origin_access_control\" resource\n    with \"name\" argument\n    with \"origin_access_control_origin_type\" with value \"s3\"\n    with \"signing_behavior\" argument with value \"always\"\n    with \"signing_protocol\" argument with value \"sigv4\"\n\nhave one \"aws_cloudfront_distribution\" resource\n    with \"origin.domain_name\" argument linking to \"aws_s3_bucket\" resource\n    with \"origin.origin_access_control_id\" argument linking to \"aws_cloudfront_origin_access_control\" resource\n    with \"origin.origin_id\" argument with value x\n    with \"default_cache_behavior.allowed_methods\" argument with value [\"GET\", \"HEAD\"]\n    with \"default_cache_behavior.cached_methods\" argument with value [\"GET\", \"HEAD\"]\n    with \"default_cache_behavior.target_origin_id\" argument with value x\n    with \"default_cache_behavior.viewer_protocol_policy\" argument with value \"allow-all\"\n    with \"price_class\" argument with value \"PriceClass_200\"\n    with \"restrictions.geo_restriction.restriction_type\" argument with value \"whitelist\"\n    with \"restrictions.geo_restriction.locations\" argument with value [\"US\", \"CA\", \"GB\", \"DE\"]\n    with \"viewer_certificate.cloudfront_default_certificate\" argument with value true\n\nhave one \"aws_s3_bucket\" resource\n\nhave one \"aws_route53_zone\" resource\n    with \"name\" argument with value \"netflix.com\"\n\nhave one \"aws_route53_record\" resource\n    with \"type\" argument with value \"A\"\n    with \"name\" argument with value \"cdn\"\n    with \"zone_id\" argument linking to \"aws_route53_zone\" resource\n\n    with \"alias.name\" argument linking to \"aws_cloudfront_distribution\" resource\n    with \"alias.zone_id\" argument linking to \"aws_cloudfront_distribution\" resource\n    with \"alias.evaluate_target_health\" argument with value true\n\nhave one \"aws_route53_record\" resource\n    with \"type\" argument with value \"AAAA\"\n    with \"name\" argument with value \"cdn\"\n    with \"zone_id\" argument linking to \"aws_route53_zone\" resource\n\n    with \"alias.name\" argument linking to \"aws_cloudfront_distribution\" resource\n    with \"alias.zone_id\" argument linking to \"aws_cloudfront_distribution\" resource\n    with \"alias.evaluate_target_health\" argument with value true",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_s3_bucket\" \"website_content\" {\n  bucket_prefix = \"website-content-\"\n}\n\nresource \"aws_s3_object\" \"put_website\" {\n  bucket = aws_s3_bucket.website_content.bucket\n  key = \"index.html\"\n  source = \"./supplement/index.html\"\n  content_type = \"text/html\"\n}\n\nresource \"aws_s3_object\" \"put_website_css\" {\n  bucket = aws_s3_bucket.website_content.bucket\n  key = \"css/style.css\"\n  source = \"./supplement/css/style.css\"\n  content_type = \"text/css\"\n}\n\nresource \"aws_s3_bucket_policy\" \"bucket_policy\" {\n  bucket = aws_s3_bucket.website_content.id\n\n  policy = jsonencode({\n    Version = \"2012-10-17\"\n    Statement = [\n      {\n        Effect = \"Allow\"\n        Principal = {\n          Service = \"cloudfront.amazonaws.com\"\n        }\n        Action = \"s3:GetObject\"\n        Resource = \"${aws_s3_bucket.website_content.arn}/*\"\n        Condition = {\n          StringEquals = {\n            \"AWS:SourceArn\" = aws_cloudfront_distribution.my_distribution.arn\n          }\n        }\n      }\n    ]\n  })\n}\n\n\nlocals {\n  s3_origin_id = \"s3_website_origin\"\n}\n\nresource \"aws_cloudfront_origin_access_control\" \"s3_oac\" {\n  name                              = \"s3-oac\"\n  description                       = \"aws access control policy\"\n  origin_access_control_origin_type = \"s3\"\n  signing_behavior                  = \"always\"\n  signing_protocol                  = \"sigv4\"\n}\n\nresource \"aws_cloudfront_distribution\" \"my_distribution\" {\n  origin {\n    domain_name              = aws_s3_bucket.website_content.bucket_regional_domain_name\n    origin_access_control_id = aws_cloudfront_origin_access_control.s3_oac.id\n    origin_id                = local.s3_origin_id\n  }\n\n  enabled             = true\n  is_ipv6_enabled     = true\n  default_root_object = \"index.html\"\n\n  default_cache_behavior {\n    allowed_methods  = [\"GET\", \"HEAD\"]\n    cached_methods   = [\"GET\", \"HEAD\"]\n    target_origin_id = local.s3_origin_id\n\n    forwarded_values {\n      query_string = false\n\n      cookies {\n        forward = \"none\"\n      }\n    }\n\n    viewer_protocol_policy = \"allow-all\"\n    min_ttl                = 0\n    default_ttl            = 3600\n    max_ttl                = 86400\n  }\n\n  price_class = \"PriceClass_200\"\n\n  restrictions {\n    geo_restriction {\n      restriction_type = \"whitelist\"\n      locations        = [\"US\", \"CA\", \"GB\", \"DE\"]\n    }\n  }\n\n  viewer_certificate {\n    cloudfront_default_certificate = true\n  }\n}\n\n# Route53\nresource \"aws_route53_zone\" \"my_zone\" {\n  name = \"my-test-cloudfront.com\"\n}\n\nresource \"aws_route53_record\" \"cdn_ipv4\" {\n  type    = \"A\"\n  name    = \"cdn\"\n  zone_id = aws_route53_zone.my_zone.zone_id\n\n  alias {\n    name                   = aws_cloudfront_distribution.my_distribution.domain_name\n    zone_id                = aws_cloudfront_distribution.my_distribution.hosted_zone_id\n    evaluate_target_health = true\n  }\n}\n\nresource \"aws_route53_record\" \"cdn_ipv6\" {\n  type    = \"AAAA\" # ipv6 is enabled\n  name    = \"cdn\"\n  zone_id = aws_route53_zone.my_zone.zone_id\n\n  alias {\n    name                   = aws_cloudfront_distribution.my_distribution.domain_name\n    zone_id                = aws_cloudfront_distribution.my_distribution.hosted_zone_id\n    evaluate_target_health = true\n  }\n}",
+  "bleuScore": 0.259331,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0319-llm-1d841b110258",
+  "generatedSourceFiles": [
+    "generated-source/row-0319-llm-1d841b110258/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"netflix\": {\"valid\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_cloudfront_distribution": true,
+    "aws_cloudfront_origin_access_control": true,
+    "aws_route53_record": true,
+    "aws_route53_zone": true,
+    "aws_s3_bucket": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates:\n\n- An S3 bucket to act as the private video-content origin.\n- A CloudFront Origin Access Control configured for S3 with SigV4 signing.\n- A CloudFront distribution using the S3 bucket regional domain name as its origin.\n- A default cache behavior allowing and caching only `GET` and `HEAD`.\n- Geo restriction allowing access only from `US`, `CA`, `GB`, and `DE`.\n- The default CloudFront certificate.\n- A Route53 hosted zone named `netflix.com`.\n- Two Route53 alias records, `A` and `AAAA`, pointing the zone apex to the CloudFront distribution.\n- An S3 bucket policy allowing only the CloudFront distribution to read objects from the bucket.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region used for regional resources such as S3.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"s3_bucket_name\" {\n  description = \"Globally unique name for the S3 bucket used as the CloudFront origin.\"\n  type        = string\n  default     = \"netflix-video",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0319-llm-1d841b110258.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: An AWS CloudFront distribution resource with an origin argument block with the following arguments (1) a domain_name argument linking to the S3 backet domain name; (2) an origin_access_control_id argument linking to a CloudFront origin access control resource; (3) an origin_id argument with value \"s3_video_content_origin\", a default_cache_behavior argument with the following arguments (a) an allowed_methods argument with values [\"GET\", \"HEAD\"]; (b) a cached_methods with values [\"GET\", \"HEAD\"]; (c) a target_origin_id argument with value \"s3_video_content_origin\" (same as origin_id in the origin argument block); (d) a viewer_protocol_policy argument with value \"allow-all\"; (4) a price_class argument with value \"PriceClass_200\"; (5) a restrictions argument block with a geo_restriction argument block with a restriction_type argument of value \"whitelist\" and locations argument with values [\"US\", \"CA\", \"GB\", \"DE\"]; (6) a viewer_certificate argument block with cloudfront_default_certificate set to true. An AWS Route53 zone resource with a name argument of value \"netflix.com\". Two AWS Route53 record resources linking to the Route53 hosted zone. A CloudFront origin access control resource with (1) a name argument; (2) an origin_access_control_origin_type argument of value \"s3\"; (3) a signing_behavior argument of value \"always\"; (4) a signing_protocol argument of value \"sigv4\".",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates:\n\n- An S3 bucket to act as the private video-content origin.\n- A CloudFront Origin Access Control configured for S3 with SigV4 signing.\n- A CloudFront distribution using the S3 bucket regional domain name as its origin.\n- A default cache behavior allowing and caching only `GET` and `HEAD`.\n- Geo restriction allowing access only from `US`, `CA`, `GB`, and `DE`.\n- The default CloudFront certificate.\n- A Route53 hosted zone named `netflix.com`.\n- Two Route53 alias records, `A` and `AAAA`, pointing the zone apex to the CloudFront distribution.\n- An S3 bucket policy allowing only the CloudFront distribution to read objects from the bucket.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"netflix\": {\"valid\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

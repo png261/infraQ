@@ -1,0 +1,95 @@
+{
+  "index": 257,
+  "rowId": "257",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-f4bac894b892",
+  "userId": "local-user",
+  "durationSeconds": 104.67,
+  "difficulty": "3",
+  "resource": "aws_redshift_cluster, aws_redshift_event_subscription, aws_sns_topic",
+  "prompt": "Create an AWS Redshift cluster with notifications on events",
+  "intent": "Has one resource \"aws_sns_topic\"\n\nHas one resource \"aws_redshift_cluster\"\n\nHas one resource \"aws_redshift_event_subscription\"\nwith source_type = \"cluster\"\nand sns topic referenced in sns_topic_arn\nand cluster referenced in source_ids",
+  "referenceOutput": "resource \"aws_redshift_cluster\" \"example\" {\n  cluster_identifier = \"default\"\n  database_name      = \"default\"\n  master_username    = \"exampleuser\"\n  master_password    = \"Mustbe8characters\"\n  node_type          = \"ra3.xlplus\"\n  cluster_type       = \"single-node\"\n}\n\nresource \"aws_sns_topic\" \"default\" {\n  name = \"redshift-events\"\n}\n\nresource \"aws_redshift_event_subscription\" \"default\" {\n  name          = \"redshift-event-sub\"\n  sns_topic_arn = aws_sns_topic.default.arn\n\n  source_type = \"cluster\"\n  source_ids  = [aws_redshift_cluster.example.id]\n\n  severity = \"INFO\"\n\n  event_categories = [\n    \"configuration\",\n    \"management\",\n    \"monitoring\",\n    \"security\",\n  ]\n\n  tags = {\n    Name = \"default\"\n  }\n}",
+  "bleuScore": 0.047138,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0257-llm-f4bac894b892",
+  "generatedSourceFiles": [
+    "generated-source/row-0257-llm-f4bac894b892/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "98",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "174",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: Invalid data source\n\n  on main.tf line 65, in data \"aws_default_vpc\" \"default\":\n  65: data \"aws_default_vpc\" \"default\" {}\n\nThe provider hashicorp/aws does not support data source \"aws_default_vpc\".\n\nDid you intend to use the managed resource type \"aws_default_vpc\"? If so,\ndeclare this using a \"resource\" block instead of a \"data\" block.\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_redshift_cluster": true,
+    "aws_redshift_event_subscription": true,
+    "aws_sns_topic": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "The Terraform configuration below creates an AWS Redshift cluster and configures event notifications using Amazon SNS. It provisions:\n\n- An encrypted single-node Redshift cluster\n- A Redshift subnet group using the default VPC subnets\n- A security group for the Redshift cluster\n- An SNS topic for Redshift event notifications\n- An SNS topic policy allowing Redshift to publish events\n- A Redshift event subscription connected to the SNS topic\n- A generated master password for the Redshift cluster\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Redshift cluster will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"cluster_identifier\" {\n  description = \"Identifier for the Redshift cluster.\"\n  type        = string\n  default     = \"example-redshift-cluster\"\n}\n\nvariable \"database_name\" {\n  description = \"Initial database name for the Redshift cluster.\"\n  type        =",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0257-llm-f4bac894b892.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an AWS Redshift cluster with notifications on events",
+  "promptStrategy": "default",
+  "answer": "The Terraform configuration below creates an AWS Redshift cluster and configures event notifications using Amazon SNS. It provisions:\n\n- An encrypted single-node Redshift cluster\n- A Redshift subnet group using the default VPC subnets\n- A security group for the Redshift cluster\n- An SNS topic for Redshift event notifications\n- An SNS topic policy allowing Redshift to publish events\n- A Redshift event subscription connected to the SNS topic\n- A generated master password for the Redshift cluster",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: Invalid data source on main.tf line 65, in data \"aws_default_vpc\" \"default\": 65: data \"aws_default_vpc\" \"default\" {} The provider hashicorp/aws does not support data source \"aws_default_vpc\". Did you intend to use the managed resource type \"aws_default_vpc\"? If so, declare this using a \"resource\" block instead of a \"data\" block."
+}

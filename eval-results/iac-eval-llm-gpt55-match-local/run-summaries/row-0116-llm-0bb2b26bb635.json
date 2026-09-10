@@ -1,0 +1,82 @@
+{
+  "index": 116,
+  "rowId": "116",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-0bb2b26bb635",
+  "userId": "local-user",
+  "durationSeconds": 105.68,
+  "difficulty": "3",
+  "resource": "aws_s3_bucket, aws_s3_bucket_acl, aws_s3_bucket_policy",
+  "prompt": "Create a Terraform configuration that defines an AWS S3 bucket, an ACL for the bucket, and a bucket policy allowing s3:GetObject actions with a condition based on the AWS Referer header. The bucket should have a unique name like \"my_unique_bucket_name,\" and the policy should grant access to all principals.",
+  "intent": "Resource \"aws_s3_bucket\"\nhas one \"bucket\"\n\nResource \"aws_s3_bucket_acl\"\nhas one \"bucket\"\nhas one \"acl\"\n\nResource \"aws_s3_bucket_policy\"\nhas one \"bucket\"\nhas one \"policy\"",
+  "referenceOutput": "provider \"aws\" {\n    region = \"us-west-1\"\n}\n\nresource \"aws_s3_bucket\" \"my_bucket\" {\n  bucket = \"my_unique_bucket_name\"\n}\n\nresource \"aws_s3_bucket_acl\" \"my_bucket_acl\" {\n  bucket = aws_s3_bucket.my_bucket.id\n  acl    = \"private\"\n}\n\nresource \"aws_s3_bucket_policy\" \"my_bucket_policy\" {\n  bucket = aws_s3_bucket.my_bucket.id\n  policy = jsonencode({\n    Version = \"2012-10-17\",\n    Statement = [\n      {\n        Sid       = \"ExampleStatement1\",\n        Effect    = \"Allow\",\n        Principal = \"*\",\n        Action    = [\n          \"s3:GetObject\"\n        ],\n        Resource = [\n          \"${aws_s3_bucket.my_bucket.arn}/*\"\n        ],\n        Condition = {\n          StringEquals = {\n            \"aws:Referer\" = \"http://www.example.com\"\n          }\n        }\n      }\n    ]\n  })\n}",
+  "bleuScore": 0.048588,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0116-llm-0bb2b26bb635",
+  "generatedSourceFiles": [
+    "generated-source/row-0116-llm-0bb2b26bb635/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_aws_s3_bucket\": false, \"has_aws_s3_bucket_acl\": false, \"has_aws_s3_bucket_policy\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_s3_bucket": true,
+    "aws_s3_bucket_acl": true,
+    "aws_s3_bucket_policy": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS S3 bucket with a unique name, configures bucket ownership controls, applies a bucket ACL, disables S3 public access blocks required for the bucket policy, and attaches a bucket policy that allows `s3:GetObject` access to all principals only when the request includes a matching `aws:Referer` header.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the S3 bucket will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"bucket_name_prefix\" {\n  description = \"Prefix for the S3 bucket name. A random suffix will be added to ensure uniqueness.\"\n  type        = string\n  default     = \"my-unique-bucket-name\"\n}\n\nvariable \"allowed_referer\" {\n  description = \"Allowed HTTP referer pattern for accessing objects in the bucket.\"\n  type        = string\n  default     = \"https://example.com/*\"\n}\n\nresource \"random_id\" \"bucket_suffix\" {\n  byte_le",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0116-llm-0bb2b26bb635.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a Terraform configuration that defines an AWS S3 bucket, an ACL for the bucket, and a bucket policy allowing s3:GetObject actions with a condition based on the AWS Referer header. The bucket should have a unique name like \"my_unique_bucket_name,\" and the policy should grant access to all principals.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS S3 bucket with a unique name, configures bucket ownership controls, applies a bucket ACL, disables S3 public access blocks required for the bucket policy, and attaches a bucket policy that allows `s3:GetObject` access to all principals only when the request includes a matching `aws:Referer` header.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_aws_s3_bucket\": false, \"has_aws_s3_bucket_acl\": false, \"has_aws_s3_bucket_policy\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

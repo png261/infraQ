@@ -1,0 +1,85 @@
+{
+  "index": 70,
+  "rowId": "70",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-1b492f21dae3",
+  "userId": "local-user",
+  "durationSeconds": 71.28,
+  "difficulty": "3",
+  "resource": "aws_iam_role, aws_kinesis_firehose_delivery_stream, aws_s3_bucket, aws_iam_policy_document",
+  "prompt": "Generate a Kinesis Firehose Delivery Stream with an extended S3 Destination",
+  "intent": "Has one \"aws_iam_role\" resource, one \"aws_s3_bucket\" resource, and one \"aws_kinesis_firehose_delivery_stream\" resource with an \"extended_s3_configuration\" block",
+  "referenceOutput": "provider \"aws\" {\n  region = \"us-west-2\"\n}\n\nresource \"aws_s3_bucket\" \"januarysixteenth\" {\n  bucket = \"januarysixteenth\"\n}\n\ndata \"aws_iam_policy_document\" \"firehose_assume_role\" {\n  statement {\n    effect = \"Allow\"\n\n    principals {\n      type        = \"Service\"\n      identifiers = [\"firehose.amazonaws.com\"]\n    }\n\n    actions = [\"sts:AssumeRole\"]\n  }\n}\n\nresource \"aws_iam_role\" \"firehose_role\" {\n  name               = \"firehose_test_role\"\n  assume_role_policy = data.aws_iam_policy_document.firehose_assume_role.json\n}\n\nresource \"aws_kinesis_firehose_delivery_stream\" \"extended_s3_stream\" {\n  name        = \"terraform-kinesis-firehose-extended-s3-test-stream\"\n  destination = \"extended_s3\"\n\n  extended_s3_configuration {\n    role_arn   = aws_iam_role.firehose_role.arn\n    bucket_arn = aws_s3_bucket.januarysixteenth.arn\n  }\n}",
+  "bleuScore": 0.081834,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-3/generated-source/row-0070-llm-1b492f21dae3",
+  "generatedSourceFiles": [
+    "generated-source/row-0070-llm-1b492f21dae3/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_iam_role": true,
+    "aws_kinesis_firehose_delivery_stream": true,
+    "aws_s3_bucket": true,
+    "aws_iam_policy_document": false
+  },
+  "missingMarkers": [
+    "aws_iam_policy_document"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates an AWS Kinesis Firehose Delivery Stream using an extended S3 destination. It provisions:\n\n- An S3 bucket to receive delivered records\n- An IAM role assumed by Kinesis Firehose\n- An IAM policy granting Firehose permission to write to the S3 bucket\n- A Kinesis Firehose Delivery Stream configured with `extended_s3_configuration`\n\n```hcl\nterraform {\n  required_version = \">= 1.3.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"delivery_stream_name\" {\n  description = \"Name of the Kinesis Firehose Delivery Stream.\"\n  type        = string\n  default     = \"example-extended-s3-firehose\"\n}\n\nvariable \"s3_prefix\" {\n  description = \"S3 prefix for delivered Firehose records.\"\n  type        = string\n  default     = \"firehose-data/\"\n}\n\nvariable \"s3_error_output_prefix\" {\n  description = \"S3 prefix for Firehose delivery errors.\"\n  ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-3/run-summaries/row-0070-llm-1b492f21dae3.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Generate a Kinesis Firehose Delivery Stream with an extended S3 Destination",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS Kinesis Firehose Delivery Stream using an extended S3 destination. It provisions:\n\n- An S3 bucket to receive delivered records\n- An IAM role assumed by Kinesis Firehose\n- An IAM policy granting Firehose permission to write to the S3 bucket\n- A Kinesis Firehose Delivery Stream configured with `extended_s3_configuration`",
+  "failure_category": "",
+  "failure_reason": ""
+}

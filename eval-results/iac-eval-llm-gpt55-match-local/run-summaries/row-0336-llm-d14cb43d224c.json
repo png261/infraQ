@@ -1,0 +1,104 @@
+{
+  "index": 336,
+  "rowId": "336",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-d14cb43d224c",
+  "userId": "local-user",
+  "durationSeconds": 80.82,
+  "difficulty": "6",
+  "resource": "aws_db_instance, aws_db_parameter_group, aws_db_subnet_group, aws_security_group, aws_subnet, aws_subnet, aws_vpc",
+  "prompt": "Set up a PostgreSQL 15 instance on AWS RDS within specific public subnets for running Airbyte connector test cases, using managed settings for low maintenance. The database should skip finale snapshot, and any change on it will apply immediately.",
+  "intent": "Has one \"aws_db_instance\" resource\n    with one \"allocated_storage\"\n    with one \"engine\" = \"postgres\"\n    with one \"engine_version\" = \"12.6\"\n    with one \"instance_class\"\n    with one \"password\" \n    with one \"username\"\n    with one \"skip_final_snapshot\" = true\n    with one \"apply_immediately\" = true\n    with one \"publicly_accessible\" = false\n    with one \"db_subnet_group_name\" set to corrosponding db subnet group\n    with one \"vpc_security_group_ids\" set to corrosponding security group ids\n    \n\nHas one \"aws_db_subnet_group\" resource\n    with one \"subnet_ids\" attribute and IDs of the specific public and private subnets\n\nHas one \"aws_security_group\" resource\n    with security group rules to ensure the instance is not publicly accessible\n\nHas one \"aws_vpc\" resource\n    with one \"cidr_block\"\n\nHas at least one \"aws_subnet\" resource\n    with vpc_id set to corrosponding vpc id",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\ndata \"aws_availability_zones\" \"available\" {\n  state = \"available\"\n}\n\nmodule \"vpc\" {\n  source  = \"terraform-aws-modules/vpc/aws\"\n\n  name = \"main-vpc\"\n  cidr = \"10.0.0.0/16\"\n\n  azs                  = data.aws_availability_zones.available.names\n  public_subnets       = [\"10.0.4.0/24\", \"10.0.5.0/24\", \"10.0.6.0/24\"]\n}\n\nresource \"aws_db_subnet_group\" \"db-subnet-group\" {\n  name       = \"db-subnet-group\"\n  subnet_ids = module.vpc.public_subnets\n}\n\nresource \"aws_security_group\" \"db-sg\" {\n  name = \"db-sg\"\n  vpc_id = module.vpc.vpc_id\n}\n\nresource \"aws_vpc_security_group_ingress_rule\" \"db-sg-ingress-rule\" {\n  from_port       = 5432\n  to_port         = 5432\n  ip_protocol     = \"tcp\"\n  cidr_ipv4       = \"0.0.0.0/0\"\n  security_group_id = aws_security_group.db-sg.id\n}\n\nresource \"aws_vpc_security_group_egress_rule\" \"db-sg-egress-rule\" {\n  from_port       = 5432\n  to_port         = 5432\n  ip_protocol     = \"tcp\"\n  cidr_ipv4       = \"0.0.0.0/0\"\n  security_group_id = aws_security_group.db-sg.id\n}\n\nresource \"aws_db_parameter_group\" \"postgre-param-group\" {\n  name   = \"pgparamgrp15\"\n  family = \"postgres15\"\n\n  parameter {\n    name  = \"password_encryption\"\n    value = \"scram-sha-256\"\n  }\n\n  parameter {\n    name  = \"rds.force_ssl\"\n    value = \"0\"\n  }\n\n  lifecycle {\n    create_before_destroy = true\n  }\n}\n\nresource \"aws_kms_key\" \"rds-key\" {\n  description             = \"kmsrds\"\n  deletion_window_in_days = 14\n}\n\nresource \"aws_db_instance\" \"postgres\" {\n  identifier                      = \"pg\"\n  skip_final_snapshot             = true\n  apply_immediately               = true\n  allocated_storage               = 5\n  backup_retention_period         = 7\n  db_subnet_group_name            = aws_db_subnet_group.db-subnet-group.id\n  parameter_group_name            = aws_db_parameter_group.postgre-param-group.name\n  enabled_cloudwatch_logs_exports = [\"postgresql\", \"upgrade\"]\n  engine                          = \"postgres\"\n  engine_version                  = \"15\"\n  instance_class                  = \"db.t3.micro\"\n  db_name                         = \"postgres\" # Initial database name\n  username                        = \"myusername\"\n  password                        = \"mypassword\"\n  vpc_security_group_ids          = [aws_security_group.db-sg.id]\n  # Other security settings\n  publicly_accessible             = true\n  multi_az                        = true\n  storage_encrypted               = true\n  kms_key_id                      = aws_kms_key.rds-key.arn\n  # Default daily backup window\n  # https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html#USER_WorkingWithAutomatedBackups.BackupWindow\n}",
+  "bleuScore": 0.115519,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0336-llm-d14cb43d224c",
+  "generatedSourceFiles": [
+    "generated-source/row-0336-llm-d14cb43d224c/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "172",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "220",
+        "finding": "public_rds_instance"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "236",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_db_instance\": false, \"is_valid_db_subnet_group\": true, \"is_valid_security_group\": true, \"is_valid_subnet\": true, \"is_valid_vpc\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_db_instance": true,
+    "aws_db_parameter_group": true,
+    "aws_db_subnet_group": true,
+    "aws_security_group": true,
+    "aws_subnet": true,
+    "aws_vpc": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "Description: This Terraform configuration provisions an AWS RDS PostgreSQL 15 database instance intended for Airbyte connector test cases. It creates a VPC with two public subnets, internet access, a DB subnet group, and a security group allowing PostgreSQL access. The RDS instance is configured for low-maintenance managed operation with automatic minor version upgrades, immediate application of changes, and no final snapshot on deletion.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region to deploy the RDS PostgreSQL instance.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"project_name\" {\n  description = \"Name prefix for all resources.\"\n  type        = string\n  default     = \"airbyte-rds-test\"\n}\n\nvariable \"db_name\" {\n  description = \"Initial PostgreSQL database name.\"\n  type        = string\n  default     = \"airbyte_test\"\n}\n\nvariable \"db_username\" {\n  description = \"Master username for PostgreSQL.\"\n  type        = string\n  default     = \"airbyte_admin\"\n}\n\nvariable",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0336-llm-d14cb43d224c.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Set up a PostgreSQL 15 instance on AWS RDS within specific public subnets for running Airbyte connector test cases, using managed settings for low maintenance. The database should skip finale snapshot, and any change on it will apply immediately.",
+  "promptStrategy": "default",
+  "answer": "Description: This Terraform configuration provisions an AWS RDS PostgreSQL 15 database instance intended for Airbyte connector test cases. It creates a VPC with two public subnets, internet access, a DB subnet group, and a security group allowing PostgreSQL access. The RDS instance is configured for low-maintenance managed operation with automatic minor version upgrades, immediate application of changes, and no final snapshot on deletion.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_db_instance\": false, \"is_valid_db_subnet_group\": true, \"is_valid_security_group\": true, \"is_valid_subnet\": true, \"is_valid_vpc\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

@@ -1,0 +1,99 @@
+{
+  "index": 145,
+  "rowId": "145",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-02e4471e946b",
+  "userId": "local-user",
+  "durationSeconds": 109.3,
+  "difficulty": "2",
+  "resource": "aws_redshift_cluster",
+  "prompt": "Setup a 2 node RedShift cluster in us-east-1 and replicate it to us-east-2.",
+  "intent": "Creates a redshift_clluster in us-east-1 and a snapshot_copy in us-east-2",
+  "referenceOutput": "provider \"aws\" {\n  region = \"us-east-1\"\n  alias  = \"useast1\"\n}\n\n# Redshift Cluster in us-east-1\nresource \"aws_redshift_cluster\" \"primary_cluster\" {\n  provider = aws.useast1\n\n  cluster_identifier  = \"primary-cluster\"\n  database_name       = \"mydatabase\"\n  master_username     = \"myusername\"\n  master_password     = \"Mypassword1\"\n  node_type           = \"dc2.large\"\n  cluster_type        = \"multi-node\"\n  number_of_nodes     = 2\n  skip_final_snapshot = true\n\n  snapshot_copy {\n    destination_region = \"us-east-2\"\n  }\n\n}",
+  "bleuScore": 0.025643,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0145-llm-02e4471e946b",
+  "generatedSourceFiles": [
+    "generated-source/row-0145-llm-02e4471e946b/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "129",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "157",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "200",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: no matching EC2 VPC found\n\n  with data.aws_vpc.replica_default,\n  on main.tf line 75, in data \"aws_vpc\" \"replica_default\":\n  75: data \"aws_vpc\" \"replica_default\" {\n\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_redshift_cluster": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "Description: This Terraform configuration deploys a 2-node Amazon Redshift provisioned cluster in `us-east-1` and configures automated Redshift snapshot copy replication to `us-east-2`. It creates networking resources using the default VPCs in both regions, Redshift subnet groups, security groups, and an IAM role for Redshift. The Redshift cluster is private, deployed across subnets in `us-east-1`, and automated snapshots are copied to `us-east-2` for cross-region disaster recovery.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nprovider \"aws\" {\n  alias  = \"replica\"\n  region = \"us-east-2\"\n}\n\nvariable \"redshift_cluster_identifier\" {\n  description = \"Identifier for the primary Redshift cluster.\"\n  type        = string\n  default     = \"primary-redshift-cluster\"\n}\n\nvariable \"redshift_database_name\" {\n  description = \"Initial database name for Redshift.\"\n  type        = string\n  default     = \"analytics\"\n}\n\nvariable \"redshift_master_username\" {\n  description = \"Master username for Redshift.\"\n  type        = string\n  default     = \"admi",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0145-llm-02e4471e946b.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Setup a 2 node RedShift cluster in us-east-1 and replicate it to us-east-2.",
+  "promptStrategy": "default",
+  "answer": "Description: This Terraform configuration deploys a 2-node Amazon Redshift provisioned cluster in `us-east-1` and configures automated Redshift snapshot copy replication to `us-east-2`. It creates networking resources using the default VPCs in both regions, Redshift subnet groups, security groups, and an IAM role for Redshift. The Redshift cluster is private, deployed across subnets in `us-east-1`, and automated snapshots are copied to `us-east-2` for cross-region disaster recovery.",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: no matching EC2 VPC found with data.aws_vpc.replica_default, on main.tf line 75, in data \"aws_vpc\" \"replica_default\": 75: data \"aws_vpc\" \"replica_default\" {"
+}

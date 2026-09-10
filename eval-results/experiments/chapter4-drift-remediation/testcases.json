@@ -1,0 +1,240 @@
+{
+  "suiteId": "CH4-DRIFT-POLICY-AI-FIX-20",
+  "suiteName": "Chapter 4 drift, policy detection, and AI-agent remediation test suite",
+  "deployedWebsite": "https://main.d16q2yz06vzwcu.amplifyapp.com",
+  "region": "ap-southeast-1",
+  "commonFlow": [
+    "Deploy or reuse the Terraform fixture for the testcase.",
+    "Register the S3 Terraform state backend in the deployed Resource Catalog.",
+    "Run a baseline scan and verify it matches the testcase baseline expectation.",
+    "Apply the live AWS mutation outside Terraform.",
+    "Run a scan from the deployed website.",
+    "Open the drift or policy issue detail panel.",
+    "Click the fix action to hand the issue to the AI agent.",
+    "Verify the generated remediation context references only the selected issue.",
+    "Apply or simulate the accepted remediation.",
+    "Run a final scan and verify the testcase fixed expectation."
+  ],
+  "testcases": [
+    {
+      "id": "CH4-DRIFT-SG-SSH-001",
+      "title": "Detect and fix unmanaged public SSH ingress",
+      "service": "ec2",
+      "fixture": "terraform/",
+      "liveMutation": "Authorize tcp/22 ingress from 0.0.0.0/0 on aws_security_group.chapter4_demo.",
+      "baselineExpectation": {"driftAlerts": 0, "policyAlerts": 0},
+      "driftExpectation": {"minDriftAlerts": 1, "minPolicyAlerts": 1, "policyIds": ["CKV_AWS_25"], "resource": "aws_security_group.chapter4_demo"},
+      "agentFixExpectation": "Agent prompt contains resource address, ingress diff, expected no inbound rules, actual tcp/22 0.0.0.0/0, and requests removal of only this unmanaged rule.",
+      "fixedExpectation": {"driftAlerts": 0, "policyAlerts": 0}
+    },
+    {
+      "id": "CH4-DRIFT-SG-SSH-002",
+      "title": "Detect public SSH ingress with operator change description",
+      "service": "ec2",
+      "fixture": "terraform/",
+      "liveMutation": "Authorize tcp/22 ingress from 0.0.0.0/0 with description emergency-admin-access.",
+      "baselineExpectation": {"driftAlerts": 0, "policyAlerts": 0},
+      "driftExpectation": {"minDriftAlerts": 1, "minPolicyAlerts": 1, "policyIds": ["CKV_AWS_25"], "resource": "aws_security_group.chapter4_demo"},
+      "agentFixExpectation": "Agent prompt preserves the description in the actual attributes so the remediation is traceable to the manual operator change.",
+      "fixedExpectation": {"driftAlerts": 0, "policyAlerts": 0}
+    },
+    {
+      "id": "CH4-DRIFT-SG-SSH-003",
+      "title": "Detect public SSH inside a widened tcp port range",
+      "service": "ec2",
+      "fixture": "terraform/",
+      "liveMutation": "Authorize tcp/20-25 ingress from 0.0.0.0/0 on the managed security group.",
+      "baselineExpectation": {"driftAlerts": 0, "policyAlerts": 0},
+      "driftExpectation": {"minDriftAlerts": 1, "minPolicyAlerts": 1, "policyIds": ["CKV_AWS_25"], "resource": "aws_security_group.chapter4_demo"},
+      "agentFixExpectation": "Agent prompt identifies that port 22 is included in the actual public ingress range and proposes removing the unmanaged range.",
+      "fixedExpectation": {"driftAlerts": 0, "policyAlerts": 0}
+    },
+    {
+      "id": "CH4-DRIFT-SG-SSH-004",
+      "title": "Detect public SSH inside a broad administrative range",
+      "service": "ec2",
+      "fixture": "terraform/",
+      "liveMutation": "Authorize tcp/22-2222 ingress from 0.0.0.0/0 on the managed security group.",
+      "baselineExpectation": {"driftAlerts": 0, "policyAlerts": 0},
+      "driftExpectation": {"minDriftAlerts": 1, "minPolicyAlerts": 1, "policyIds": ["CKV_AWS_25"], "resource": "aws_security_group.chapter4_demo"},
+      "agentFixExpectation": "Agent prompt keeps the actual from_port and to_port values and asks for a narrow remediation scoped to the unauthorized range.",
+      "fixedExpectation": {"driftAlerts": 0, "policyAlerts": 0}
+    },
+    {
+      "id": "CH4-DRIFT-SG-SSH-005",
+      "title": "Detect duplicate drift source after repeated public SSH attempt",
+      "service": "ec2",
+      "fixture": "terraform/",
+      "liveMutation": "Attempt to authorize tcp/22 ingress from 0.0.0.0/0 twice; the second API call may be reported as duplicate.",
+      "baselineExpectation": {"driftAlerts": 0, "policyAlerts": 0},
+      "driftExpectation": {"minDriftAlerts": 1, "minPolicyAlerts": 1, "policyIds": ["CKV_AWS_25"], "resource": "aws_security_group.chapter4_demo"},
+      "agentFixExpectation": "Agent prompt contains one selected issue and does not duplicate remediation instructions for the same security group rule.",
+      "fixedExpectation": {"driftAlerts": 0, "policyAlerts": 0}
+    },
+    {
+      "id": "CH4-DRIFT-SG-SSH-006",
+      "title": "Detect public SSH after baseline scan evidence exists",
+      "service": "ec2",
+      "fixture": "terraform/",
+      "liveMutation": "Run a clean baseline scan, then authorize tcp/22 ingress from 0.0.0.0/0.",
+      "baselineExpectation": {"driftAlerts": 0, "policyAlerts": 0},
+      "driftExpectation": {"minDriftAlerts": 1, "minPolicyAlerts": 1, "policyIds": ["CKV_AWS_25"], "resource": "aws_security_group.chapter4_demo"},
+      "agentFixExpectation": "Agent prompt references the current drifted scan ID and the same backend used by the clean baseline scan.",
+      "fixedExpectation": {"driftAlerts": 0, "policyAlerts": 0}
+    },
+    {
+      "id": "CH4-DRIFT-SG-SSH-007",
+      "title": "Detect public SSH when the Resource Catalog filter is active",
+      "service": "ec2",
+      "fixture": "terraform/",
+      "liveMutation": "Authorize tcp/22 ingress from 0.0.0.0/0, then filter Resource Catalog rows by security group name.",
+      "baselineExpectation": {"driftAlerts": 0, "policyAlerts": 0},
+      "driftExpectation": {"minDriftAlerts": 1, "minPolicyAlerts": 1, "policyIds": ["CKV_AWS_25"], "resource": "aws_security_group.chapter4_demo"},
+      "agentFixExpectation": "Fix action remains available from the filtered resource row and opens the chat handoff for the selected drift only.",
+      "fixedExpectation": {"driftAlerts": 0, "policyAlerts": 0}
+    },
+    {
+      "id": "CH4-DRIFT-SG-SSH-008",
+      "title": "Detect public SSH from Drift Guard scan history",
+      "service": "ec2",
+      "fixture": "terraform/",
+      "liveMutation": "Authorize tcp/22 ingress from 0.0.0.0/0 and trigger the backend through Drift Guard/run scan history.",
+      "baselineExpectation": {"driftAlerts": 0, "policyAlerts": 0},
+      "driftExpectation": {"minDriftAlerts": 1, "minPolicyAlerts": 1, "policyIds": ["CKV_AWS_25"], "resource": "aws_security_group.chapter4_demo"},
+      "agentFixExpectation": "Fix action from scan history carries the scan ID, backend ID, resource address, and CKV_AWS_25 policy detail into the agent prompt.",
+      "fixedExpectation": {"driftAlerts": 0, "policyAlerts": 0}
+    },
+    {
+      "id": "CH4-DRIFT-SG-SSH-009",
+      "title": "Detect public SSH after page refresh",
+      "service": "ec2",
+      "fixture": "terraform/",
+      "liveMutation": "Authorize tcp/22 ingress from 0.0.0.0/0, run scan, refresh the deployed website, and reopen the scan result.",
+      "baselineExpectation": {"driftAlerts": 0, "policyAlerts": 0},
+      "driftExpectation": {"minDriftAlerts": 1, "minPolicyAlerts": 1, "policyIds": ["CKV_AWS_25"], "resource": "aws_security_group.chapter4_demo"},
+      "agentFixExpectation": "Persisted scan result still provides enough issue context for the AI-agent fix handoff after browser refresh.",
+      "fixedExpectation": {"driftAlerts": 0, "policyAlerts": 0}
+    },
+    {
+      "id": "CH4-DRIFT-SG-SSH-010",
+      "title": "Detect public SSH with a reused Cognito testcase user",
+      "service": "ec2",
+      "fixture": "terraform/",
+      "liveMutation": "Authenticate with an existing testcase user, authorize tcp/22 ingress from 0.0.0.0/0, and run the scan.",
+      "baselineExpectation": {"driftAlerts": 0, "policyAlerts": 0},
+      "driftExpectation": {"minDriftAlerts": 1, "minPolicyAlerts": 1, "policyIds": ["CKV_AWS_25"], "resource": "aws_security_group.chapter4_demo"},
+      "agentFixExpectation": "Agent handoff uses the authenticated user's backend and repository metadata, not a previous user's state backend.",
+      "fixedExpectation": {"driftAlerts": 0, "policyAlerts": 0}
+    },
+    {
+      "id": "CH4-DRIFT-SG-HTTP-011",
+      "title": "Detect unmanaged public HTTP ingress as drift only",
+      "service": "ec2",
+      "fixture": "terraform/",
+      "liveMutation": "Authorize tcp/80 ingress from 0.0.0.0/0 on the managed security group.",
+      "baselineExpectation": {"driftAlerts": 0, "policyAlerts": 0},
+      "driftExpectation": {"minDriftAlerts": 1, "minPolicyAlerts": 0, "policyIds": [], "resource": "aws_security_group.chapter4_demo"},
+      "agentFixExpectation": "Agent prompt classifies the selected issue as drift, not CKV_AWS_25, and asks whether Terraform or AWS should be made authoritative.",
+      "fixedExpectation": {"driftAlerts": 0, "policyAlerts": 0}
+    },
+    {
+      "id": "CH4-DRIFT-SG-HTTPS-012",
+      "title": "Detect unmanaged public HTTPS ingress as drift only",
+      "service": "ec2",
+      "fixture": "terraform/",
+      "liveMutation": "Authorize tcp/443 ingress from 0.0.0.0/0 on the managed security group.",
+      "baselineExpectation": {"driftAlerts": 0, "policyAlerts": 0},
+      "driftExpectation": {"minDriftAlerts": 1, "minPolicyAlerts": 0, "policyIds": [], "resource": "aws_security_group.chapter4_demo"},
+      "agentFixExpectation": "Agent prompt includes the unexpected inbound HTTPS rule and does not mention the SSH policy ID.",
+      "fixedExpectation": {"driftAlerts": 0, "policyAlerts": 0}
+    },
+    {
+      "id": "CH4-DRIFT-SG-PRIVATE-SSH-013",
+      "title": "Detect restricted SSH ingress as drift without public SSH policy",
+      "service": "ec2",
+      "fixture": "terraform/",
+      "liveMutation": "Authorize tcp/22 ingress from 10.42.0.0/16 on the managed security group.",
+      "baselineExpectation": {"driftAlerts": 0, "policyAlerts": 0},
+      "driftExpectation": {"minDriftAlerts": 1, "minPolicyAlerts": 0, "policyIds": [], "resource": "aws_security_group.chapter4_demo"},
+      "agentFixExpectation": "Agent prompt shows the private CIDR and keeps the remediation scoped to unauthorized drift rather than public SSH policy remediation.",
+      "fixedExpectation": {"driftAlerts": 0, "policyAlerts": 0}
+    },
+    {
+      "id": "CH4-DRIFT-SG-EGRESS-014",
+      "title": "Detect removed managed HTTPS egress",
+      "service": "ec2",
+      "fixture": "terraform/",
+      "liveMutation": "Revoke the Terraform-managed tcp/443 egress rule from 0.0.0.0/0.",
+      "baselineExpectation": {"driftAlerts": 0, "policyAlerts": 0},
+      "driftExpectation": {"minDriftAlerts": 1, "minPolicyAlerts": 0, "policyIds": [], "resource": "aws_security_group.chapter4_demo"},
+      "agentFixExpectation": "Agent prompt reports expected egress tcp/443 and actual missing egress, then proposes restoring the managed rule or reconciling Terraform.",
+      "fixedExpectation": {"driftAlerts": 0, "policyAlerts": 0}
+    },
+    {
+      "id": "CH4-DRIFT-SG-TAG-015",
+      "title": "Detect changed security-group governance tag",
+      "service": "ec2",
+      "fixture": "terraform/",
+      "liveMutation": "Change tag ManagedBy from terraform to console on the managed security group.",
+      "baselineExpectation": {"driftAlerts": 0, "policyAlerts": 0},
+      "driftExpectation": {"minDriftAlerts": 1, "minPolicyAlerts": 0, "policyIds": [], "resource": "aws_security_group.chapter4_demo"},
+      "agentFixExpectation": "Agent prompt includes expected and actual tag values so the remediation can restore Terraform ownership metadata.",
+      "fixedExpectation": {"driftAlerts": 0, "policyAlerts": 0}
+    },
+    {
+      "id": "CH4-DRIFT-VPC-TAG-016",
+      "title": "Detect changed VPC thesis-scope tag",
+      "service": "ec2",
+      "fixture": "terraform/",
+      "liveMutation": "Change tag ThesisScope on aws_vpc.chapter4_demo to manual-change.",
+      "baselineExpectation": {"driftAlerts": 0, "policyAlerts": 0},
+      "driftExpectation": {"minDriftAlerts": 1, "minPolicyAlerts": 0, "policyIds": [], "resource": "aws_vpc.chapter4_demo"},
+      "agentFixExpectation": "Agent prompt identifies the VPC tag drift and does not mix in unrelated security-group policy context.",
+      "fixedExpectation": {"driftAlerts": 0, "policyAlerts": 0}
+    },
+    {
+      "id": "CH4-POLICY-SG-SSH-017",
+      "title": "Detect Terraform-authored public SSH as policy violation",
+      "service": "ec2",
+      "fixture": "terraform-policy-public-ssh variant",
+      "liveMutation": "Use a Terraform variant whose desired state includes tcp/22 ingress from 0.0.0.0/0, then scan without manual drift.",
+      "baselineExpectation": {"driftAlerts": 0, "policyAlerts": 1},
+      "driftExpectation": {"minDriftAlerts": 0, "minPolicyAlerts": 1, "policyIds": ["CKV_AWS_25"], "resource": "aws_security_group.chapter4_demo"},
+      "agentFixExpectation": "Agent prompt classifies this as policy remediation and proposes changing Terraform to remove public SSH instead of only revoking AWS state.",
+      "fixedExpectation": {"driftAlerts": 0, "policyAlerts": 0}
+    },
+    {
+      "id": "CH4-POLICY-SG-RANGE-018",
+      "title": "Detect Terraform-authored public SSH range as policy violation",
+      "service": "ec2",
+      "fixture": "terraform-policy-public-ssh-range variant",
+      "liveMutation": "Use a Terraform variant whose desired state includes tcp/20-25 ingress from 0.0.0.0/0, then scan without manual drift.",
+      "baselineExpectation": {"driftAlerts": 0, "policyAlerts": 1},
+      "driftExpectation": {"minDriftAlerts": 0, "minPolicyAlerts": 1, "policyIds": ["CKV_AWS_25"], "resource": "aws_security_group.chapter4_demo"},
+      "agentFixExpectation": "Agent prompt states that the unsafe configuration exists in Terraform and requires a code fix reviewed through pull request.",
+      "fixedExpectation": {"driftAlerts": 0, "policyAlerts": 0}
+    },
+    {
+      "id": "CH4-HANDOFF-DRIFT-019",
+      "title": "Verify AI-agent handoff contains only selected drift context",
+      "service": "frontend-agent-handoff",
+      "fixture": "Existing drifted scan from CH4-DRIFT-SG-SSH-001",
+      "liveMutation": "Open the drift issue detail and click the drift fix action.",
+      "baselineExpectation": {"driftAlerts": 0, "policyAlerts": 0},
+      "driftExpectation": {"minDriftAlerts": 1, "minPolicyAlerts": 1, "policyIds": ["CKV_AWS_25"], "resource": "aws_security_group.chapter4_demo"},
+      "agentFixExpectation": "Chat request contains Issue type: drift, Kind: drift, expected ingress empty, actual public SSH rule, and excludes rawResult JSON dumps.",
+      "fixedExpectation": {"driftAlerts": 0, "policyAlerts": 0}
+    },
+    {
+      "id": "CH4-HANDOFF-POLICY-020",
+      "title": "Verify AI-agent handoff contains selected policy context",
+      "service": "frontend-agent-handoff",
+      "fixture": "Existing policy finding from CH4-DRIFT-SG-SSH-001 or CH4-POLICY-SG-SSH-017",
+      "liveMutation": "Open the policy issue detail and click the policy fix action.",
+      "baselineExpectation": {"driftAlerts": 0, "policyAlerts": 0},
+      "driftExpectation": {"minDriftAlerts": 0, "minPolicyAlerts": 1, "policyIds": ["CKV_AWS_25"], "resource": "aws_security_group.chapter4_demo"},
+      "agentFixExpectation": "Chat request contains Issue type: policy, CKV_AWS_25, resource address, policy description, state backend, repository metadata, and no unrelated drift-only fields.",
+      "fixedExpectation": {"driftAlerts": 0, "policyAlerts": 0}
+    }
+  ]
+}

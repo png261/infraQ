@@ -1,0 +1,80 @@
+{
+  "index": 35,
+  "rowId": "35",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-e2a3f3eb6699",
+  "userId": "local-user",
+  "durationSeconds": 54.12,
+  "difficulty": "4",
+  "resource": "aws_codebuild_project, aws_iam_role",
+  "prompt": "create a AWS codebuild project resource with example iam role, example environment variable, and no source",
+  "intent": "Has one \"aws_iam_role\" resource and one \"aws_codebuild_project\" resource with at least one \"environment_variable\" within the \"environment\" block, and the \"type\" argument within the \"source\" block equal to \"NO_SOURCE\"",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\ndata \"aws_iam_policy_document\" \"assume_role\" {\n  statement {\n    effect = \"Allow\"\n\n    principals {\n      type        = \"Service\"\n      identifiers = [\"codebuild.amazonaws.com\"]\n    }\n\n    actions = [\"sts:AssumeRole\"]\n  }\n}\n\nresource \"aws_iam_role\" \"example3\" {\n  name               = \"example3\"\n  assume_role_policy = data.aws_iam_policy_document.assume_role.json\n}\n\nresource \"aws_codebuild_project\" \"example3\" {\n  name          = \"DROW3_codebuild\"\n  service_role  = aws_iam_role.example3.arn\n\n  artifacts {\n    type = \"NO_ARTIFACTS\"\n  }\n\n  environment {\n    compute_type = \"BUILD_GENERAL1_SMALL\"\n    image        = \"aws/codebuild/standard:7.0-24.10.29\"\n    type         = \"LINUX_CONTAINER\"\n\n    environment_variable {\n      name  = \"SOME_KEY1\"\n      value = \"SOME_VALUE1\"\n    }\n  }\n\n  source {\n    type            = \"NO_SOURCE\"\n    buildspec       = file(\"buildspec.yml\")\n  }\n}",
+  "bleuScore": 0.254496,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/generated-source/row-0035-llm-e2a3f3eb6699",
+  "generatedSourceFiles": [
+    "generated-source/row-0035-llm-e2a3f3eb6699/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_codebuild_project": true,
+    "aws_iam_role": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS CodeBuild project with:\n\n- An example IAM role for CodeBuild\n- An inline IAM policy allowing CloudWatch Logs usage\n- A CodeBuild project using `NO_SOURCE`\n- An example environment variable\n- A basic buildspec embedded directly in the project\n- AWS provider configured for a valid region\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_iam_role\" \"codebuild_role\" {\n  name = \"example-codebuild-service-role\"\n\n  assume_role_policy = jsonencode({\n    Version = \"2012-10-17\"\n    Statement = [\n      {\n        Effect = \"Allow\"\n        Principal = {\n          Service = \"codebuild.amazonaws.com\"\n        }\n        Action = \"sts:AssumeRole\"\n      }\n    ]\n  })\n}\n\nresource \"aws_iam_role_policy\" \"codebuild_policy\" {\n  name = \"example-codebuild-inline-policy\"\n  role = aws_iam_role.codebuild_role.id\n\n  policy = jsonencode({\n    Version = \"2012-10-17\"\n    Statement = [\n      {\n        Effect = \"Allow\"\n        Action = [\n          \"logs:CreateLogGroup\",\n          \"logs:CreateLogStream\",\n          ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/run-summaries/row-0035-llm-e2a3f3eb6699.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: create a AWS codebuild project resource with example iam role, example environment variable, and no source",
+  "answer": "This Terraform configuration creates an AWS CodeBuild project with:\n\n- An example IAM role for CodeBuild\n- An inline IAM policy allowing CloudWatch Logs usage\n- A CodeBuild project using `NO_SOURCE`\n- An example environment variable\n- A basic buildspec embedded directly in the project\n- AWS provider configured for a valid region",
+  "failure_category": "",
+  "failure_reason": ""
+}

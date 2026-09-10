@@ -1,0 +1,81 @@
+{
+  "index": 48,
+  "rowId": "48",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-3a7ea926611e",
+  "userId": "local-user",
+  "durationSeconds": 343.83,
+  "difficulty": "4",
+  "resource": "aws_lex_bot, aws_lex_intent, aws_lex_intent, aws_lex_intent",
+  "prompt": "create an aws_lex_bot for ordering pizzas that is meant for kids",
+  "intent": "Has one resource \"aws_lex_bot\" with \"child_directed\" = true and at least one \"aws_lex_intent\" resource",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\n\nresource \"aws_lex_bot\" \"KidsPizzaOrderBot\" {\n  child_directed = true\n  name           = \"KidsPizzaOrderBot\"\n  process_behavior = \"BUILD\"\n  idle_session_ttl_in_seconds = 300\n  locale = \"en-US\"\n  voice_id = \"Salli\"\n\n  abort_statement {\n    message {\n      content      = \"I'm sorry, I can't assist further on this.\"\n      content_type = \"PlainText\"\n    }\n  }\n\n  clarification_prompt {\n    max_attempts = 1\n    message {\n      content      = \"I'm sorry, could you please repeat that?\"\n      content_type = \"PlainText\"\n    }\n  }\n\n  intent {\n    intent_name    = aws_lex_intent.PizzaOrder.name\n    intent_version = aws_lex_intent.PizzaOrder.version\n  }\n\n  intent {\n    intent_name    = aws_lex_intent.CancelOrder.name\n    intent_version = aws_lex_intent.CancelOrder.version\n  }\n\n  intent {\n    intent_name    = aws_lex_intent.Appreciation.name\n    intent_version = aws_lex_intent.Appreciation.version\n  }\n}\n\nresource \"aws_lex_intent\" \"PizzaOrder\" {\n  name = \"PizzaOrder\"\n  description = \"Intent for ordering pizza\"\n\n  sample_utterances = [\n    \"I would like to order a pizza\",\n  ]\n\n  fulfillment_activity {\n    type = \"ReturnIntent\"\n  }\n}\n\nresource \"aws_lex_intent\" \"CancelOrder\" {\n  name = \"CancelOrder\"\n  description = \"Intent for canceling pizza order\"\n\n  sample_utterances = [\n    \"I would like to cancel my order\",\n  ]\n\n  fulfillment_activity {\n    type = \"ReturnIntent\"\n  }\n}\n\nresource \"aws_lex_intent\" \"Appreciation\" {\n  name = \"Appreciation\"\n  description = \"Intent for appreciating the service\"\n\n  sample_utterances = [\n    \"I appreciate your service\",\n  ]\n\n  fulfillment_activity {\n    type = \"ReturnIntent\"\n  }\n}",
+  "bleuScore": 0.08981,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-1/generated-source/row-0048-llm-3a7ea926611e",
+  "generatedSourceFiles": [
+    "generated-source/row-0048-llm-3a7ea926611e/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_lex_bot": true,
+    "aws_lex_intent": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "Description: This Terraform configuration creates an AWS Lex V1 chatbot named `KidsPizzaOrderBot` for helping kids order pizzas. It includes custom slot types for pizza size, crust, and toppings, an intent for collecting the pizza order, and a child-directed Lex bot configuration using friendly prompts. The bot uses `ReturnIntent` fulfillment, so it does not require a Lambda function.\n\n```hcl\nterraform {\n  required_version = \">= 1.3.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_lex_slot_type\" \"pizza_size\" {\n  name                     = \"KidsPizzaSize\"\n  description              = \"Pizza sizes that kids can choose from.\"\n  value_selection_strategy = \"ORIGINAL_VALUE\"\n\n  enumeration_value {\n    value    = \"small\"\n    synonyms = [\"little\", \"tiny\", \"kid size\"]\n  }\n\n  enumeration_value {\n    value    = \"medium\"\n    synonyms = [\"regular\", \"normal\"]\n  }\n\n  enumeration_value {\n    value    = \"large\"\n    synonyms = [\"big\", \"giant\", \"family size\"]\n  }\n}\n\nresource \"aws_lex_slot_type\" \"pizza_crust\" {\n  name                     = \"KidsPizzaCrust\"\n  description              = \"P",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-1/run-summaries/row-0048-llm-3a7ea926611e.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: create an aws_lex_bot for ordering pizzas that is meant for kids",
+  "promptStrategy": "default",
+  "answer": "Description: This Terraform configuration creates an AWS Lex V1 chatbot named `KidsPizzaOrderBot` for helping kids order pizzas. It includes custom slot types for pizza size, crust, and toppings, an intent for collecting the pizza order, and a child-directed Lex bot configuration using friendly prompts. The bot uses `ReturnIntent` fulfillment, so it does not require a Lambda function.",
+  "failure_category": "",
+  "failure_reason": ""
+}

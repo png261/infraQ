@@ -1,0 +1,80 @@
+{
+  "index": 268,
+  "rowId": "268",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-523b9a52a9ee",
+  "userId": "local-user",
+  "durationSeconds": 73.65,
+  "difficulty": "1",
+  "resource": "aws_s3_bucket",
+  "prompt": "Create an AWS resource to help me store images that I want to display on my website",
+  "intent": "Has an aws_s3_bucket resource",
+  "referenceOutput": "resource \"aws_s3_bucket\" \"example-bucket\" {\n  bucket = \"test-bucket\"\n}",
+  "bleuScore": 0.005289,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0268-llm-523b9a52a9ee",
+  "generatedSourceFiles": [
+    "generated-source/row-0268-llm-523b9a52a9ee/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_s3_bucket": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS S3 bucket for storing website images. The bucket is configured to allow public read access to objects so images can be displayed on a website. It also enables versioning, configures CORS for browser access, and outputs the bucket name and public URL format for uploaded images.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \"~> 3.6\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the image storage bucket will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"bucket_name_prefix\" {\n  description = \"Prefix for the S3 bucket name. A random suffix will be added to ensure global uniqueness.\"\n  type        = string\n  default     = \"website-images\"\n}\n\nvariable \"allowed_cors_origins\" {\n  description = \"Origins allowed to access images from the bucket. Use your website domain in production.\"\n  type        = list(string)\n  default     = [\"*\"]\n}\n\nresource \"random_id\" \"bucket_suffix\" {\n  by",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0268-llm-523b9a52a9ee.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an AWS resource to help me store images that I want to display on my website",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS S3 bucket for storing website images. The bucket is configured to allow public read access to objects so images can be displayed on a website. It also enables versioning, configures CORS for browser access, and outputs the bucket name and public URL format for uploaded images.",
+  "failure_category": "",
+  "failure_reason": ""
+}

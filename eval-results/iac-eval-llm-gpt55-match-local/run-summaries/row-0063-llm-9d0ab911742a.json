@@ -1,0 +1,85 @@
+{
+  "index": 63,
+  "rowId": "63",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-9d0ab911742a",
+  "userId": "local-user",
+  "durationSeconds": 76.32,
+  "difficulty": "3",
+  "resource": "aws_iam_role, aws_kinesis_firehose_delivery_stream, aws_s3_bucket, aws_iam_policy_document",
+  "prompt": "Generate a Kinesis Firehose Delivery Stream with a Splunk destination",
+  "intent": "Has one \"aws_iam_role\" resource, one \"aws_s3_bucket\" resource, and one \"aws_kinesis_firehose_delivery_stream\" resource with an \"splunk_configuration\" block",
+  "referenceOutput": "provider \"aws\" {\n  region = \"us-west-2\"\n}\n\ndata \"aws_iam_policy_document\" \"firehose_assume_role\" {\n  statement {\n    effect = \"Allow\"\n\n    principals {\n      type        = \"Service\"\n      identifiers = [\"firehose.amazonaws.com\"]\n    }\n\n    actions = [\"sts:AssumeRole\"]\n  }\n}\n\nresource \"aws_iam_role\" \"firehose_role\" {\n  name               = \"firehose_test_role\"\n  assume_role_policy = data.aws_iam_policy_document.firehose_assume_role.json\n}\n\nresource \"aws_s3_bucket\" \"januaryfifth\" {\n  bucket = \"januaryfifth\"\n}\n\nresource \"aws_kinesis_firehose_delivery_stream\" \"test_stream\" {\n  name        = \"terraform-kinesis-firehose-test-stream\"\n  destination = \"splunk\"\n\n  splunk_configuration {\n    hec_endpoint               = \"https://http-inputs-mydomain.splunkcloud.com:443\"\n    hec_token                  = \"51D4DA16-C61B-4F5F-8EC7-ED4301342A4A\"\n    hec_acknowledgment_timeout = 600\n    hec_endpoint_type          = \"Event\"\n    s3_backup_mode             = \"FailedEventsOnly\"\n\n    s3_configuration {\n      role_arn           = aws_iam_role.firehose_role.arn\n      bucket_arn         = aws_s3_bucket.januaryfifth.arn\n      buffering_size     = 10\n      buffering_interval = 400\n      compression_format = \"GZIP\"\n    }\n  }\n}",
+  "bleuScore": 0.069007,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-0/generated-source/row-0063-llm-9d0ab911742a",
+  "generatedSourceFiles": [
+    "generated-source/row-0063-llm-9d0ab911742a/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_iam_role": true,
+    "aws_kinesis_firehose_delivery_stream": true,
+    "aws_s3_bucket": true,
+    "aws_iam_policy_document": false
+  },
+  "missingMarkers": [
+    "aws_iam_policy_document"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "The following Terraform configuration creates an AWS Kinesis Data Firehose delivery stream with a Splunk destination. It includes:\n\n- AWS provider configuration\n- An S3 bucket for failed event backup\n- IAM role and policy for Firehose\n- CloudWatch Log Group and Log Stream for delivery logging\n- A Kinesis Firehose Delivery Stream configured to send records to Splunk HEC\n\nReplace the default Splunk HEC endpoint and token values with valid Splunk values before production use.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"firehose_stream_name\" {\n  description = \"Name of the Kinesis Firehose delivery stream.\"\n  type        = string\n  default     = \"splunk-firehose-delivery-stream\"\n}\n\nvariable \"splunk_hec_endpoint\" {\n  description = \"Splunk HTTP Event Collector endpoint.\"\n  type        = string\n  default     = \"https://http-inputs.example.splunkcloud.com:443\"\n}\n\nvariable \"splunk_he",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-0/run-summaries/row-0063-llm-9d0ab911742a.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Generate a Kinesis Firehose Delivery Stream with a Splunk destination",
+  "promptStrategy": "default",
+  "answer": "The following Terraform configuration creates an AWS Kinesis Data Firehose delivery stream with a Splunk destination. It includes:\n\n- AWS provider configuration\n- An S3 bucket for failed event backup\n- IAM role and policy for Firehose\n- CloudWatch Log Group and Log Stream for delivery logging\n- A Kinesis Firehose Delivery Stream configured to send records to Splunk HEC\n\nReplace the default Splunk HEC endpoint and token values with valid Splunk values before production use.",
+  "failure_category": "",
+  "failure_reason": ""
+}

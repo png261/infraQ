@@ -1,0 +1,84 @@
+{
+  "index": 252,
+  "rowId": "252",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-617cb47984e8",
+  "userId": "local-user",
+  "durationSeconds": 100.51,
+  "difficulty": "2",
+  "resource": "aws_chime_voice_connector, aws_chime_voice_connector_logging",
+  "prompt": "Create an AWS Chime Voice Connector with encryption and log media metrics.",
+  "intent": "Has one resource \"aws_chime_voice_connector\"\nwith require_encryption=true\n\nHas one resource \"aws_chime_voice_connector_logging\"\nwith voice_connector_id equal to the id of the voice connector\nwith enable_media_metric_logs true",
+  "referenceOutput": "resource \"aws_chime_voice_connector\" \"default\" {\n  name               = \"vc-name-test\"\n  require_encryption = true\n}\n\nresource \"aws_chime_voice_connector_logging\" \"default\" {\n  enable_sip_logs          = false\n  enable_media_metric_logs = true\n  voice_connector_id       = aws_chime_voice_connector.default.id\n}",
+  "bleuScore": 0.029207,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0252-llm-617cb47984e8",
+  "generatedSourceFiles": [
+    "generated-source/row-0252-llm-617cb47984e8/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: Invalid resource type\n\n  on main.tf line 28, in resource \"aws_chimesdkvoice_voice_connector\" \"this\":\n  28: resource \"aws_chimesdkvoice_voice_connector\" \"this\" {\n\nThe provider hashicorp/aws does not support resource type\n\"aws_chimesdkvoice_voice_connector\".\n\nError: Invalid resource type\n\n  on main.tf line 40, in resource \"aws_chimesdkvoice_voice_connector_logging\" \"this\":\n  40: resource \"aws_chimesdkvoice_voice_connector_logging\" \"this\" {\n\nThe provider hashicorp/aws does not support resource type\n\"aws_chimesdkvoice_voice_connector_logging\".\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_chime_voice_connector": false,
+    "aws_chime_voice_connector_logging": false
+  },
+  "missingMarkers": [
+    "aws_chime_voice_connector",
+    "aws_chime_voice_connector_logging"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates an AWS Chime SDK Voice Connector in `us-east-1`, requires encryption for calls, and enables media metric logging for the Voice Connector.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nvariable \"voice_connector_name\" {\n  description = \"Name of the AWS Chime SDK Voice Connector.\"\n  type        = string\n  default     = \"encrypted-media-metrics-voice-connector\"\n}\n\nvariable \"voice_connector_region\" {\n  description = \"AWS region for the Chime SDK Voice Connector.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nresource \"aws_chimesdkvoice_voice_connector\" \"this\" {\n  name               = var.voice_connector_name\n  require_encryption = true\n  aws_region         = var.voice_connector_region\n\n  tags = {\n    Name        = var.voice_connector_name\n    Environment = \"example\"\n    ManagedBy   = \"terraform\"\n  }\n}\n\nresource \"aws_chimesdkvoice_voice_connector_logging\" \"this\" {\n  voice_connector_id = aws_chimesdkvoice_voice_connector.this.id\n\n  logging_configuration {\n    enable_sip_logs           = true\n",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0252-llm-617cb47984e8.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an AWS Chime Voice Connector with encryption and log media metrics.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS Chime SDK Voice Connector in `us-east-1`, requires encryption for calls, and enables media metric logging for the Voice Connector.",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: Invalid resource type on main.tf line 28, in resource \"aws_chimesdkvoice_voice_connector\" \"this\": 28: resource \"aws_chimesdkvoice_voice_connector\" \"this\" { The provider hashicorp/aws does not support resource type \"aws_chimesdkvoice_voice_connector\". Error: Invalid resource type on main.tf line 40, in resource \"aws_chimesdkvoice_voice_connector_logging\" \"this\": 40: resource \"aws_chimesdkvoice_voice_connector_logging\" \"this\" { The provider hashicorp/aws does not support resource type \"aws_... <truncated 39 chars>"
+}

@@ -1,0 +1,83 @@
+{
+  "index": 40,
+  "rowId": "40",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-fdf64a235c07",
+  "userId": "local-user",
+  "durationSeconds": 135.82,
+  "difficulty": "5",
+  "resource": "aws_codebuild_project, aws_iam_role, aws_s3_bucket",
+  "prompt": "create a AWS codebuild project resource with example iam role and buildbatch configuration",
+  "intent": "Has one \"aws_iam_role\" resource, one \"aws_s3_bucket\" resource, and one \"aws_codebuild_project\" resource with a \"build_batch_config\" block",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_iam_role\" \"test_role9\" {\n  name = \"test_role9\"\n\n  assume_role_policy = jsonencode({\n    Version = \"2012-10-17\"\n    Statement = [\n      {\n        Action = \"sts:AssumeRole\"\n        Effect = \"Allow\"\n        Sid    = \"\"\n        Principal = {\n          Service = \"codebuild.amazonaws.com\"\n        }\n      },\n    ]\n  })\n}\n\nresource \"aws_s3_bucket\" \"aprilthirthieth\" {\n  bucket = \"aprilthirthieth\"\n}\n\nresource \"aws_codebuild_project\" \"example9\" {\n  name          = \"test-project9\"\n  service_role  = aws_iam_role.test_role9.arn\n\n  artifacts {\n    location  = aws_s3_bucket.aprilthirthieth.bucket\n    name     = \"results.zip\"\n    type      = \"S3\"\n    path      = \"/\"\n    packaging = \"ZIP\"\n  }\n\n  environment {\n    compute_type                = \"BUILD_GENERAL1_SMALL\"\n    image                       = \"aws/codebuild/standard:7.0-24.10.29\"\n    type                        = \"LINUX_CONTAINER\"\n    image_pull_credentials_type = \"CODEBUILD\"\n\n  }\n\n  source {\n    type            = \"GITHUB\"\n    location        = \"https://github.com/mitchellh/packer.git\"\n    git_clone_depth = 1\n  }\n\n  source_version = \"master\"\n\n  build_batch_config {\n    service_role = aws_iam_role.test_role9.arn\n    restrictions {\n      maximum_builds_allowed = 4\n    }\n  }\n\n}",
+  "bleuScore": 0.21538,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/generated-source/row-0040-llm-fdf64a235c07",
+  "generatedSourceFiles": [
+    "generated-source/row-0040-llm-fdf64a235c07/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: Failed to load plugin schemas\n\nError while loading schemas for plugin components: Failed to obtain provider\nschema: Could not load the schema for provider\nregistry.terraform.io/hashicorp/aws: failed to instantiate provider\n\"registry.terraform.io/hashicorp/aws\" to obtain schema: timeout while waiting\nfor plugin to start..\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_codebuild_project": true,
+    "aws_iam_role": true,
+    "aws_s3_bucket": false
+  },
+  "missingMarkers": [
+    "aws_s3_bucket"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "Below is a deployable Terraform configuration that creates:\n\n- An AWS CodeBuild project\n- An example IAM service role for CodeBuild\n- IAM permissions for CloudWatch Logs and CodeBuild batch execution\n- A CodeBuild project using `NO_SOURCE` and `NO_ARTIFACTS`\n- A `build_batch_config` block with batch restrictions and service role configuration\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\ndata \"aws_caller_identity\" \"current\" {}\n\ndata \"aws_region\" \"current\" {}\n\nresource \"aws_iam_role\" \"codebuild_service_role\" {\n  name = \"example-codebuild-batch-service-role\"\n\n  assume_role_policy = jsonencode({\n    Version = \"2012-10-17\"\n    Statement = [\n      {\n        Effect = \"Allow\"\n        Principal = {\n          Service = \"codebuild.amazonaws.com\"\n        }\n        Action = \"sts:AssumeRole\"\n      }\n    ]\n  })\n}\n\nresource \"aws_iam_role_policy\" \"codebuild_service_policy\" {\n  name = \"example-codebuild-batch-service-policy\"\n  role = aws_iam_role.codebuild_service_role.id\n\n  policy = jsonencode({\n    Version = \"2012-10-17\"\n    Statement = [\n     ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/run-summaries/row-0040-llm-fdf64a235c07.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: create a AWS codebuild project resource with example iam role and buildbatch configuration",
+  "answer": "Below is a deployable Terraform configuration that creates:\n\n- An AWS CodeBuild project\n- An example IAM service role for CodeBuild\n- IAM permissions for CloudWatch Logs and CodeBuild batch execution\n- A CodeBuild project using `NO_SOURCE` and `NO_ARTIFACTS`\n- A `build_batch_config` block with batch restrictions and service role configuration",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: Failed to load plugin schemas Error while loading schemas for plugin components: Failed to obtain provider schema: Could not load the schema for provider registry.terraform.io/hashicorp/aws: failed to instantiate provider \"registry.terraform.io/hashicorp/aws\" to obtain schema: timeout while waiting for plugin to start.."
+}

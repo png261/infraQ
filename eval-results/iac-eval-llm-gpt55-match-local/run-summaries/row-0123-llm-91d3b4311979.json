@@ -1,0 +1,81 @@
+{
+  "index": 123,
+  "rowId": "123",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-91d3b4311979",
+  "userId": "local-user",
+  "durationSeconds": 72.53,
+  "difficulty": "2",
+  "resource": "aws_s3_bucket, aws_s3_bucket_ownership_controls",
+  "prompt": "Generate a Terraform configuration for creating an AWS S3 bucket and setting its ownership controls. Define a resource for an S3 bucket with a specified name. Follow this by configuring ownership controls for this bucket, referencing its ID. Within the ownership controls, set a rule to specify the object ownership as 'BucketOwnerPreferred'. Ensure that the resources are properly linked using references, and the configuration is clearly laid out to reflect these settings.",
+  "intent": "Resource \"aws_s3_bucket\" \nhas one \"bucket\"\n\nResource \"aws_s3_bucket_ownership_controls\"\nhas one \"bucket\"\nwithin the \"rule\", it specifies:\n\"object_ownership\"",
+  "referenceOutput": "provider \"aws\" {\n    region = \"us-west-1\"\n}\n\nresource \"aws_s3_bucket\" \"example\" {\n  bucket = \"example\"\n}\n\nresource \"aws_s3_bucket_ownership_controls\" \"example\" {\n  bucket = aws_s3_bucket.example.id\n\n  rule {\n    object_ownership = \"BucketOwnerPreferred\"\n  }\n}",
+  "bleuScore": 0.140541,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0123-llm-91d3b4311979",
+  "generatedSourceFiles": [
+    "generated-source/row-0123-llm-91d3b4311979/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_aws_s3_bucket_example\": false, \"has_aws_s3_bucket_ownership_controls_example\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_s3_bucket": true,
+    "aws_s3_bucket_ownership_controls": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS S3 bucket with a specified bucket name and then configures S3 bucket ownership controls for that bucket. The ownership controls are linked to the bucket using the bucket resource ID, and the object ownership rule is set to `BucketOwnerPreferred`.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the S3 bucket will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"bucket_name\" {\n  description = \"Name of the S3 bucket to create. Must be globally unique across AWS.\"\n  type        = string\n  default     = \"terraform-ownership-controls-example-bucket-1234567890\"\n}\n\nresource \"aws_s3_bucket\" \"this\" {\n  bucket = var.bucket_name\n}\n\nresource \"aws_s3_bucket_ownership_controls\" \"this\" {\n  bucket = aws_s3_bucket.this.id\n\n  rule {\n    object_ownership = \"BucketOwnerPreferred\"\n  }\n}\n```",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0123-llm-91d3b4311979.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Generate a Terraform configuration for creating an AWS S3 bucket and setting its ownership controls. Define a resource for an S3 bucket with a specified name. Follow this by configuring ownership controls for this bucket, referencing its ID. Within the ownership controls, set a rule to specify the object ownership as 'BucketOwnerPreferred'. Ensure that the resources are properly linked using references, and the configuration is clearly laid out to reflect these settings.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS S3 bucket with a specified bucket name and then configures S3 bucket ownership controls for that bucket. The ownership controls are linked to the bucket using the bucket resource ID, and the object ownership rule is set to `BucketOwnerPreferred`.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_aws_s3_bucket_example\": false, \"has_aws_s3_bucket_ownership_controls_example\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

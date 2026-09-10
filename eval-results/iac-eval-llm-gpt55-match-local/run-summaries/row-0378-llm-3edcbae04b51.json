@@ -1,0 +1,88 @@
+{
+  "index": 378,
+  "rowId": "378",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-3edcbae04b51",
+  "userId": "local-user",
+  "durationSeconds": 89.45,
+  "difficulty": "3",
+  "resource": "aws_lightsail_distribution, aws_lightsail_instance, aws_lightsail_static_ip, aws_lightsail_static_ip_attachment, aws_availability_zones",
+  "prompt": "managing an AWS Lightsail Distribution with a instance as an origin",
+  "intent": "have one aws_lightsail_instance\n    with \"name\" argument\n    with \"availability_zone\" argument\n    with \"blueprint_id\" argument\n    with \"bundle_id\" argument\n\nhave one aws_lightsail_distribution\n    with name\n    with bundle_id\n    with default_cache_behavior \n        with behavior\n    with origin \n        with name\n        with region_name\n    with cache_behavior_settings \n        with forwarded_cookies\n            with cookies_allow_list \n        with forwarded_headers  \n            with headers_allow_list \n        with forwarded_query_strings \n            with query_strings_allowed_list",
+  "referenceOutput": "data \"aws_availability_zones\" \"available\" {\n  state = \"available\"\n\n  filter {\n    name   = \"opt-in-status\"\n    values = [\"opt-in-not-required\"]\n  }\n}\n\nresource \"aws_lightsail_static_ip_attachment\" \"test\" {\n  static_ip_name = aws_lightsail_static_ip.test.name\n  instance_name  = aws_lightsail_instance.test.name\n}\n\nresource \"aws_lightsail_static_ip\" \"test\" {\n  name = \"test-static-ip\"\n}\n\nresource \"aws_lightsail_instance\" \"test\" {\n  name              = \"test-instance\"\n  availability_zone = data.aws_availability_zones.available.names[0]\n  blueprint_id      = \"amazon_linux_2\"\n  bundle_id         = \"micro_1_0\"\n}\n\nresource \"aws_lightsail_distribution\" \"test\" {\n  name       = \"test-distribution\"\n  depends_on = [aws_lightsail_static_ip_attachment.test]\n  bundle_id  = \"small_1_0\"\n  origin {\n    name        = aws_lightsail_instance.test.name\n    region_name = data.aws_availability_zones.available.id\n  }\n  default_cache_behavior {\n    behavior = \"cache\"\n  }\n}",
+  "bleuScore": 0.042444,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0378-llm-3edcbae04b51",
+  "generatedSourceFiles": [
+    "generated-source/row-0378-llm-3edcbae04b51/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_lightsail_distribution": true,
+    "aws_lightsail_instance": true,
+    "aws_lightsail_static_ip": false,
+    "aws_lightsail_static_ip_attachment": false,
+    "aws_availability_zones": false
+  },
+  "missingMarkers": [
+    "aws_lightsail_static_ip",
+    "aws_lightsail_static_ip_attachment",
+    "aws_availability_zones"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates an AWS Lightsail instance and configures an AWS Lightsail CDN Distribution with that instance as the origin. The Lightsail instance runs a simple Nginx web server on port 80, and the Lightsail Distribution forwards traffic to the instance over HTTP. Public HTTP access is enabled on the instance, and the distribution is configured with default cache behavior settings.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Lightsail resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"availability_zone\" {\n  description = \"Availability zone for the Lightsail instance.\"\n  type        = string\n  default     = \"us-east-1a\"\n}\n\nvariable \"lightsail_instance_name\" {\n  description = \"Name of the Lightsail instance.\"\n  type        = string\n  default     = \"lightsail-origin-instance\"\n}\n\nvariable \"lightsail_distribution_name\" {\n  description = \"Name of the Lightsail distribution.\"\n  type        = string\n  default ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0378-llm-3edcbae04b51.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: managing an AWS Lightsail Distribution with a instance as an origin",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS Lightsail instance and configures an AWS Lightsail CDN Distribution with that instance as the origin. The Lightsail instance runs a simple Nginx web server on port 80, and the Lightsail Distribution forwards traffic to the instance over HTTP. Public HTTP access is enabled on the instance, and the distribution is configured with default cache behavior settings.",
+  "failure_category": "",
+  "failure_reason": ""
+}

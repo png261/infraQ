@@ -1,0 +1,80 @@
+{
+  "index": 160,
+  "rowId": "160",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-ebf4614ba77d",
+  "userId": "local-user",
+  "durationSeconds": 79.54,
+  "difficulty": "2",
+  "resource": "aws_cloudwatch_metric_alarm",
+  "prompt": "Create a CloudWatch Metric Alarm resource.",
+  "intent": "Createsr a aws_cloudwatch_metric_alarm",
+  "referenceOutput": "resource \"aws_cloudwatch_metric_alarm\" \"foobar\" {\n  alarm_name                = \"terraform-test-foobar5\"\n  comparison_operator       = \"GreaterThanOrEqualToThreshold\"\n  evaluation_periods        = 2\n  metric_name               = \"CPUUtilization\"\n  namespace                 = \"AWS/EC2\"\n  period                    = 120\n  statistic                 = \"Average\"\n  threshold                 = 80\n  alarm_description         = \"This metric monitors ec2 cpu utilization\"\n  insufficient_data_actions = []\n}",
+  "bleuScore": 0.03145,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0160-llm-ebf4614ba77d",
+  "generatedSourceFiles": [
+    "generated-source/row-0160-llm-ebf4614ba77d/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_cloudwatch_metric_alarm": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS CloudWatch Metric Alarm that monitors average EC2 CPU utilization across the account/region. The alarm enters the `ALARM` state if CPU utilization exceeds the configured threshold for the configured evaluation periods.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the CloudWatch alarm will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"alarm_name\" {\n  description = \"Name of the CloudWatch Metric Alarm.\"\n  type        = string\n  default     = \"ec2-high-cpu-utilization-alarm\"\n}\n\nvariable \"cpu_threshold\" {\n  description = \"CPU utilization percentage threshold that triggers the alarm.\"\n  type        = number\n  default     = 80\n}\n\nvariable \"evaluation_periods\" {\n  description = \"Number of periods over which data is compared to the threshold.\"\n  type        = number\n  default     = 2\n}\n\nvariable \"period\" {\n  description = \"Period in seconds over which the metric statistic is applied.\"\n  type        = nu",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0160-llm-ebf4614ba77d.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a CloudWatch Metric Alarm resource.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS CloudWatch Metric Alarm that monitors average EC2 CPU utilization across the account/region. The alarm enters the `ALARM` state if CPU utilization exceeds the configured threshold for the configured evaluation periods.",
+  "failure_category": "",
+  "failure_reason": ""
+}

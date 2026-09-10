@@ -1,0 +1,88 @@
+{
+  "index": 186,
+  "rowId": "186",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-722f2b2ea2fc",
+  "userId": "local-user",
+  "durationSeconds": 71.01,
+  "difficulty": "3",
+  "resource": "aws_instance, aws_ami",
+  "prompt": "Create the latest Amazon Linux 2 AMI with cpu count= 2 and cores per threads per core= 2",
+  "intent": "create aws_ami resource with cpu_count = 2 and cores_per_thread=2",
+  "referenceOutput": "provider \"aws\" {\n  # Configure your AWS provider settings here\n  region = \"us-east-1\"  # Update with your desired AWS region\n}\n\ndata \"aws_ami\" \"latest_amazon_linux_2\" {\n  most_recent = true\n\n  owners = [\"amazon\"]\n\n  filter {\n    name   = \"name\"\n    values = [\"amzn2-ami-hvm-*-x86_64-gp2\"]\n  }\n\n  filter {\n    name   = \"root-device-type\"\n    values = [\"ebs\"]\n  }\n}\n\nresource \"aws_instance\" \"example_instance\" {\n  ami           = data.aws_ami.latest_amazon_linux_2.id\n  instance_type = \"t3.2xlarge\"  # Update with your desired instance type\n\n  # Other instance configuration settings go here\n\n  cpu_core_count = 2\n  cpu_threads_per_core = 2\n}",
+  "bleuScore": 0.124379,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0186-llm-722f2b2ea2fc",
+  "generatedSourceFiles": [
+    "generated-source/row-0186-llm-722f2b2ea2fc/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "88",
+        "finding": "broad_ingress_or_egress_cidr"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: Invalid index\n\n  on main.tf line 99, in resource \"aws_instance\" \"amazon_linux_2\":\n  99:   subnet_id     = data.aws_subnets.default.ids[0]\n    ├────────────────\n    │ data.aws_subnets.default.ids is empty list of string\n\nThe given key does not identify an element in this collection value: the\ncollection has no elements.\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_instance": true,
+    "aws_ami": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "The Terraform configuration below deploys an EC2 instance using the latest Amazon Linux 2 AMI in AWS. It configures the instance with CPU options of `core_count = 2` and `threads_per_core = 2`, resulting in 4 vCPUs total. It also creates a security group allowing SSH access and uses the default VPC.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be deployed.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"instance_type\" {\n  description = \"EC2 instance type that supports 2 cores and 2 threads per core.\"\n  type        = string\n  default     = \"m5.xlarge\"\n}\n\nvariable \"ssh_cidr_block\" {\n  description = \"CIDR block allowed to access the instance over SSH.\"\n  type        = string\n  default     = \"0.0.0.0/0\"\n}\n\ndata \"aws_vpc\" \"default\" {\n  default = true\n}\n\ndata \"aws_subnets\" \"default\" {\n  filter {\n    name   = \"vpc-id\"\n    values = [data.aws_vpc.default.id]\n  }\n}\n\ndata \"aws_ami\" \"latest_amazon_linux_2\" {\n  most_recent = true\n  owners      = [\"am",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0186-llm-722f2b2ea2fc.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create the latest Amazon Linux 2 AMI with cpu count= 2 and cores per threads per core= 2",
+  "promptStrategy": "default",
+  "answer": "The Terraform configuration below deploys an EC2 instance using the latest Amazon Linux 2 AMI in AWS. It configures the instance with CPU options of `core_count = 2` and `threads_per_core = 2`, resulting in 4 vCPUs total. It also creates a security group allowing SSH access and uses the default VPC.",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: Invalid index on main.tf line 99, in resource \"aws_instance\" \"amazon_linux_2\": 99: subnet_id = data.aws_subnets.default.ids[0] ├──────────────── │ data.aws_subnets.default.ids is empty list of string The given key does not identify an element in this collection value: the collection has no elements."
+}

@@ -1,0 +1,82 @@
+{
+  "index": 363,
+  "rowId": "363",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-535026494d84",
+  "userId": "local-user",
+  "durationSeconds": 63.21,
+  "difficulty": "2",
+  "resource": "aws_lightsail_instance, aws_lightsail_static_ip, aws_lightsail_static_ip_attachment",
+  "prompt": "create Amazon Lightsail with static ipv4 IP",
+  "intent": "have one \"aws_lightsail_instance\" resource\n    with \"name\" argument\n    with \"availability_zone\" argument\n    with \"blueprint_id\" argument\n    with \"bundle_id\" argument\n\nhas one \"aws_lightsail_static_ip\" resource\n    with \"name\" argument\n\nhas one \"aws_lightsail_static_ip_attachment\" resource\n    with \"static_ip_name\" argument\n    with \"instance_name\" argument",
+  "referenceOutput": "provider \"aws\" {\n  region     = \"us-east-1\"\n}\n\nresource \"aws_lightsail_static_ip_attachment\" \"test\" {\n  static_ip_name = aws_lightsail_static_ip.test.id\n  instance_name  = aws_lightsail_instance.test.id\n}\n\nresource \"aws_lightsail_static_ip\" \"test\" {\n  name = \"example\"\n}\n\nresource \"aws_lightsail_instance\" \"test\" {\n  name              = \"custom_gitlab\"\n  availability_zone = \"us-east-1b\"\n  blueprint_id      = \"amazon_linux_2\"\n  bundle_id         = \"nano_2_0\"\n}",
+  "bleuScore": 0.047487,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0363-llm-535026494d84",
+  "generatedSourceFiles": [
+    "generated-source/row-0363-llm-535026494d84/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_lightsail_instance": true,
+    "aws_lightsail_static_ip": true,
+    "aws_lightsail_static_ip_attachment": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an Amazon Lightsail instance and provisions a static IPv4 address for it. The static IP is then attached to the Lightsail instance. The configuration uses the AWS provider in `us-east-1` and includes default variable values so it can be deployed directly.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Lightsail resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"lightsail_instance_name\" {\n  description = \"Name of the Amazon Lightsail instance.\"\n  type        = string\n  default     = \"example-lightsail-instance\"\n}\n\nvariable \"lightsail_static_ip_name\" {\n  description = \"Name of the Lightsail static IPv4 address.\"\n  type        = string\n  default     = \"example-lightsail-static-ip\"\n}\n\nvariable \"availability_zone\" {\n  description = \"Availability zone for the Lightsail instance.\"\n  type        = string\n  default     = \"us-east-1a\"\n}\n\nvariable \"blueprint_id\" {\n  description = \"Lightsail blueprint ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0363-llm-535026494d84.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: create Amazon Lightsail with static ipv4 IP",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an Amazon Lightsail instance and provisions a static IPv4 address for it. The static IP is then attached to the Lightsail instance. The configuration uses the AWS provider in `us-east-1` and includes default variable values so it can be deployed directly.",
+  "failure_category": "",
+  "failure_reason": ""
+}

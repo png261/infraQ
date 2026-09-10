@@ -1,0 +1,96 @@
+{
+  "index": 307,
+  "rowId": "307",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-58768aabdd55",
+  "userId": "local-user",
+  "durationSeconds": 71.59,
+  "difficulty": "5",
+  "resource": "aws_backup_plan, aws_backup_selection, aws_backup_vault, aws_iam_role, aws_iam_role_policy_attachment, aws_instance, aws_iam_policy_document",
+  "prompt": "An AWS service that provisions an EC2 instance and backs it up every day at midnight. Accomplish this using the following services: AWS EC2, AWS Backup. Add any necessary services.",
+  "intent": "have one \"aws_ami\" data resource\nhave one \"aws_instance\" resource\n  with \"ami\" argument linking to the aws_ami data resource\n  with \"instance_type\" argument\nhave one \"aws_backup_plan\" resource\n  with \"name\" argument\n  with \"rule\" argument block\n    with \"rule_name\" argument\n    with \"target_vault_name\" argument linking to backup_vault\n    with \"schedule\" argument with value \"cron(0 0 * * ? *)\"\n  with \"advanced_backup_setting\" argument block\n    with \"backup_options\" argument block\n      with \"WindowsVSS\" argument\n    with \"resource_type\" argument with value \"EC2\"\nhave one \"aws_backup_vault\" resource\n  with \"name\" argument\nhave one \"aws_backup_selection\" resource\n  with \"iam_role_arn\" argument\n  with \"name\" argument\n  with \"plan_id\" argument linking to aws_backup_plan resource\n  with \"resources\" argument including the aws_instance resource",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\ndata \"aws_ami\" \"amzn2\" {\n  most_recent = true\n  owners      = [\"amazon\"]\n\n  filter {\n    name   = \"name\"\n    values = [\"*ubuntu-noble-24.04-amd64-server-*\"]\n  }\n}\n\n\nresource \"aws_instance\" \"cloud_desktop\" {\n  instance_type = \"t2.micro\"\n  ami = data.aws_ami.amzn2.id\n}\n\nresource \"aws_backup_plan\" \"cloud_desktop_backup\" {\n  name = \"cloud_desktop_backup_plan\"\n  rule {\n    rule_name         = \"cloud_desktop_backup_rule\" # required, not specified\n    target_vault_name = aws_backup_vault.valut.name # required, not specified\n    schedule          = \"cron(0 0 * * ? *)\"\n  }\n\n  advanced_backup_setting {\n    backup_options = {\n      WindowsVSS = \"enabled\"\n    }\n    resource_type = \"EC2\"\n  }\n}\n\nresource \"aws_backup_vault\" \"valut\" {\n  name = \"cloud_desktop_backup_valut\"\n}\n\nresource \"aws_backup_selection\" \"backup_ec2\" {\n  iam_role_arn = aws_iam_role.backup.arn\n\n  name    = \"backup_ec2\"\n  plan_id = aws_backup_plan.cloud_desktop_backup.id\n\n  resources = [\n    aws_instance.cloud_desktop.arn,\n  ]\n}\n\ndata \"aws_iam_policy_document\" \"backup_assume_role\" {\n  statement {\n    effect = \"Allow\"\n\n    principals {\n      type        = \"Service\"\n      identifiers = [\"backup.amazonaws.com\"]\n    }\n\n    actions = [\"sts:AssumeRole\"]\n  }\n}\n\nresource \"aws_iam_role\" \"backup\" {\n  name               = \"backup\"\n  assume_role_policy = data.aws_iam_policy_document.backup_assume_role.json\n}\n\nresource \"aws_iam_role_policy_attachment\" \"backup\" {\n  policy_arn = \"arn:aws:iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup\"\n  role       = aws_iam_role.backup.name\n}",
+  "bleuScore": 0.120809,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0307-llm-58768aabdd55",
+  "generatedSourceFiles": [
+    "generated-source/row-0307-llm-58768aabdd55/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "117",
+        "finding": "broad_ingress_or_egress_cidr"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"cloud_desktop_high\": {\"valid\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_backup_plan": true,
+    "aws_backup_selection": true,
+    "aws_backup_vault": true,
+    "aws_iam_role": true,
+    "aws_iam_role_policy_attachment": true,
+    "aws_instance": true,
+    "aws_iam_policy_document": false,
+    "aws_ami": true
+  },
+  "missingMarkers": [
+    "aws_iam_policy_document"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration provisions an AWS EC2 instance and configures AWS Backup to back it up automatically every day at midnight UTC. It creates the necessary networking resources, security group, EC2 instance, AWS Backup vault, backup plan, IAM role, and backup selection targeting the EC2 instance.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"project_name\" {\n  description = \"Name prefix for all resources.\"\n  type        = string\n  default     = \"ec2-daily-backup\"\n}\n\nvariable \"instance_type\" {\n  description = \"EC2 instance type.\"\n  type        = string\n  default     = \"t3.micro\"\n}\n\nvariable \"backup_retention_days\" {\n  description = \"Number of days to retain backups.\"\n  type        = number\n  default     = 30\n}\n\ndata \"aws_ami\" \"amazon_linux_2023\" {\n  most_recent = true\n  owners      = [\"amazon\"]\n\n  filter {\n    name   = \"name\"\n    values = [\"al2023-ami-*-x86_64\"]\n  }\n\n  fi",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0307-llm-58768aabdd55.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: An AWS service that provisions an EC2 instance and backs it up every day at midnight. Accomplish this using the following services: AWS EC2, AWS Backup. Add any necessary services.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration provisions an AWS EC2 instance and configures AWS Backup to back it up automatically every day at midnight UTC. It creates the necessary networking resources, security group, EC2 instance, AWS Backup vault, backup plan, IAM role, and backup selection targeting the EC2 instance.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"cloud_desktop_high\": {\"valid\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

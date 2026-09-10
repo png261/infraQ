@@ -1,0 +1,89 @@
+{
+  "index": 57,
+  "rowId": "57",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-2e0ba3190279",
+  "userId": "local-user",
+  "durationSeconds": 94.48,
+  "difficulty": "5",
+  "resource": "aws_iam_policy, aws_iam_role, aws_iam_role_policy_attachment, aws_kinesis_analytics_application, aws_kinesis_stream, aws_iam_policy_document, aws_iam_policy_document",
+  "prompt": "Generate a basic Amazon Kinesis Analytics Application with an input kinesis stream",
+  "intent": "Has one \"aws_kinesis_analytics_application\" resource with one \"aws_kinesis_stream\" resource as an input",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\n\ndata \"aws_iam_policy_document\" \"StreamReaderWriter\" {\n  statement {\n    effect = \"Allow\"\n    actions = [\"kinesis:DescribeStream\",\n               \"kinesis:GetShardIterator\",\n               \"kinesis:GetRecords\"]\n    resources = [aws_kinesis_stream.test_stream.arn]\n  }\n}\n\ndata \"aws_iam_policy_document\" \"KinesisAssume\" {\n  statement {\n    effect  = \"Allow\"\n    actions = [\"sts:AssumeRole\"]\n    principals {\n      type        = \"Service\"\n      identifiers = [\"kinesisanalytics.amazonaws.com\"]\n    }\n  }\n}\n\nresource \"aws_iam_policy\" \"StreamReaderWriter\" {\n  name   = \"KinesisStreamReaderWriter\"\n  policy = data.aws_iam_policy_document.StreamReaderWriter.json\n}\n\nresource \"aws_iam_role\" \"kinesis_role\" {\n  name               = \"kinesis_role\"\n  assume_role_policy = data.aws_iam_policy_document.KinesisAssume.json\n}\n\nresource \"aws_iam_role_policy_attachment\" \"attach_kinesis_role\" {\n  role       = aws_iam_role.kinesis_role.name\n  policy_arn = aws_iam_policy.StreamReaderWriter.arn\n}\n\nresource \"aws_kinesis_stream\" \"test_stream\" {\n  name             = \"events\"\n  shard_count      = 1\n  retention_period = 168\n}\n\n\nresource \"aws_kinesis_analytics_application\" \"test_application\" {\n  name = \"kinesis-analytics-application-test\"\n\n  inputs {\n    name_prefix = \"test_prefix\"\n\n    kinesis_stream {\n      resource_arn = aws_kinesis_stream.test_stream.arn\n      role_arn     = aws_iam_role.kinesis_role.arn\n    }\n\n    parallelism {\n      count = 1\n    }\n\n    schema {\n      record_columns {\n        mapping  = \"$.test\"\n        name     = \"test\"\n        sql_type = \"VARCHAR(8)\"\n      }\n\n      record_encoding = \"UTF-8\"\n\n      record_format {\n        mapping_parameters {\n          json {\n            record_row_path = \"$\"\n          }\n        }\n      }\n    }\n  }\n}",
+  "bleuScore": 0.13675,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-2/generated-source/row-0057-llm-2e0ba3190279",
+  "generatedSourceFiles": [
+    "generated-source/row-0057-llm-2e0ba3190279/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: Unsupported argument\n\n  on main.tf line 139, in resource \"aws_kinesis_analytics_application\" \"analytics_application\":\n 139:   application_code = <<-SQL\n\nAn argument named \"application_code\" is not expected here.\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_iam_policy": false,
+    "aws_iam_role": true,
+    "aws_iam_role_policy_attachment": false,
+    "aws_kinesis_analytics_application": true,
+    "aws_kinesis_stream": true,
+    "aws_iam_policy_document": false
+  },
+  "missingMarkers": [
+    "aws_iam_policy",
+    "aws_iam_role_policy_attachment",
+    "aws_iam_policy_document"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates a basic Amazon Kinesis Data Analytics SQL application with a single Amazon Kinesis Data Stream as its input source. It includes the required IAM role and permissions so the analytics application can read from the stream. The application defines a simple SQL pump that reads JSON records from the source stream and writes selected fields into an in-application destination stream.\n\n```hcl\nterraform {\n  required_version = \">= 1.3.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region to deploy resources into.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"kinesis_stream_name\" {\n  description = \"Name of the input Kinesis data stream.\"\n  type        = string\n  default     = \"basic-kinesis-analytics-input-stream\"\n}\n\nvariable \"analytics_application_name\" {\n  description = \"Name of the Kinesis Analytics application.\"\n  type        = string\n  default     = \"basic-kinesis-analytics-application\"\n}\n\nresource \"aws_kinesis_stream\" \"input_stream\" {\n  name             = var.kinesis_stream_name\n  ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-2/run-summaries/row-0057-llm-2e0ba3190279.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Generate a basic Amazon Kinesis Analytics Application with an input kinesis stream",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a basic Amazon Kinesis Data Analytics SQL application with a single Amazon Kinesis Data Stream as its input source. It includes the required IAM role and permissions so the analytics application can read from the stream. The application defines a simple SQL pump that reads JSON records from the source stream and writes selected fields into an in-application destination stream.",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: Unsupported argument on main.tf line 139, in resource \"aws_kinesis_analytics_application\" \"analytics_application\": 139: application_code = <<-SQL An argument named \"application_code\" is not expected here."
+}

@@ -1,0 +1,82 @@
+{
+  "index": 444,
+  "rowId": "444",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-bccc68ab04c9",
+  "userId": "local-user",
+  "durationSeconds": 66.86,
+  "difficulty": "3",
+  "resource": "aws_vpc_dhcp_options, aws_vpc_dhcp_options_association",
+  "prompt": "creates DHCP options named \"pike\" for an AWS VPC, specifying Google's DNS servers (8.8.8.8 and 8.8.4.4), and then associates these DHCP options with a specified VPC",
+  "intent": "Has one \"aws_vpc_dhcp_options\" resource:\nSpecifies Google's DNS servers (8.8.8.8 and 8.8.4.4) as the DNS servers for the DHCP options\nTagged with \"permissions\" to categorize or specify its role or access levels within the infrastructure\n\nHas one \n\"aws_vpc_dhcp_options_association\" resource:\nAssociates the \"aws_vpc_dhcp_options\" with a specified \"aws_vpc\" resource",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 4.16\"\n    }\n  }\n\n  required_version = \">= 1.2.0\"\n}\n# Define the provider block for AWS\nprovider \"aws\" {\n  region = \"us-east-2\" # Set your desired AWS region\n}\n\n\nresource \"aws_vpc_dhcp_options_association\" \"pike\" {\n  dhcp_options_id = aws_vpc_dhcp_options.pike.id\n  vpc_id          = \"vpc-0c33dc8cd64f408c4\"\n}\n\nresource \"aws_vpc_dhcp_options\" \"pike\" {\n  domain_name_servers = [\"8.8.8.8\", \"8.8.4.4\"]\n  tags = {\n    pike = \"permissions\"\n  }\n}",
+  "bleuScore": 0.140711,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0444-llm-bccc68ab04c9",
+  "generatedSourceFiles": [
+    "generated-source/row-0444-llm-bccc68ab04c9/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_vpc_dhcp_options": true,
+    "aws_vpc_dhcp_options_association": true,
+    "aws_vpc": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "The Terraform configuration below creates an AWS DHCP options set named `pike` that uses Google DNS servers `8.8.8.8` and `8.8.4.4`, then associates it with a VPC.\n\nBy default, it creates a new VPC for deployability. To associate the DHCP options with an existing VPC, set the `vpc_id` variable.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"vpc_id\" {\n  description = \"Existing VPC ID to associate with the DHCP options. Leave empty to create a new VPC.\"\n  type        = string\n  default     = \"\"\n}\n\nvariable \"vpc_cidr_block\" {\n  description = \"CIDR block for the VPC created when vpc_id is not provided.\"\n  type        = string\n  default     = \"10.0.0.0/16\"\n}\n\nresource \"aws_vpc\" \"default\" {\n  count = var.vpc_id == \"\" ? 1 : 0\n\n  cidr_block           = var.vpc_cidr_block\n  enable_dns_support   = true\n  enable_dns_hostnames = true\n\n  tags = {\n    Name = \"pike-vpc\"\n  }\n}\n\nresource \"aws_vpc_",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0444-llm-bccc68ab04c9.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: creates DHCP options named \"pike\" for an AWS VPC, specifying Google's DNS servers (8.8.8.8 and 8.8.4.4), and then associates these DHCP options with a specified VPC",
+  "promptStrategy": "default",
+  "answer": "The Terraform configuration below creates an AWS DHCP options set named `pike` that uses Google DNS servers `8.8.8.8` and `8.8.4.4`, then associates it with a VPC.\n\nBy default, it creates a new VPC for deployability. To associate the DHCP options with an existing VPC, set the `vpc_id` variable.",
+  "failure_category": "",
+  "failure_reason": ""
+}

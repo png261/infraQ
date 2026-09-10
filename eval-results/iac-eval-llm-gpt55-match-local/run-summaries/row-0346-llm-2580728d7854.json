@@ -1,0 +1,108 @@
+{
+  "index": 346,
+  "rowId": "346",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-2580728d7854",
+  "userId": "local-user",
+  "durationSeconds": 66.69,
+  "difficulty": "5",
+  "resource": "aws_db_instance, aws_db_subnet_group, aws_subnet, aws_vpc",
+  "prompt": "sets up a PostgreSQL database instance in AWS, specifying details like engine version, instance size, storage, and associated networking resources within a custom VPC and subnet.",
+  "intent": "Has one \"aws_db_instance\" resource\n    with one \"allocated_storage\"\n    with one \"engine\" = \"postgres\"\n    with one \"instance_class\"\n    with one \"password\"\n    with one \"username\"\n\nhas one aws_db_subnet_group resource\nhas one aws_subnet\nhas one aws_vpc",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_db_instance\" \"db\" {\n  engine            = \"postgres\"\n  engine_version    = \"17.2\"\n  instance_class    = \"db.t4g.micro\"\n  allocated_storage = 5\n\n  db_name  = \"mydbname\"\n  username = \"username\"\n  password = \"password\"\n\n  db_subnet_group_name   = aws_db_subnet_group.main.name\n\n  allow_major_version_upgrade = true\n  auto_minor_version_upgrade  = true\n  apply_immediately           = true\n  max_allocated_storage       = 50\n\n  skip_final_snapshot     = true\n  backup_retention_period = 5\n  backup_window           = \"03:00-06:00\"\n  maintenance_window      = \"Mon:00:00-Mon:03:00\"\n  publicly_accessible = false\n  enabled_cloudwatch_logs_exports = [\"postgresql\"]\n\n  timeouts {\n    create = \"40m\"\n    update = \"80m\"\n    delete = \"40m\"\n  }\n}\n\ndata \"aws_availability_zones\" \"available\" {\n  state = \"available\"\n}\n\nmodule \"vpc\" {\n  source  = \"terraform-aws-modules/vpc/aws\"\n\n  name                 = \"main-vpc\"\n  cidr                 = \"10.0.0.0/16\"\n  azs                  = data.aws_availability_zones.available.names\n  private_subnets      = [\"10.0.1.0/24\", \"10.0.2.0/24\"]\n  public_subnets       = [\"10.0.3.0/24\", \"10.0.4.0/24\"]\n}\n\nresource \"aws_security_group\" \"rds-proxy-sg\" {\n  name        = \"rds-proxy-sg\"\n  vpc_id      = module.vpc.vpc_id\n}\n\nresource \"aws_vpc_security_group_ingress_rule\" \"db-proxy-sg-ingress-rule\" {\n  from_port       = 5432\n  to_port         = 5432\n  ip_protocol     = \"tcp\"\n  cidr_ipv4       = \"0.0.0.0/0\"\n  security_group_id = aws_security_group.rds-proxy-sg.id\n}\n\nresource \"aws_vpc_security_group_egress_rule\" \"db-proxy-sg-egress-rule\" {\n  from_port       = 5432\n  to_port         = 5432\n  ip_protocol     = \"tcp\"\n  cidr_ipv4       = \"0.0.0.0/0\"\n  security_group_id = aws_security_group.rds-proxy-sg.id\n}\n\nresource \"aws_db_subnet_group\" \"main\" {\n  name       = \"main\"\n  subnet_ids = module.vpc.private_subnets\n}",
+  "bleuScore": 0.096483,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0346-llm-2580728d7854",
+  "generatedSourceFiles": [
+    "generated-source/row-0346-llm-2580728d7854/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "155",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "163",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "204",
+        "finding": "public_rds_instance"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "211",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_db_instance\": false, \"is_valid_db_subnet_group\": true, \"is_valid_subnet\": true, \"is_valid_vpc\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_db_instance": true,
+    "aws_db_subnet_group": true,
+    "aws_subnet": true,
+    "aws_vpc": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration provisions a custom AWS VPC with public subnets across two Availability Zones, an internet gateway, route table associations, a security group for PostgreSQL access, and an Amazon RDS PostgreSQL database instance. The database uses a specified engine version, instance class, allocated storage, and subnet group inside the custom VPC.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region to deploy resources into.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"vpc_cidr\" {\n  description = \"CIDR block for the custom VPC.\"\n  type        = string\n  default     = \"10.0.0.0/16\"\n}\n\nvariable \"public_subnet_1_cidr\" {\n  description = \"CIDR block for the first public subnet.\"\n  type        = string\n  default     = \"10.0.1.0/24\"\n}\n\nvariable \"public_subnet_2_cidr\" {\n  description = \"CIDR block for the second public subnet.\"\n  type        = string\n  default     = \"10.0.2.0/24\"\n}\n\nvariable \"db_name\" {\n  description = \"Initial PostgreSQL database name.\"\n  ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0346-llm-2580728d7854.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: sets up a PostgreSQL database instance in AWS, specifying details like engine version, instance size, storage, and associated networking resources within a custom VPC and subnet.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration provisions a custom AWS VPC with public subnets across two Availability Zones, an internet gateway, route table associations, a security group for PostgreSQL access, and an Amazon RDS PostgreSQL database instance. The database uses a specified engine version, instance class, allocated storage, and subnet group inside the custom VPC.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_db_instance\": false, \"is_valid_db_subnet_group\": true, \"is_valid_subnet\": true, \"is_valid_vpc\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

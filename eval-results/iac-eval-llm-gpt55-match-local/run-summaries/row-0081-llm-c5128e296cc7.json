@@ -1,0 +1,85 @@
+{
+  "index": 81,
+  "rowId": "81",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-c5128e296cc7",
+  "userId": "local-user",
+  "durationSeconds": 55.14,
+  "difficulty": "4",
+  "resource": "aws_route53_health_check, aws_route53_record, aws_route53_record, aws_route53_zone",
+  "prompt": "Configure Active-Passive Failover policies using Route 53 resources. Name the health check resource \"primary_health_check\" and use a fqdn. Call the zone \"primary\"",
+  "intent": "Has one \"aws_route53_zone\" resource\n    with \"name\"\n\nHas two \"aws_route53_record\" resources\n    The first \"aws_route53_record\" \n        with \"name\"\n        with \"type\"\n        with \"ttl\"\n        with \"records\"\n        with \"zone_id\" referencing the \"aws_route53_zone\" resource\n        with \"health_check_id\" referencing the \"aws_health_check\" resource\n        with \"set_identifier\"\n        with \"failover_routing_policy\" block that contains \"type\" = \"PRIMARY\"\n    The second \"aws_route53_record\"\n        with \"name\"\n        with \"type\"\n        with \"ttl\"\n        with \"records\"\n        with \"zone_id\" referencing the \"aws_route53_zone\" resource\n        with \"set_identifier\"\n        with \"failover_routing_policy\" block that contains \"type\" = \"SECONDARY\"\n\nHas one \"aws_health_check\" resources\n    with \"fqdn\" \n    with \"request_interval\"\n    with \"type\"",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_route53_zone\" \"primary\" {\n  name = \"example53.com\"\n}\n\n# Health check for the primary resource\nresource \"aws_route53_health_check\" \"primary_health_check\" {\n  fqdn              = \"example.com\"\n  port              = 80\n  type              = \"HTTP\"\n  resource_path     = \"/\"\n  failure_threshold = 3\n}\n\n# Primary A record with a health check (active endpoint)\nresource \"aws_route53_record\" \"primary_record\" {\n  zone_id           = aws_route53_zone.primary.zone_id\n  name              = \"example.com\"\n  type              = \"A\"\n  ttl               = \"60\"\n  records           = [\"192.0.2.10\"]\n  set_identifier    = \"primary\"\n  health_check_id   = aws_route53_health_check.primary_health_check.id\n\n  failover_routing_policy {\n    type = \"PRIMARY\"\n  }\n}\n\n# Secondary A record without a health check (passive endpoint)\nresource \"aws_route53_record\" \"secondary_record\" {\n  zone_id           = aws_route53_zone.primary.zone_id\n  name              = \"example.com\"\n  type              = \"A\"\n  ttl               = \"60\"\n  records           = [\"192.0.2.20\"]\n  set_identifier    = \"secondary\"\n\n  failover_routing_policy {\n    type = \"SECONDARY\"\n  }\n}",
+  "bleuScore": 0.188143,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-2/generated-source/row-0081-llm-c5128e296cc7",
+  "generatedSourceFiles": [
+    "generated-source/row-0081-llm-c5128e296cc7/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_configuration_valid\": false, \"is_valid_r53_health_check\": false, \"is_valid_r53_record_primary\": true, \"is_valid_r53_record_secondary\": true, \"is_valid_r53_zone\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_route53_health_check": true,
+    "aws_route53_record": true,
+    "aws_route53_zone": true,
+    "aws_health_check": false
+  },
+  "missingMarkers": [
+    "aws_health_check"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "The following Terraform configuration creates a Route 53 public hosted zone named `primary`, defines a Route 53 health check resource named `primary_health_check` using an FQDN, and configures active-passive DNS failover records. The primary record is monitored by the health check, while the secondary record is used when the primary endpoint is unhealthy.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region used for provider configuration.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"zone_name\" {\n  description = \"The DNS name for the Route 53 hosted zone.\"\n  type        = string\n  default     = \"example.com\"\n}\n\nvariable \"application_record_name\" {\n  description = \"The DNS record name used for active-passive failover.\"\n  type        = string\n  default     = \"app.example.com\"\n}\n\nvariable \"primary_endpoint_fqdn\" {\n  description = \"The fully qualified domain name of the primary endpoint.\"\n  type        = string\n  default     = \"primary-origin.example.com\"\n}\n\nvariable",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-2/run-summaries/row-0081-llm-c5128e296cc7.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Configure Active-Passive Failover policies using Route 53 resources. Name the health check resource \"primary_health_check\" and use a fqdn. Call the zone \"primary\"",
+  "promptStrategy": "default",
+  "answer": "The following Terraform configuration creates a Route 53 public hosted zone named `primary`, defines a Route 53 health check resource named `primary_health_check` using an FQDN, and configures active-passive DNS failover records. The primary record is monitored by the health check, while the secondary record is used when the primary endpoint is unhealthy.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_configuration_valid\": false, \"is_valid_r53_health_check\": false, \"is_valid_r53_record_primary\": true, \"is_valid_r53_record_secondary\": true, \"is_valid_r53_zone\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

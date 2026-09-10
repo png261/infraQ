@@ -1,0 +1,81 @@
+{
+  "index": 440,
+  "rowId": "440",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-c56a50572ed5",
+  "userId": "local-user",
+  "durationSeconds": 102.66,
+  "difficulty": "2",
+  "resource": "aws_egress_only_internet_gateway",
+  "prompt": "creates an egress-only internet gateway named \"pike\" associated with a specified VPC, allowing IPv6-enabled instances to connect to the internet without allowing inbound internet traffic, and tags it with \"permissions\".",
+  "intent": "Has one \"aws_egress_only_internet_gateway\" resource:\nAssociated with a specified \"aws_vpc\" resource\nDesigned to allow IPv6-enabled instances within the VPC to connect to the internet while preventing inbound internet traffic\nTagged with \"permissions\" to categorize or specify its role or access levels within the infrastructure",
+  "referenceOutput": "# Define the provider block for AWS\nprovider \"aws\" {\n  region = \"us-east-2\" # Set your desired AWS region\n}\n\nresource \"aws_egress_only_internet_gateway\" \"pike\" {\n  vpc_id = \"vpc-0c33dc8cd64f408c4\"\n  tags = {\n    pike = \"permissions\"\n  }\n}",
+  "bleuScore": 0.048699,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0440-llm-c56a50572ed5",
+  "generatedSourceFiles": [
+    "generated-source/row-0440-llm-c56a50572ed5/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: Failed to load plugin schemas\n\nError while loading schemas for plugin components: Failed to obtain provider\nschema: Could not load the schema for provider\nregistry.terraform.io/hashicorp/aws: failed to instantiate provider\n\"registry.terraform.io/hashicorp/aws\" to obtain schema: timeout while waiting\nfor plugin to start..\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_egress_only_internet_gateway": true,
+    "aws_vpc": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an IPv6-enabled AWS VPC, attaches an egress-only internet gateway named `pike`, and adds an IPv6 default route so instances in the associated IPv6 subnet can initiate outbound internet connections while preventing unsolicited inbound IPv6 traffic. The egress-only internet gateway is tagged with `permissions`.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nvariable \"vpc_cidr_block\" {\n  description = \"IPv4 CIDR block for the VPC.\"\n  type        = string\n  default     = \"10.0.0.0/16\"\n}\n\nvariable \"subnet_cidr_block\" {\n  description = \"IPv4 CIDR block for the subnet.\"\n  type        = string\n  default     = \"10.0.1.0/24\"\n}\n\nresource \"aws_vpc\" \"specified_vpc\" {\n  cidr_block                       = var.vpc_cidr_block\n  assign_generated_ipv6_cidr_block = true\n  enable_dns_support               = true\n  enable_dns_hostnames             = true\n\n  tags = {\n    Name        = \"specified-vpc\"\n    permissions = \"true\"\n  }\n}\n\nresource \"aws_subnet\" \"ipv6_enabled_subnet\" {\n  vpc_id                          = aws_",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0440-llm-c56a50572ed5.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: creates an egress-only internet gateway named \"pike\" associated with a specified VPC, allowing IPv6-enabled instances to connect to the internet without allowing inbound internet traffic, and tags it with \"permissions\".",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an IPv6-enabled AWS VPC, attaches an egress-only internet gateway named `pike`, and adds an IPv6 default route so instances in the associated IPv6 subnet can initiate outbound internet connections while preventing unsolicited inbound IPv6 traffic. The egress-only internet gateway is tagged with `permissions`.",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: Failed to load plugin schemas Error while loading schemas for plugin components: Failed to obtain provider schema: Could not load the schema for provider registry.terraform.io/hashicorp/aws: failed to instantiate provider \"registry.terraform.io/hashicorp/aws\" to obtain schema: timeout while waiting for plugin to start.."
+}

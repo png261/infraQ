@@ -1,0 +1,83 @@
+{
+  "index": 167,
+  "rowId": "167",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-c85864c62a82",
+  "userId": "local-user",
+  "durationSeconds": 75.91,
+  "difficulty": "3",
+  "resource": "aws_dynamodb_table, aws_dynamodb_table_replica",
+  "prompt": "Create a DynamoDB Global Table and create a replica of the table",
+  "intent": "dynamodb table -> hash_key, name, attribute (name, type) -> create a repilca with the table arn",
+  "referenceOutput": "provider \"aws\" {\n  alias  = \"alt\"\n  region = \"us-east-2\"\n}\n\nresource \"aws_dynamodb_table\" \"example\" {\n  provider         = aws.alt\n  name             = \"TestTable\"\n  hash_key         = \"BrodoBaggins\"\n  billing_mode     = \"PAY_PER_REQUEST\"\n  stream_enabled   = true\n  stream_view_type = \"NEW_AND_OLD_IMAGES\"\n\n  attribute {\n    name = \"BrodoBaggins\"\n    type = \"S\"\n  }\n\n  lifecycle {\n    ignore_changes = [replica]\n  }\n}\n\nresource \"aws_dynamodb_table_replica\" \"example\" {\n  provider         = aws.alt\n  global_table_arn = aws_dynamodb_table.example.arn\n\n  tags = {\n    Name = \"IZPAWS\"\n    Pozo = \"Amargo\"\n  }\n}",
+  "bleuScore": 0.091533,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0167-llm-c85864c62a82",
+  "generatedSourceFiles": [
+    "generated-source/row-0167-llm-c85864c62a82/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"main\": {\"allow\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_dynamodb_table": true,
+    "aws_dynamodb_table_replica": false
+  },
+  "missingMarkers": [
+    "aws_dynamodb_table_replica"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates an AWS DynamoDB Global Table using the current DynamoDB global tables model. It creates a primary DynamoDB table in `us-east-1` and configures a replica in `us-west-2`. The table uses on-demand billing, has DynamoDB Streams enabled as required for global table replication, and includes point-in-time recovery.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n\nvariable \"primary_region\" {\n  description = \"Primary AWS region for the DynamoDB Global Table.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"replica_region\" {\n  description = \"Replica AWS region for the DynamoDB Global Table.\"\n  type        = string\n  default     = \"us-west-2\"\n}\n\nvariable \"table_name\" {\n  description = \"Name of the DynamoDB Global Table.\"\n  type        = string\n  default     = \"example-global-table\"\n}\n\nprovider \"aws\" {\n  region = var.primary_region\n}\n\nprovider \"aws\" {\n  alias  = \"replica\"\n  region = var.replica_region\n}\n\nresource \"aws_dynamodb_table\" \"global_table\" {\n  name         = var.table_name\n  billing_mode = \"PAY_PER_REQUEST\"\n\n  hash_key  = \"p",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0167-llm-c85864c62a82.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a DynamoDB Global Table and create a replica of the table",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS DynamoDB Global Table using the current DynamoDB global tables model. It creates a primary DynamoDB table in `us-east-1` and configures a replica in `us-west-2`. The table uses on-demand billing, has DynamoDB Streams enabled as required for global table replication, and includes point-in-time recovery.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"main\": {\"allow\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

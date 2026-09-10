@@ -1,0 +1,92 @@
+{
+  "index": 332,
+  "rowId": "332",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-d4e38c27b7be",
+  "userId": "local-user",
+  "durationSeconds": 79.62,
+  "difficulty": "6",
+  "resource": "aws_db_instance, aws_db_parameter_group, aws_db_subnet_group, aws_kms_key, aws_security_group, aws_subnet, aws_subnet",
+  "prompt": "Provision a secure PostgreSQL database instance within a specified AWS VPC, leveraging AWS services like RDS, subnets, and KMS for encryption. It sets up a custom parameter group for PostgreSQL settings, and a security group to manage access. The database instance is configured with specifications like storage size, engine version, multi-AZ deployment for high availability, and encryption using a KMS key. The database instance is configured with instance class \"db.t3.micro\", and backup retention period 7.",
+  "intent": "Has one \"aws_db_instance\" resource\nwith one \"allocated_storage\"\nwith one \"engine\" = \"postgres\"\nwith one \"instance_class\" = \"db.t3.micro\"\nwith one \"password\"\nwith one \"username\"\nwith one backup_retention_period = 7\nwith one allow_major_version_upgrade = true\n\nHas one \"aws_security_group\" resource\nwith rules to manage access to the PostgreSQL database instance\n\nHas one \"aws_db_subnet_group\" resource\nwith \"subnet_ids\" including at least two subnets within the VPC\n\nHas one \"aws_db_parameter_group\" resource\nwith customized parameters for PostgreSQL settings, such as \"password_encryption\" and \"rds.force_ssl\"\n\nHas one \"aws_kms_key\" resource\nfor encrypting the PostgreSQL database storage",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\ndata \"aws_availability_zones\" \"available\" {\n  state = \"available\"\n}\n\nmodule \"vpc\" {\n  source  = \"terraform-aws-modules/vpc/aws\"\n\n  name = \"main-vpc\"\n  cidr = \"10.0.0.0/16\"\n\n  azs                  = data.aws_availability_zones.available.names\n  public_subnets       = [\"10.0.4.0/24\", \"10.0.5.0/24\", \"10.0.6.0/24\"]\n}\n\nresource \"aws_db_subnet_group\" \"db-subnet-group\" {\n  name       = \"db-subnet-group\"\n  subnet_ids = module.vpc.public_subnets\n}\n\nresource \"aws_security_group\" \"db-sg\" {\n  name = \"db-sg\"\n  vpc_id = module.vpc.vpc_id\n}\n\nresource \"aws_vpc_security_group_ingress_rule\" \"db-sg-ingress-rule\" {\n  from_port       = 5432\n  to_port         = 5432\n  ip_protocol     = \"tcp\"\n  cidr_ipv4       = \"0.0.0.0/0\"\n  security_group_id = aws_security_group.db-sg.id\n}\n\nresource \"aws_vpc_security_group_egress_rule\" \"db-sg-egress-rule\" {\n  from_port       = 5432\n  to_port         = 5432\n  ip_protocol     = \"tcp\"\n  cidr_ipv4       = \"0.0.0.0/0\"\n  security_group_id = aws_security_group.db-sg.id\n}\n\nresource \"aws_db_parameter_group\" \"postgre-param-group\" {\n  name   = \"pgparamgrp15\"\n  family = \"postgres15\"\n\n  parameter {\n    name  = \"password_encryption\"\n    value = \"scram-sha-256\"\n  }\n\n  parameter {\n    name  = \"rds.force_ssl\"\n    value = \"0\"\n  }\n\n  lifecycle {\n    create_before_destroy = true\n  }\n}\n\nresource \"aws_kms_key\" \"rds-key\" {\n  description             = \"kmsrds\"\n  deletion_window_in_days = 14\n}\n\nresource \"aws_db_instance\" \"postgres\" {\n  identifier                      = \"pg\"\n  skip_final_snapshot             = true\n  allocated_storage               = 5\n  backup_retention_period         = 7\n  db_subnet_group_name            = aws_db_subnet_group.db-subnet-group.id\n  parameter_group_name            = aws_db_parameter_group.postgre-param-group.name\n  enabled_cloudwatch_logs_exports = [\"postgresql\", \"upgrade\"]\n  engine                          = \"postgres\"\n  engine_version                  = \"15\"\n  instance_class                  = \"db.t3.micro\"\n  db_name                         = \"postgres\" # Initial database name\n  username                        = \"myusername\"\n  password                        = \"mypassword\"\n  vpc_security_group_ids          = [aws_security_group.db-sg.id]\n  # Other security settings\n  publicly_accessible             = true\n  multi_az                        = true\n  storage_encrypted               = true\n  kms_key_id                      = aws_kms_key.rds-key.arn\n  # Default daily backup window\n  # https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html#USER_WorkingWithAutomatedBackups.BackupWindow\n}",
+  "bleuScore": 0.103454,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0332-llm-d4e38c27b7be",
+  "generatedSourceFiles": [
+    "generated-source/row-0332-llm-d4e38c27b7be/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "120",
+        "finding": "broad_ingress_or_egress_cidr"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_db_instance\": false, \"is_valid_db_parameter_group\": true, \"is_valid_db_subnet_group\": true, \"is_valid_kms_key\": true, \"is_valid_security_group\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_db_instance": true,
+    "aws_db_parameter_group": true,
+    "aws_db_subnet_group": true,
+    "aws_kms_key": true,
+    "aws_security_group": true,
+    "aws_subnet": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration provisions a secure Amazon RDS PostgreSQL database in an AWS VPC. It uses the default VPC by default, but you can provide a specific VPC ID. The configuration creates:\n\n- A PostgreSQL RDS instance using instance class `db.t3.micro`\n- Multi-AZ deployment enabled for high availability\n- 20 GB encrypted storage\n- Backup retention period of 7 days\n- A customer-managed AWS KMS key for encryption\n- A custom PostgreSQL parameter group\n- A DB subnet group using subnets from the selected VPC\n- A security group allowing PostgreSQL access only from configurable CIDR blocks\n- A generated secure master password\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"vpc_id\" {\n  description = \"ID of the VPC where the RDS instance should be deployed. If null, the default VPC is used.\"\n  type    ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0332-llm-d4e38c27b7be.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Provision a secure PostgreSQL database instance within a specified AWS VPC, leveraging AWS services like RDS, subnets, and KMS for encryption. It sets up a custom parameter group for PostgreSQL settings, and a security group to manage access. The database instance is configured with specifications like storage size, engine version, multi-AZ deployment for high availability, and encryption using a KMS key. The database instance is configured with instance class \"db.t3.micro\", and backup retention period 7.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration provisions a secure Amazon RDS PostgreSQL database in an AWS VPC. It uses the default VPC by default, but you can provide a specific VPC ID. The configuration creates:\n\n- A PostgreSQL RDS instance using instance class `db.t3.micro`\n- Multi-AZ deployment enabled for high availability\n- 20 GB encrypted storage\n- Backup retention period of 7 days\n- A customer-managed AWS KMS key for encryption\n- A custom PostgreSQL parameter group\n- A DB subnet group using subnets from the selected VPC\n- A security group allowing PostgreSQL access only from configurable CIDR blocks\n- A generated secure master password",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_db_instance\": false, \"is_valid_db_parameter_group\": true, \"is_valid_db_subnet_group\": true, \"is_valid_kms_key\": true, \"is_valid_security_group\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

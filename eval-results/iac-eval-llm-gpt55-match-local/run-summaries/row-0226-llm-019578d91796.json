@@ -1,0 +1,88 @@
+{
+  "index": 226,
+  "rowId": "226",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-019578d91796",
+  "userId": "local-user",
+  "durationSeconds": 86.42,
+  "difficulty": "3",
+  "resource": "aws_dax_cluster, aws_iam_role",
+  "prompt": "Create a DAX cluster.",
+  "intent": "has one \"aws_dax_cluster\"",
+  "referenceOutput": "terraform {\nrequired_providers {\naws = {\nsource = \"hashicorp/aws\"\nversion = \"~> 5.0\"\n}\n}\n}\n\nresource \"aws_iam_role\" \"example\" {\nname = \"test_role\"\n\n# Terraform's \"jsonencode\" function converts a\n# Terraform expression result to valid JSON syntax.\nassume_role_policy = jsonencode({\nVersion = \"2012-10-17\"\nStatement = [\n{\nAction = \"sts:AssumeRole\"\nEffect = \"Allow\"\nSid = \"\"\nPrincipal = {\nService = \"dax.amazonaws.com\"\n}\n},\n]\n})\n}\n\nresource \"aws_dax_cluster\" \"bar\" {\ncluster_name = \"cluster-example\"\niam_role_arn = aws_iam_role.example.arn\nnode_type = \"dax.r4.large\"\nreplication_factor = 1\n}",
+  "bleuScore": 0.056055,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0226-llm-019578d91796",
+  "generatedSourceFiles": [
+    "generated-source/row-0226-llm-019578d91796/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "98",
+        "finding": "broad_ingress_or_egress_cidr"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_dax_cluster": true,
+    "aws_iam_role": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS DynamoDB Accelerator (DAX) cluster using the default VPC and its subnets. It provisions:\n\n- An AWS provider in a default region\n- A DAX IAM service role with the required trust policy\n- An IAM policy attachment allowing DAX to access DynamoDB\n- A security group for the DAX cluster\n- A DAX subnet group using the default VPC subnets\n- A DAX parameter group\n- A single-node DAX cluster\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the DAX cluster will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"cluster_name\" {\n  description = \"Name of the DAX cluster.\"\n  type        = string\n  default     = \"example-dax-cluster\"\n}\n\nvariable \"node_type\" {\n  description = \"DAX node instance type.\"\n  type        = string\n  default     = \"dax.t3.small\"\n}\n\nvariable \"replication_factor\" {\n  description = \"Number of nodes in the DAX cluster.\"\n  type        = number\n  default     = 1\n}\n\nvariable \"allowed_cidr_blocks\" {\n  d",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0226-llm-019578d91796.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a DAX cluster.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS DynamoDB Accelerator (DAX) cluster using the default VPC and its subnets. It provisions:\n\n- An AWS provider in a default region\n- A DAX IAM service role with the required trust policy\n- An IAM policy attachment allowing DAX to access DynamoDB\n- A security group for the DAX cluster\n- A DAX subnet group using the default VPC subnets\n- A DAX parameter group\n- A single-node DAX cluster",
+  "failure_category": "",
+  "failure_reason": ""
+}

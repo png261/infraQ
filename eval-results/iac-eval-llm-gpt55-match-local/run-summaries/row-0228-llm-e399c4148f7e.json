@@ -1,0 +1,82 @@
+{
+  "index": 228,
+  "rowId": "228",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-e399c4148f7e",
+  "userId": "local-user",
+  "durationSeconds": 56.72,
+  "difficulty": "3",
+  "resource": "aws_dax_subnet_group, aws_subnet, aws_subnet, aws_vpc",
+  "prompt": "Create a DAX subnet group.",
+  "intent": "Has one \"aws_dax_subnet_group\"",
+  "referenceOutput": "terraform {\nrequired_providers {\naws = {\nsource = \"hashicorp/aws\"\nversion = \"~> 5.0\"\n}\n}\n}\n\nresource \"aws_vpc\" \"vpc\" {\ncidr_block = \"192.168.0.0/22\"\n}\n\n\nresource \"aws_subnet\" \"example1\" {\ncidr_block = \"192.168.0.0/24\"\nvpc_id = aws_vpc.vpc.id\n}\n\nresource \"aws_subnet\" \"example2\" {\ncidr_block = \"192.168.1.0/24\"\nvpc_id = aws_vpc.vpc.id\n}\n\nresource \"aws_dax_subnet_group\" \"example\" {\nname = \"example\"\nsubnet_ids = [aws_subnet.example1.id, aws_subnet.example2.id]\n}",
+  "bleuScore": 0.091014,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0228-llm-e399c4148f7e",
+  "generatedSourceFiles": [
+    "generated-source/row-0228-llm-e399c4148f7e/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_dax_subnet_group": true,
+    "aws_subnet": true,
+    "aws_vpc": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a minimal AWS networking setup for an Amazon DynamoDB Accelerator, or DAX, subnet group. It provisions a VPC, two private subnets in different availability zones, and an `aws_dax_subnet_group` that includes those subnets.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the DAX subnet group will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"vpc_cidr_block\" {\n  description = \"CIDR block for the VPC.\"\n  type        = string\n  default     = \"10.0.0.0/16\"\n}\n\nvariable \"subnet_cidr_blocks\" {\n  description = \"CIDR blocks for the DAX private subnets.\"\n  type        = list(string)\n  default     = [\"10.0.1.0/24\", \"10.0.2.0/24\"]\n}\n\nvariable \"dax_subnet_group_name\" {\n  description = \"Name of the DAX subnet group.\"\n  type        = string\n  default     = \"example-dax-subnet-group\"\n}\n\ndata \"aws_availability_zones\" \"available\" {\n  state = \"available\"\n}\n\nresource \"aws_vpc\" \"dax_vpc\" {\n  cidr_block           = var.vpc_cidr_",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0228-llm-e399c4148f7e.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a DAX subnet group.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a minimal AWS networking setup for an Amazon DynamoDB Accelerator, or DAX, subnet group. It provisions a VPC, two private subnets in different availability zones, and an `aws_dax_subnet_group` that includes those subnets.",
+  "failure_category": "",
+  "failure_reason": ""
+}

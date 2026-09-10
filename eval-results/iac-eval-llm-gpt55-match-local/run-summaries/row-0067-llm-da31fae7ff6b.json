@@ -1,0 +1,105 @@
+{
+  "index": 67,
+  "rowId": "67",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-da31fae7ff6b",
+  "userId": "local-user",
+  "durationSeconds": 85.97,
+  "difficulty": "6",
+  "resource": "aws_iam_role, aws_iam_role_policy, aws_kinesis_firehose_delivery_stream, aws_opensearch_domain, aws_s3_bucket, aws_security_group, aws_subnet, aws_subnet, aws_vpc, aws_iam_policy_document",
+  "prompt": "Generate a Kinesis Firehose Delivery Stream with OpenSearch Destination With VPC",
+  "intent": "Has one \"aws_iam_role\" resource, one \"aws_s3_bucket\" resource, one \"aws_opensearch_domain\" resource, one \"aws_vpc\" resource, two \"aws_subnet\" resources, one \"aws_security_group,\" and one \"aws_kinesis_firehose_delivery_stream\" resource with a \"vpc_config\" block within the \"opensearch_configuration\" block",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_s3_bucket\" \"bucket\" {\n  bucket_prefix = \"my-bucket-\"\n}\n\nresource \"aws_vpc\" \"main\" {\n  cidr_block = \"10.0.0.0/16\"\n}\n\ndata \"aws_availability_zones\" \"available\" {\n  state = \"available\"\n}\n\n# Subnets\nresource \"aws_subnet\" \"first\" {\n  vpc_id     = aws_vpc.main.id\n  cidr_block = \"10.0.1.0/24\"\n\n  map_public_ip_on_launch = true\n  availability_zone       = data.aws_availability_zones.available.names[0]\n}\n\nresource \"aws_subnet\" \"second\" {\n  vpc_id     = aws_vpc.main.id\n  cidr_block = \"10.0.2.0/24\"\n\n  map_public_ip_on_launch = true\n  availability_zone       = data.aws_availability_zones.available.names[1]\n}\n\nresource \"aws_internet_gateway\" \"main\" {\n  vpc_id = aws_vpc.main.id\n}\n\nresource \"aws_route_table\" \"main\" {\n  vpc_id = aws_vpc.main.id\n\n  route {\n    cidr_block = \"0.0.0.0/0\"\n    gateway_id = aws_internet_gateway.main.id\n  }\n}\n\nresource \"aws_route_table_association\" \"first\" {\n  subnet_id      = aws_subnet.first.id\n  route_table_id = aws_route_table.main.id\n}\n\nresource \"aws_route_table_association\" \"second\" {\n  subnet_id      = aws_subnet.second.id\n  route_table_id = aws_route_table.main.id\n}\n\nresource \"aws_security_group\" \"first\" {\n  name        = \"test-security-group\"\n  description = \"Allow traffic for Elasticsearch\"\n  vpc_id      = aws_vpc.main.id\n}\n\nresource \"aws_vpc_security_group_ingress_rule\" \"ingress1\" {\n  security_group_id = aws_security_group.first.id\n  cidr_ipv4 = \"0.0.0.0/0\"\n  from_port = 80\n  ip_protocol = \"tcp\"\n  to_port = 80\n}\n\nresource \"aws_vpc_security_group_ingress_rule\" \"ingress2\" {\n  security_group_id = aws_security_group.first.id\n  cidr_ipv4 = \"0.0.0.0/0\"\n  from_port = 443\n  ip_protocol = \"tcp\"\n  to_port = 443\n}\n\nresource \"aws_vpc_security_group_ingress_rule\" \"ingress3\" {\n  security_group_id = aws_security_group.first.id\n  cidr_ipv4 = \"0.0.0.0/0\"\n  from_port = 9200\n  ip_protocol = \"tcp\"\n  to_port = 9200\n}\n\nresource \"aws_vpc_security_group_egress_rule\" \"egress1\" {\n  security_group_id = aws_security_group.first.id\n  cidr_ipv4         = \"0.0.0.0/0\"\n  ip_protocol       = \"-1\"\n}\n\ndata \"aws_iam_policy_document\" \"firehose_assume_role\" {\n  statement {\n    effect = \"Allow\"\n\n    principals {\n      type        = \"Service\"\n      identifiers = [\"firehose.amazonaws.com\"]\n    }\n\n    actions = [\"sts:AssumeRole\"]\n  }\n}\n\nresource \"aws_iam_role\" \"firehose_role\" {\n  name               = \"firehose_test_role\"\n  assume_role_policy = data.aws_iam_policy_document.firehose_assume_role.json\n}\n\nresource \"aws_iam_role_policy\" \"firehose-opensearch\" {\n  name   = \"opensearch\"\n  role   = aws_iam_role.firehose_role.id\n  policy = <<EOF\n{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Action\": [\n        \"es:*\"\n      ],\n      \"Resource\": [\n        \"${aws_opensearch_domain.test_cluster.arn}\",\n        \"${aws_opensearch_domain.test_cluster.arn}/*\"\n      ]\n        },\n        {\n          \"Effect\": \"Allow\",\n          \"Action\": [\n            \"ec2:DescribeVpcs\",\n            \"ec2:DescribeVpcAttribute\",\n            \"ec2:DescribeSubnets\",\n            \"ec2:DescribeSecurityGroups\",\n            \"ec2:DescribeNetworkInterfaces\",\n            \"ec2:CreateNetworkInterface\",\n            \"ec2:CreateNetworkInterfacePermission\",\n            \"ec2:DeleteNetworkInterface\"\n          ],\n          \"Resource\": [\n            \"*\"\n          ]\n        }\n  ]\n}\nEOF\n}\n\nresource \"aws_opensearch_domain\" \"test_cluster\" {\n  domain_name = \"es-test\"\n\n  cluster_config {\n    instance_count         = 2\n    zone_awareness_enabled = true\n    instance_type          = \"m4.large.search\"\n  }\n\n  ebs_options {\n    ebs_enabled = true\n    volume_size = 10\n  }\n\n  vpc_options {\n    security_group_ids = [aws_security_group.first.id]\n    subnet_ids         = [aws_subnet.first.id, aws_subnet.second.id]\n  }\n}\n\nresource \"aws_kinesis_firehose_delivery_stream\" \"test\" {\n  depends_on = [aws_iam_role_policy.firehose-opensearch]\n\n  name        = \"terraform-kinesis-firehose-os\"\n  destination = \"opensearch\"\n\n  opensearch_configuration {\n    domain_arn = aws_opensearch_domain.test_cluster.arn\n    role_arn   = aws_iam_role.firehose_role.arn\n    index_name = \"test\"\n\n    s3_configuration {\n      role_arn   = aws_iam_role.firehose_role.arn\n      bucket_arn = aws_s3_bucket.bucket.arn\n    }\n\n    vpc_config {\n      subnet_ids         = [aws_subnet.first.id, aws_subnet.second.id]\n      security_group_ids = [aws_security_group.first.id]\n      role_arn           = aws_iam_role.firehose_role.arn\n    }\n  }\n}",
+  "bleuScore": 0.146497,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-0/generated-source/row-0067-llm-da31fae7ff6b",
+  "generatedSourceFiles": [
+    "generated-source/row-0067-llm-da31fae7ff6b/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "122",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "148",
+        "finding": "broad_ingress_or_egress_cidr"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: Cycle: aws_security_group.firehose, aws_security_group.opensearch\n\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_iam_role": true,
+    "aws_iam_role_policy": true,
+    "aws_kinesis_firehose_delivery_stream": true,
+    "aws_opensearch_domain": true,
+    "aws_s3_bucket": true,
+    "aws_security_group": true,
+    "aws_subnet": true,
+    "aws_vpc": true,
+    "aws_iam_policy_document": false,
+    "aws_security_group,": false
+  },
+  "missingMarkers": [
+    "aws_iam_policy_document",
+    "aws_security_group,"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "The following Terraform configuration creates an AWS Kinesis Firehose Delivery Stream with an Amazon OpenSearch Service destination inside a VPC. It includes:\n\n- A VPC with two public subnets\n- Security groups for Firehose and OpenSearch\n- An OpenSearch domain deployed into the VPC\n- An S3 bucket for Firehose backup data\n- CloudWatch Logs for Firehose delivery logging\n- IAM role and policies required by Firehose\n- A Kinesis Firehose delivery stream configured with an OpenSearch destination and VPC access\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  type        = string\n  description = \"AWS region to deploy resources into.\"\n  default     = \"us-east-1\"\n}\n\nvariable \"project_name\" {\n  type        = string\n  description = \"Project name used for resource naming.\"\n  default     = \"firehose-opensearch-vpc\"\n}\n\nvariable \"opensearch_domain_name\" {\n  type        = string\n  description = \"Name of the OpenSearch domain.\"\n  default     = \"firehose-os-domain\"\n}\n\ndata \"aws_caller_identity\" \"current\" {}\n\ndata \"aws_ava",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-0/run-summaries/row-0067-llm-da31fae7ff6b.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Generate a Kinesis Firehose Delivery Stream with OpenSearch Destination With VPC",
+  "promptStrategy": "default",
+  "answer": "The following Terraform configuration creates an AWS Kinesis Firehose Delivery Stream with an Amazon OpenSearch Service destination inside a VPC. It includes:\n\n- A VPC with two public subnets\n- Security groups for Firehose and OpenSearch\n- An OpenSearch domain deployed into the VPC\n- An S3 bucket for Firehose backup data\n- CloudWatch Logs for Firehose delivery logging\n- IAM role and policies required by Firehose\n- A Kinesis Firehose delivery stream configured with an OpenSearch destination and VPC access",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: Cycle: aws_security_group.firehose, aws_security_group.opensearch"
+}

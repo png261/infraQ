@@ -1,0 +1,98 @@
+{
+  "index": 146,
+  "rowId": "146",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-bd527909fbc4",
+  "userId": "local-user",
+  "durationSeconds": 72.21,
+  "difficulty": "3",
+  "resource": "aws_iam_role, aws_iam_role_policy_attachment, aws_redshift_cluster, aws_redshift_cluster_iam_roles",
+  "prompt": "Create an IAM role and a redshift cluster and associate the IAM role with the RedShift cluster.",
+  "intent": "Create a aws_iam_role, aws_redshift_cluster, and attach the role to the cluster",
+  "referenceOutput": "resource \"aws_iam_role\" \"redshift_role\" {\n  name = \"redshift_role\"\n\n  assume_role_policy = jsonencode({\n    Version = \"2012-10-17\",\n    Statement = [\n      {\n        Action = \"sts:AssumeRole\",\n        Effect = \"Allow\",\n        Principal = {\n          Service = \"redshift.amazonaws.com\"\n        },\n      },\n    ],\n  })\n}\n\nresource \"aws_iam_role_policy_attachment\" \"redshift_s3_read_only\" {\n  role       = aws_iam_role.redshift_role.name\n  policy_arn = \"arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess\"\n}\n\nresource \"aws_redshift_cluster\" \"example\" {\n  cluster_identifier = \"tf-redshift-cluster\"\n  database_name      = \"mydb\"\n  master_username    = \"foo\"\n  master_password    = \"Mustbe8characters\"\n  node_type          = \"dc2.large\"\n  cluster_type       = \"single-node\"\n\n  depends_on = [aws_iam_role.redshift_role]\n}\n\nresource \"aws_redshift_cluster_iam_roles\" \"example\" {\n  cluster_identifier = aws_redshift_cluster.example.id\n  iam_role_arns      = [aws_iam_role.redshift_role.arn]\n}",
+  "bleuScore": 0.076484,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0146-llm-bd527909fbc4",
+  "generatedSourceFiles": [
+    "generated-source/row-0146-llm-bd527909fbc4/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "99",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "168",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"main\": {\"allow\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_iam_role": true,
+    "aws_iam_role_policy_attachment": true,
+    "aws_redshift_cluster": true,
+    "aws_redshift_cluster_iam_roles": false
+  },
+  "missingMarkers": [
+    "aws_redshift_cluster_iam_roles"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates:\n\n- An AWS IAM role trusted by Amazon Redshift\n- An IAM policy attachment giving the role read-only access to S3\n- A VPC with two subnets for the Redshift cluster\n- A security group for Redshift\n- A Redshift subnet group\n- A single-node Amazon Redshift cluster\n- Association of the IAM role with the Redshift cluster\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"redshift_cluster_identifier\" {\n  description = \"Identifier for the Redshift cluster.\"\n  type        = string\n  default     = \"example-redshift-cluster\"\n}\n\nvariable \"redshift_database_name\" {\n  description = \"Initial database name for the Redshift cluster.\"\n  type        = string\n  default     = \"exampledb\"\n}\n\nvariable \"redshift_master_username\" {\n  description = \"Master username for the Redshift cluster.\"\n  type        = string\n  default     = \"adminuser\"\n}\n\nvariable \"redshift_master_pas",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0146-llm-bd527909fbc4.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an IAM role and a redshift cluster and associate the IAM role with the RedShift cluster.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates:\n\n- An AWS IAM role trusted by Amazon Redshift\n- An IAM policy attachment giving the role read-only access to S3\n- A VPC with two subnets for the Redshift cluster\n- A security group for Redshift\n- A Redshift subnet group\n- A single-node Amazon Redshift cluster\n- Association of the IAM role with the Redshift cluster",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"main\": {\"allow\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

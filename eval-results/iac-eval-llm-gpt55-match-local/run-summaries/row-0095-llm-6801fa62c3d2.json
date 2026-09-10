@@ -1,0 +1,84 @@
+{
+  "index": 95,
+  "rowId": "95",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-6801fa62c3d2",
+  "userId": "local-user",
+  "durationSeconds": 79.16,
+  "difficulty": "4",
+  "resource": "aws_eks_cluster, aws_eks_fargate_profile, aws_iam_role, aws_subnet, aws_subnet, aws_vpc",
+  "prompt": "Generate a Terraform script to create an AWS EKS Fargate profile. Define a resource that links to an EKS cluster (with name set to \"example\") by name, sets a Fargate profile name, and assigns a pod execution role ARN (tied to an IAM role with name \"example\"). Specify subnet IDs and include a selector for the namespace 'example'.",
+  "intent": "has one \"aws_eks_fargate_profile\" resource\nwith one \"cluster_name\"\nwith one \"fargate_profile_name\"\nwith one \"pod_execution_role_arn\"\nwith one \"subnet_ids\"\nwith one \"selector\" containing \"namespace\"",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_vpc\" \"main\" {\n  cidr_block = \"10.0.0.0/16\"\n}\n\nresource \"aws_subnet\" \"example1\" {\n  vpc_id     = aws_vpc.main.id\n  cidr_block = \"10.0.1.0/24\"\n}\n\nresource \"aws_subnet\" \"example2\" {\n  vpc_id     = aws_vpc.main.id\n  cidr_block = \"10.0.2.0/24\"\n}\n\nresource \"aws_iam_role\" \"example\" {\n  name = \"eks-cluster-1\"\n\n  assume_role_policy = <<POLICY\n{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Principal\": {\n        \"Service\": \"eks.amazonaws.com\"\n      },\n      \"Action\": \"sts:AssumeRole\"\n    }\n  ]\n}\nPOLICY\n}\n\nresource \"aws_iam_role_policy_attachment\" \"eks_cluster_policy\" {\n  policy_arn = \"arn:aws:iam::aws:policy/AmazonEKSClusterPolicy\"\n  role       = aws_iam_role.example.name\n}\n\nresource \"aws_iam_role_policy_attachment\" \"eks_service_policy\" {\n  policy_arn = \"arn:aws:iam::aws:policy/AmazonEKSServicePolicy\"\n  role       = aws_iam_role.example.name\n}\n\nresource \"aws_iam_role\" \"example-fargate\" {\n  name = \"eks-fargate-profile-example\"\n\n  assume_role_policy = jsonencode({\n    Statement = [{\n      Action = \"sts:AssumeRole\"\n      Effect = \"Allow\"\n      Principal = {\n        Service = \"eks-fargate-pods.amazonaws.com\"\n      }\n    }]\n    Version = \"2012-10-17\"\n  })\n}\n\nresource \"aws_iam_role_policy_attachment\" \"example-AmazonEKSFargatePodExecutionRolePolicy\" {\n  policy_arn = \"arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy\"\n  role       = aws_iam_role.example-fargate.name\n}\n\nresource \"aws_eks_cluster\" \"example\" {\n  name     = \"example\"\n  role_arn = aws_iam_role.example.arn\n\n  vpc_config {\n    subnet_ids = [aws_subnet.example1.id, aws_subnet.example2.id]\n  }\n}\n\nresource \"aws_eks_fargate_profile\" \"example\" {\n  cluster_name           = aws_eks_cluster.example.name\n  fargate_profile_name   = \"example\"\n  pod_execution_role_arn = aws_iam_role.example-fargate.arn\n  subnet_ids             = [aws_subnet.example1.id, aws_subnet.example2.id]\n\n  selector {\n    namespace = \"example\"\n  }\n}",
+  "bleuScore": 0.31112,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0095-llm-6801fa62c3d2",
+  "generatedSourceFiles": [
+    "generated-source/row-0095-llm-6801fa62c3d2/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_eks_cluster": true,
+    "aws_eks_fargate_profile": true,
+    "aws_iam_role": true,
+    "aws_subnet": true,
+    "aws_vpc": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a complete AWS EKS setup with an EKS Fargate profile. It provisions:\n\n- An AWS provider in `us-east-1`\n- A VPC with two subnets across different Availability Zones\n- An EKS cluster named `example`\n- An IAM role for the EKS cluster\n- An IAM pod execution role named `example`\n- An EKS Fargate profile that:\n  - Links to the EKS cluster named `example`\n  - Uses the Fargate profile name `example`\n  - Uses the pod execution role ARN from the IAM role named `example`\n  - Uses the created subnet IDs\n  - Selects pods in the namespace `example`\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\ndata \"aws_availability_zones\" \"available\" {\n  state = \"available\"\n}\n\nresource \"aws_vpc\" \"example\" {\n  cidr_block           = \"10.0.0.0/16\"\n  enable_dns_hostnames = true\n  enable_dns_support   = true\n\n  tags = {\n    Name = \"example-eks-vpc\"\n  }\n}\n\nresource \"aws_subnet\" \"example_a\" {\n  vpc_id                  = aws_vpc.example.id\n  cidr_block              = \"10.0.1.0/24\"\n  availability_zone       = data.aws_availability",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0095-llm-6801fa62c3d2.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Generate a Terraform script to create an AWS EKS Fargate profile. Define a resource that links to an EKS cluster (with name set to \"example\") by name, sets a Fargate profile name, and assigns a pod execution role ARN (tied to an IAM role with name \"example\"). Specify subnet IDs and include a selector for the namespace 'example'.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a complete AWS EKS setup with an EKS Fargate profile. It provisions:\n\n- An AWS provider in `us-east-1`\n- A VPC with two subnets across different Availability Zones\n- An EKS cluster named `example`\n- An IAM role for the EKS cluster\n- An IAM pod execution role named `example`\n- An EKS Fargate profile that:\n  - Links to the EKS cluster named `example`\n  - Uses the Fargate profile name `example`\n  - Uses the pod execution role ARN from the IAM role named `example`\n  - Uses the created subnet IDs\n  - Selects pods in the namespace `example`",
+  "failure_category": "",
+  "failure_reason": ""
+}

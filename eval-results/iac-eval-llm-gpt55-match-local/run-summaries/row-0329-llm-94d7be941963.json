@@ -1,0 +1,104 @@
+{
+  "index": 329,
+  "rowId": "329",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-94d7be941963",
+  "userId": "local-user",
+  "durationSeconds": 81.34,
+  "difficulty": "6",
+  "resource": "aws_db_instance, aws_db_subnet_group, aws_security_group, aws_security_group, aws_security_group, aws_security_group, aws_security_group, aws_security_group, aws_subnet, aws_subnet, aws_vpc, aws_availability_zones",
+  "prompt": "Set up a VPC with public subnets, and security groups for database access. Create a MySQL database instance (the version should be 8.4.3 and capacity is 5GB) within the VPC, accessible and secured by a designated security group.",
+  "intent": "Has one \"aws_vpc\" resource\n    with a specified \"cidr_block\"\n    with \"enable_dns_hostnames\" set to true\n    with a \"tags\" map including a \"Name\" key\n\nHas multiple \"aws_subnet\" resources\n    with \"vpc_id\" referencing the \"aws_vpc\" resource\n    with specified \"cidr_block\" for each\n    divided into \"public\" and \"private\" categories, each with a unique set of \"tags\"\n\nHas multiple \"aws_security_group\" resources for different components such as \"master\", \"worker\", \"alert\", \"API\", \"standalone\", and \"database\"\n    with \"vpc_id\" referencing the \"aws_vpc\" resource\n    with defined \"ingress\" and \"egress\" rules tailored to each component's needs\n    with a \"tags\" map including a \"Name\" key\n\nHas one \"aws_db_instance\" resource for a PostgreSQL database\n    with \"allocated_storage\" set to 50\n    with \"engine\" set to \"mysql\"\n    with a specified \"instance_class\"\n    with \"username\" and \"password\"\n    with \"skip_final_snapshot\" set to true\n    with \"identifier\"\n    with \"password\"\n\nHas one \"aws_db_subnet_group\" resource\n    with \"subnet_ids\" referencing the IDs of \"aws_subnet\" resources designated as private",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\ndata \"aws_availability_zones\" \"available\" {\n  state = \"available\"\n}\n\nmodule \"vpc\" {\n  source  = \"terraform-aws-modules/vpc/aws\"\n\n  name = \"main-vpc\"\n  cidr = \"10.0.0.0/16\"\n\n  azs                  = data.aws_availability_zones.available.names\n  public_subnets       = [\"10.0.4.0/24\", \"10.0.5.0/24\", \"10.0.6.0/24\"]\n}\n\nresource \"aws_db_subnet_group\" \"db-subnet-group\" {\n  name       = \"db-subnet-group\"\n  subnet_ids = module.vpc.public_subnets\n}\n\nresource \"aws_security_group\" \"db-sg\" {\n  name = \"db-sg\"\n  vpc_id = module.vpc.vpc_id\n}\n\nresource \"aws_vpc_security_group_ingress_rule\" \"db-sg-ingress-rule\" {\n  from_port       = 3306\n  to_port         = 3306\n  ip_protocol     = \"tcp\"\n  cidr_ipv4       = \"0.0.0.0/0\"\n  security_group_id = aws_security_group.db-sg.id\n}\n\nresource \"aws_vpc_security_group_egress_rule\" \"db-sg-egress-rule\" {\n  from_port       = 3306\n  to_port         = 3306\n  ip_protocol     = \"tcp\"\n  cidr_ipv4       = \"0.0.0.0/0\"\n  security_group_id = aws_security_group.db-sg.id\n}\n\nresource \"aws_db_instance\" \"database\" {\n  identifier             = \"dolphinscheduler\"\n  db_name                = \"dolphinscheduler\"\n  instance_class         = \"db.t3.micro\"\n  allocated_storage      = 5\n  engine                 = \"mysql\"\n  engine_version         = \"8.4.3\"\n  skip_final_snapshot    = true\n  db_subnet_group_name   = aws_db_subnet_group.db-subnet-group.id\n  publicly_accessible    = true\n  vpc_security_group_ids = [aws_security_group.db-sg.id]\n  username               = \"myusername\"\n  password               = \"mypassword\"\n}",
+  "bleuScore": 0.08045,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0329-llm-94d7be941963",
+  "generatedSourceFiles": [
+    "generated-source/row-0329-llm-94d7be941963/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "173",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "214",
+        "finding": "public_rds_instance"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "222",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_db_instance\": false, \"is_valid_db_subnet_group\": true, \"is_valid_security_group\": true, \"is_valid_subnet\": true, \"is_valid_vpc\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_db_instance": true,
+    "aws_db_subnet_group": true,
+    "aws_security_group": true,
+    "aws_subnet": true,
+    "aws_vpc": true,
+    "aws_availability_zones": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS VPC with two public subnets across two Availability Zones, an internet gateway, public routing, and security groups for controlled MySQL database access. It provisions an Amazon RDS MySQL instance using MySQL `8.4.3`, secured by a dedicated database security group that only permits MySQL traffic from a designated client security group.\n\nNote: AWS RDS MySQL requires a minimum allocated storage size of `20 GiB`, so although the requested capacity is `5GB`, this configuration uses the AWS-supported minimum of `20 GiB` to ensure the deployment is valid.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"vpc_cidr\" {\n  description = \"CIDR block for the VPC.\"\n  type        = string\n  default     = \"10.0.0.0/16\"\n}\n\nvariable \"public_subnet_1_cidr\" {\n  description = \"CID",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0329-llm-94d7be941963.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Set up a VPC with public subnets, and security groups for database access. Create a MySQL database instance (the version should be 8.4.3 and capacity is 5GB) within the VPC, accessible and secured by a designated security group.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS VPC with two public subnets across two Availability Zones, an internet gateway, public routing, and security groups for controlled MySQL database access. It provisions an Amazon RDS MySQL instance using MySQL `8.4.3`, secured by a dedicated database security group that only permits MySQL traffic from a designated client security group.\n\nNote: AWS RDS MySQL requires a minimum allocated storage size of `20 GiB`, so although the requested capacity is `5GB`, this configuration uses the AWS-supported minimum of `20 GiB` to ensure the deployment is valid.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_db_instance\": false, \"is_valid_db_subnet_group\": true, \"is_valid_security_group\": true, \"is_valid_subnet\": true, \"is_valid_vpc\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

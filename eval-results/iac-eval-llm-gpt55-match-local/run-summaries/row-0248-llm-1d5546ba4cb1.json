@@ -1,0 +1,81 @@
+{
+  "index": 248,
+  "rowId": "248",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-1d5546ba4cb1",
+  "userId": "local-user",
+  "durationSeconds": 59.58,
+  "difficulty": "3",
+  "resource": "aws_chime_voice_connector, aws_chime_voice_connector, aws_chime_voice_connector_group",
+  "prompt": "Create two AWS Chime Voice Connectors, both with encryption. Then create an aws_chime_voice_connector_group resource with both of these connectors. One connector should have priority=1 and the other should have priority=3",
+  "intent": "Has one resource \"aws_chime_voice_connector\"\nwith require_encryption=\"true\"\n\nHas another resource \"aws_chime_voice_connector\"\nwith require_encryption=\"true\"\n\nHas one resource \"aws_chime_voice_connector_group\"\nwith a connector for each voice connector with the correct id\none connector should have priority=1 and the other priority=3",
+  "referenceOutput": "resource \"aws_chime_voice_connector\" \"vc1\" {\n  name               = \"connector-test-1\"\n  require_encryption = true\n  aws_region         = \"us-east-1\"\n}\n\nresource \"aws_chime_voice_connector\" \"vc2\" {\n  name               = \"connector-test-2\"\n  require_encryption = true\n  aws_region         = \"us-west-2\"\n}\n\nresource \"aws_chime_voice_connector_group\" \"group\" {\n  name = \"test-group\"\n\n  connector {\n    voice_connector_id = aws_chime_voice_connector.vc1.id\n    priority           = 1\n  }\n\n  connector {\n    voice_connector_id = aws_chime_voice_connector.vc2.id\n    priority           = 3\n  }\n}",
+  "bleuScore": 0.305041,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0248-llm-1d5546ba4cb1",
+  "generatedSourceFiles": [
+    "generated-source/row-0248-llm-1d5546ba4cb1/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_chime_voice_connector": true,
+    "aws_chime_voice_connector_group": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates two AWS Chime Voice Connectors with encryption required on both. It then creates an AWS Chime Voice Connector Group containing both connectors, assigning one connector priority `1` and the other priority `3`.\n\n```hcl\nterraform {\n  required_version = \">= 1.3.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_chime_voice_connector\" \"primary\" {\n  name               = \"encrypted-voice-connector-primary\"\n  require_encryption = true\n}\n\nresource \"aws_chime_voice_connector\" \"secondary\" {\n  name               = \"encrypted-voice-connector-secondary\"\n  require_encryption = true\n}\n\nresource \"aws_chime_voice_connector_group\" \"this\" {\n  name = \"encrypted-voice-connector-group\"\n\n  connector {\n    voice_connector_id = aws_chime_voice_connector.primary.id\n    priority           = 1\n  }\n\n  connector {\n    voice_connector_id = aws_chime_voice_connector.secondary.id\n    priority           = 3\n  }\n}\n```",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0248-llm-1d5546ba4cb1.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create two AWS Chime Voice Connectors, both with encryption. Then create an aws_chime_voice_connector_group resource with both of these connectors. One connector should have priority=1 and the other should have priority=3",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates two AWS Chime Voice Connectors with encryption required on both. It then creates an AWS Chime Voice Connector Group containing both connectors, assigning one connector priority `1` and the other priority `3`.",
+  "failure_category": "",
+  "failure_reason": ""
+}

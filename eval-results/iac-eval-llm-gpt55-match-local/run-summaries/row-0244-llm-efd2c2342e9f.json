@@ -1,0 +1,96 @@
+{
+  "index": 244,
+  "rowId": "244",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-efd2c2342e9f",
+  "userId": "local-user",
+  "durationSeconds": 84.58,
+  "difficulty": "3",
+  "resource": "aws_neptune_cluster, aws_neptune_cluster_instance, aws_neptune_cluster_parameter_group, aws_neptune_parameter_group",
+  "prompt": "Set up a basic AWS Neptune cluster with a custom parameter group and an instance in that cluster with its own custom parameter group",
+  "intent": "Has \"aws_neptune_cluster\"\nwith \"neptune_cluster_parameter_group_name\"\n\nHas \"aws_neptune_cluster_parameter_group\"\nwith family = \"neptune1.2\"\n\nHas \"aws_neptune_cluster_instance\"\nwith \"cluster_identifier\"\nwith \"neptune_parameter_group_name\"\nwith \"publicly_accessible\" = false OR a subnet group defined\n\nHas \"aws_neptune_parameter_group\"\nwith family = \"neptune1.2\"",
+  "referenceOutput": "resource \"aws_neptune_cluster_parameter_group\" \"example\" {\n  family      = \"neptune1.2\"\n  name        = \"example\"\n  description = \"neptune cluster parameter group\"\n\n  parameter {\n    name  = \"neptune_enable_audit_log\"\n    value = 1\n  }\n}\n\nresource \"aws_neptune_parameter_group\" \"example\" {\n  family = \"neptune1.2\"\n  name   = \"example\"\n\n  parameter {\n    name  = \"neptune_query_timeout\"\n    value = \"25\"\n  }\n}\n\nresource \"aws_neptune_cluster\" \"default\" {\n  cluster_identifier                  = \"neptune-cluster-demo\"\n  engine                              = \"neptune\"\n  backup_retention_period             = 5\n  preferred_backup_window             = \"07:00-09:00\"\n  skip_final_snapshot                 = true\n  iam_database_authentication_enabled = true\n  apply_immediately                   = true\n  neptune_cluster_parameter_group_name = aws_neptune_cluster_parameter_group.example.id\n}\n\nresource \"aws_neptune_cluster_instance\" \"example\" {\n  count              = 2\n  cluster_identifier = aws_neptune_cluster.default.id\n  engine             = \"neptune\"\n  instance_class     = \"db.t3.medium\"\n  apply_immediately  = true\n  publicly_accessible = true\n  neptune_parameter_group_name = aws_neptune_parameter_group.example.id\n}",
+  "bleuScore": 0.061284,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0244-llm-efd2c2342e9f",
+  "generatedSourceFiles": [
+    "generated-source/row-0244-llm-efd2c2342e9f/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "138",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "205",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"aws_neptune_cluster\": {\"cluster_parameter_group_valid\": false, \"instance_parameter_group_valid\": false, \"valid\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_neptune_cluster": true,
+    "aws_neptune_cluster_instance": true,
+    "aws_neptune_cluster_parameter_group": true,
+    "aws_neptune_parameter_group": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a basic AWS Neptune deployment, including:\n\n- A dedicated VPC with two public subnets across two Availability Zones\n- A Neptune subnet group\n- A security group allowing Neptune traffic on port `8182`\n- A custom Neptune cluster parameter group\n- A custom Neptune instance parameter group\n- A Neptune cluster using the custom cluster parameter group\n- A Neptune instance inside the cluster using its own custom instance parameter group\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region to deploy the Neptune cluster into.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"name_prefix\" {\n  description = \"Name prefix for all resources.\"\n  type        = string\n  default     = \"basic-neptune\"\n}\n\nvariable \"neptune_engine_version\" {\n  description = \"Neptune engine version.\"\n  type        = string\n  default     = \"1.2.1.0\"\n}\n\nvariable \"neptune_parameter_group_family\" {\n  description = \"Neptune parameter group family compatible with the selected",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0244-llm-efd2c2342e9f.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Set up a basic AWS Neptune cluster with a custom parameter group and an instance in that cluster with its own custom parameter group",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a basic AWS Neptune deployment, including:\n\n- A dedicated VPC with two public subnets across two Availability Zones\n- A Neptune subnet group\n- A security group allowing Neptune traffic on port `8182`\n- A custom Neptune cluster parameter group\n- A custom Neptune instance parameter group\n- A Neptune cluster using the custom cluster parameter group\n- A Neptune instance inside the cluster using its own custom instance parameter group",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"aws_neptune_cluster\": {\"cluster_parameter_group_valid\": false, \"instance_parameter_group_valid\": false, \"valid\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

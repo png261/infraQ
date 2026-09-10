@@ -1,0 +1,80 @@
+{
+  "index": 455,
+  "rowId": "455",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-975beb620c35",
+  "userId": "local-user",
+  "durationSeconds": 71.77,
+  "difficulty": "3",
+  "resource": "aws_default_network_acl",
+  "prompt": "defines a default network ACL with unrestricted ingress and egress rules allowing all traffic from and to any source.",
+  "intent": "Has one \"aws_default_network_acl\" resource:\nwith unrestricted ingress and egress rules allowing all traffic",
+  "referenceOutput": "provider \"aws\" {\n  region = \"us-west-1\"\n}\n\nresource \"aws_default_network_acl\" \"pike\" {\n  default_network_acl_id = \"acl-01c8f6820c190c9dd\"\n  ingress {\n    protocol   = -1\n    rule_no    = 100\n    action     = \"allow\"\n    cidr_block = \"0.0.0.0/0\"\n    from_port  = 0\n    to_port    = 0\n  }\n\n  egress {\n    protocol   = -1\n    rule_no    = 100\n    action     = \"allow\"\n    cidr_block = \"0.0.0.0/0\"\n    from_port  = 0\n    to_port    = 0\n  }\n}",
+  "bleuScore": 0.192473,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0455-llm-975beb620c35",
+  "generatedSourceFiles": [
+    "generated-source/row-0455-llm-975beb620c35/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_network_acl\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_default_network_acl": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "The following Terraform configuration creates an AWS VPC and manages its default Network ACL. The default Network ACL is configured with unrestricted ingress and egress rules, allowing all IPv4 and IPv6 traffic from and to any source.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"vpc_cidr_block\" {\n  description = \"CIDR block for the VPC.\"\n  type        = string\n  default     = \"10.0.0.0/16\"\n}\n\nresource \"aws_vpc\" \"main\" {\n  cidr_block                       = var.vpc_cidr_block\n  assign_generated_ipv6_cidr_block = true\n  enable_dns_support               = true\n  enable_dns_hostnames             = true\n\n  tags = {\n    Name = \"unrestricted-default-acl-vpc\"\n  }\n}\n\nresource \"aws_default_network_acl\" \"default\" {\n  default_network_acl_id = aws_vpc.main.default_network_acl_id\n\n  ingress {\n    rule_no    = 100\n    protocol   = \"-1\"\n    action     = \"allow\"\n    cidr_block = \"0.0.0.0/0\"\n    ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0455-llm-975beb620c35.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: defines a default network ACL with unrestricted ingress and egress rules allowing all traffic from and to any source.",
+  "promptStrategy": "default",
+  "answer": "The following Terraform configuration creates an AWS VPC and manages its default Network ACL. The default Network ACL is configured with unrestricted ingress and egress rules, allowing all IPv4 and IPv6 traffic from and to any source.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_network_acl\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

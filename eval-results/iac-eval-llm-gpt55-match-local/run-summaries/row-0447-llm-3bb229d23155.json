@@ -1,0 +1,82 @@
+{
+  "index": 447,
+  "rowId": "447",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-3bb229d23155",
+  "userId": "local-user",
+  "durationSeconds": 75.68,
+  "difficulty": "3",
+  "resource": "aws_vpc, aws_vpc_dhcp_options, aws_vpc_dhcp_options_association",
+  "prompt": "sets up a basic AWS network infrastructure consisting of a Virtual Private Cloud (VPC) with a custom DHCP options set. The VPC is configured with a CIDR block of 192.168.0.0/16. The DHCP options include a domain name (windomain.local), a combination of custom and Google's DNS servers, and a NetBIOS name server (192.168.56.102). These DHCP options are then associated with the created VPC, customizing its DHCP settings.",
+  "intent": "Has one \"aws_vpc\" resource:\nConfigured with a \"cidr_block\" of \"192.168.0.0/16\"\nIncludes associated custom DHCP options\n\nHas one \"aws_vpc_dhcp_options\" resource:\nSpecifies a \"domain_name\" of \"windomain.local\"\nIncludes DNS servers with a combination of a custom DNS server and Google's DNS server\nConfigures a \"NetBIOS\" name server at \"192.168.56.102\"\n\nHas one \"aws_vpc_dhcp_options_association\" resource:\nAssociates the \"aws_vpc_dhcp_options\" with the created \"aws_vpc\"\nCustomizes DHCP settings specifically for the created VPC environment",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 4.16\"\n    }\n  }\n\n  required_version = \">= 1.2.0\"\n}\n# Define the provider block for AWS\nprovider \"aws\" {\n  region = \"us-east-2\" # Set your desired AWS region\n}\n\nresource \"aws_vpc\" \"default\" {\n  cidr_block = \"192.168.0.0/16\"\n}\n\nresource \"aws_vpc_dhcp_options\" \"default\" {\n  domain_name          = \"windomain.local\"\n  domain_name_servers  = concat([\"192.168.56.102\"], [\"8.8.8.8\"])\n  netbios_name_servers = [\"192.168.56.102\"]\n}\n\nresource \"aws_vpc_dhcp_options_association\" \"default\" {\n  vpc_id          = aws_vpc.default.id\n  dhcp_options_id = aws_vpc_dhcp_options.default.id\n}",
+  "bleuScore": 0.09398,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0447-llm-3bb229d23155",
+  "generatedSourceFiles": [
+    "generated-source/row-0447-llm-3bb229d23155/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_dhcp_options\": true, \"is_valid_dhcp_options_association\": false, \"is_valid_vpc\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_vpc": true,
+    "aws_vpc_dhcp_options": true,
+    "aws_vpc_dhcp_options_association": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a basic AWS networking foundation:\n\n- An AWS VPC using CIDR block `192.168.0.0/16`\n- A custom DHCP options set with:\n  - Domain name: `windomain.local`\n  - DNS servers: `192.168.56.102`, `8.8.8.8`, and `8.8.4.4`\n  - NetBIOS name server: `192.168.56.102`\n  - NetBIOS node type: `2`\n- An association between the DHCP options set and the VPC\n\n```hcl\nterraform {\n  required_version = \">= 1.0.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the network infrastructure will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"vpc_cidr_block\" {\n  description = \"CIDR block for the VPC.\"\n  type        = string\n  default     = \"192.168.0.0/16\"\n}\n\nvariable \"dhcp_domain_name\" {\n  description = \"Domain name to be assigned through the DHCP options set.\"\n  type        = string\n  default     = \"windomain.local\"\n}\n\nvariable \"dhcp_domain_name_servers\" {\n  description = \"List of DNS servers for the DHCP options set.\"\n  type        = list(string)\n  default = [\n    \"192.168.56.102\",\n  ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0447-llm-3bb229d23155.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: sets up a basic AWS network infrastructure consisting of a Virtual Private Cloud (VPC) with a custom DHCP options set. The VPC is configured with a CIDR block of 192.168.0.0/16. The DHCP options include a domain name (windomain.local), a combination of custom and Google's DNS servers, and a NetBIOS name server (192.168.56.102). These DHCP options are then associated with the created VPC, customizing its DHCP settings.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a basic AWS networking foundation:\n\n- An AWS VPC using CIDR block `192.168.0.0/16`\n- A custom DHCP options set with:\n  - Domain name: `windomain.local`\n  - DNS servers: `192.168.56.102`, `8.8.8.8`, and `8.8.4.4`\n  - NetBIOS name server: `192.168.56.102`\n  - NetBIOS node type: `2`\n- An association between the DHCP options set and the VPC",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_dhcp_options\": true, \"is_valid_dhcp_options_association\": false, \"is_valid_vpc\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

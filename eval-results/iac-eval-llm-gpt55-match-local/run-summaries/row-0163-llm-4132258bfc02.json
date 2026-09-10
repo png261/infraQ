@@ -1,0 +1,83 @@
+{
+  "index": 163,
+  "rowId": "163",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-4132258bfc02",
+  "userId": "local-user",
+  "durationSeconds": 66.75,
+  "difficulty": "4",
+  "resource": "aws_dynamodb_global_table, aws_dynamodb_table, aws_dynamodb_table",
+  "prompt": "Create a DynamoDB Table in us-east-1, us-west-1 and us-west-2",
+  "intent": "Create a DynamoDB Global Table v1(requires a name and at least one replica (regions))",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_dynamodb_table\" \"base_table\" {\n  billing_mode     = \"PAY_PER_REQUEST\"\n  hash_key         = \"myAttribute\"\n  name             = \"myTable\"\n  stream_enabled   = true\n  stream_view_type = \"NEW_AND_OLD_IMAGES\"\n\n  attribute {\n    name = \"myAttribute\"\n    type = \"S\"\n  }\n\n  replica {\n    region_name = \"us-west-1\"\n  }\n\n  replica {\n    region_name = \"us-west-2\"\n  }\n}",
+  "bleuScore": 0.094304,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0163-llm-4132258bfc02",
+  "generatedSourceFiles": [
+    "generated-source/row-0163-llm-4132258bfc02/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"main\": {\"allow\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_dynamodb_global_table": false,
+    "aws_dynamodb_table": true
+  },
+  "missingMarkers": [
+    "aws_dynamodb_global_table"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates one DynamoDB table in each of the following AWS regions:\n\n- `us-east-1`\n- `us-west-1`\n- `us-west-2`\n\nEach table uses on-demand billing mode (`PAY_PER_REQUEST`) and has a simple primary key named `id`.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nvariable \"table_name\" {\n  description = \"Name of the DynamoDB table to create in each region.\"\n  type        = string\n  default     = \"multi-region-dynamodb-table\"\n}\n\nprovider \"aws\" {\n  alias  = \"use1\"\n  region = \"us-east-1\"\n}\n\nprovider \"aws\" {\n  alias  = \"usw1\"\n  region = \"us-west-1\"\n}\n\nprovider \"aws\" {\n  alias  = \"usw2\"\n  region = \"us-west-2\"\n}\n\nresource \"aws_dynamodb_table\" \"us_east_1\" {\n  provider = aws.use1\n\n  name         = var.table_name\n  billing_mode = \"PAY_PER_REQUEST\"\n  hash_key     = \"id\"\n\n  attribute {\n    name = \"id\"\n    type = \"S\"\n  }\n\n  tags = {\n    Name        = var.table_name\n    Environment = \"default\"\n    Region      = \"us-east-1\"\n    ManagedBy   = \"Terraform\"\n  }\n}\n\nresource \"aws_dynamodb_table\" \"us_west_1\" {\n  provider = aws.usw1\n\n  name         = var.table_name\n  billing",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0163-llm-4132258bfc02.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a DynamoDB Table in us-east-1, us-west-1 and us-west-2",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates one DynamoDB table in each of the following AWS regions:\n\n- `us-east-1`\n- `us-west-1`\n- `us-west-2`\n\nEach table uses on-demand billing mode (`PAY_PER_REQUEST`) and has a simple primary key named `id`.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"main\": {\"allow\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

@@ -1,0 +1,80 @@
+{
+  "index": 265,
+  "rowId": "265",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-4160394c5ab8",
+  "userId": "local-user",
+  "durationSeconds": 84.28,
+  "difficulty": "1",
+  "resource": "aws_iam_user",
+  "prompt": "Create a basic AWS IAM user example",
+  "intent": "Has one \"aws_iam_user\" resource\nwith one \"name\" with any value",
+  "referenceOutput": "resource \"aws_iam_user\" \"lb\" {\n  name = \"loadbalancer\"\n  path = \"/system/\"\n\n  tags = {\n    tag-key = \"tag-value\"\n  }\n}",
+  "bleuScore": 0.017391,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0265-llm-4160394c5ab8",
+  "generatedSourceFiles": [
+    "generated-source/row-0265-llm-4160394c5ab8/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_iam_user": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a basic AWS IAM user example. It defines:\n\n- An AWS provider using the `us-east-1` region\n- An IAM user\n- An IAM group\n- A basic IAM policy allowing read-only access to IAM account details\n- Attachment of the policy to the group\n- Membership of the user in the group\n\n```hcl\nterraform {\n  required_version = \">= 1.0.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_iam_user\" \"basic_user\" {\n  name = \"basic-example-user\"\n\n  tags = {\n    Name        = \"basic-example-user\"\n    Environment = \"example\"\n  }\n}\n\nresource \"aws_iam_group\" \"basic_group\" {\n  name = \"basic-example-group\"\n}\n\nresource \"aws_iam_policy\" \"basic_read_only_policy\" {\n  name        = \"basic-example-read-only-policy\"\n  description = \"A basic read-only IAM policy for example purposes\"\n\n  policy = jsonencode({\n    Version = \"2012-10-17\"\n    Statement = [\n      {\n        Effect = \"Allow\"\n        Action = [\n          \"iam:GetUser\",\n          \"iam:ListUsers\",\n          \"iam:ListGroups\",\n          \"iam:ListPolicies\",\n          \"iam:GetAccountSummary\"\n        ]\n        Resource = ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0265-llm-4160394c5ab8.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a basic AWS IAM user example",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a basic AWS IAM user example. It defines:\n\n- An AWS provider using the `us-east-1` region\n- An IAM user\n- An IAM group\n- A basic IAM policy allowing read-only access to IAM account details\n- Attachment of the policy to the group\n- Membership of the user in the group",
+  "failure_category": "",
+  "failure_reason": ""
+}

@@ -1,0 +1,84 @@
+{
+  "index": 263,
+  "rowId": "263",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-1e68b8cc63fd",
+  "userId": "local-user",
+  "durationSeconds": 55.58,
+  "difficulty": "2",
+  "resource": "aws_iam_user, aws_iam_user_ssh_key",
+  "prompt": "Create a basic AWS IAM user with a basic SSH key attached.",
+  "intent": "Has one \"aws_iam_user\" resource\nwith one \"name\" with any value\n\nHas one \"aws_iam_user_ssh_key\" resource\nwith one \"username\" with value \"aws_iam_user.{USER NAME}.name\"\nwith one \"encoding\" with value \"SSH\"\nwith one \"public_key\" with any value",
+  "referenceOutput": "resource \"aws_iam_user\" \"user\" {\n  name = \"test-user\"\n  path = \"/\"\n}\n\nresource \"aws_iam_user_ssh_key\" \"user\" {\n  username   = aws_iam_user.user.name\n  encoding   = \"SSH\"\n  public_key = \"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD3F6tyPEFEzV0LX3X8BsXdMsQz1x2cEikKDEY0aIj41qgxMCP/iteneqXSIFZBp5vizPvaoIR3Um9xK7PGoW8giupGn+EPuxIA4cDM4vzOqOkiMPhz5XK0whEjkVzTo4+S0puvDZuwIsdiW9mxhJc7tgBNL0cYlWSYVkz4G/fslNfRPW5mYAM49f4fhtxPb5ok4Q2Lg9dPKVHO/Bgeu5woMc7RY0p1ej6D4CKFE6lymSDJpW0YHX/wqE9+cfEauh7xZcG0q9t2ta6F6fmX0agvpFyZo8aFbXeUBr7osSCJNgvavWbM/06niWrOvYX2xwWdhXmXSrbX8ZbabVohBK41 mytest@mydomain.com\"\n}",
+  "bleuScore": 0.040292,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0263-llm-1e68b8cc63fd",
+  "generatedSourceFiles": [
+    "generated-source/row-0263-llm-1e68b8cc63fd/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_iam_user": true,
+    "aws_iam_user_ssh_key": true,
+    "aws_iam_user.{USER NAME}.name": false
+  },
+  "missingMarkers": [
+    "aws_iam_user.{USER NAME}.name"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates a basic AWS IAM user and attaches an SSH public key to that IAM user using the `aws_iam_user_ssh_key` resource. The SSH key is provided as a variable with a default placeholder public key value, which should be replaced with your real SSH public key before production use.\n\n```hcl\nterraform {\n  required_version = \">= 1.0.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region to use for the provider configuration.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"iam_user_name\" {\n  description = \"Name of the IAM user to create.\"\n  type        = string\n  default     = \"basic-ssh-user\"\n}\n\nvariable \"ssh_public_key\" {\n  description = \"SSH public key to attach to the IAM user. Replace this with your actual SSH public key.\"\n  type        = string\n  default     = \"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC7exampleplaceholderkeyonlydonotuseinproduction user@example\"\n}\n\nresource \"aws_iam_user\" \"basic_user\" {\n  name = var.iam_user_name\n\n  tags = {\n    Name        = var.iam_user_name\n    Environme",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0263-llm-1e68b8cc63fd.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a basic AWS IAM user with a basic SSH key attached.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a basic AWS IAM user and attaches an SSH public key to that IAM user using the `aws_iam_user_ssh_key` resource. The SSH key is provided as a variable with a default placeholder public key value, which should be replaced with your real SSH public key before production use.",
+  "failure_category": "",
+  "failure_reason": ""
+}

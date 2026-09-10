@@ -1,0 +1,80 @@
+{
+  "index": 32,
+  "rowId": "32",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-947ee7063be2",
+  "userId": "local-user",
+  "durationSeconds": 57.36,
+  "difficulty": "3",
+  "resource": "aws_elastic_beanstalk_application, aws_iam_role",
+  "prompt": "Create an Elastic Beanstalk application with an app version lifecycle. Retain the version for 5 days",
+  "intent": "Has one \"aws_elastic_beanstalk_application\" resource\n    with \"name\"\n    with \"appversion_lifecycle\" block\n\nHas one \"aws_iam_role\" resource\n    with \"name\"\n    with \"assume_role_policy\" and \"Service\" set to \"elasticbeanstalk.amazonaws.com\"",
+  "referenceOutput": "provider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_iam_role\" \"beanstalk_service\" {\n  name = \"tf-test-beanstalk-service-role\"\n\n  assume_role_policy = jsonencode({\n    Version = \"2012-10-17\",\n    Statement = [\n      {\n        Action = \"sts:AssumeRole\",\n        Effect = \"Allow\",\n        Principal = {\n          Service = \"elasticbeanstalk.amazonaws.com\"\n        },\n      },\n    ]\n  })\n}\n\nresource \"aws_elastic_beanstalk_application\" \"tftest\" {\n  name        = \"tf-test-name\"\n  description = \"tf-test-desc\"\n\n  appversion_lifecycle {\n    service_role          = aws_iam_role.beanstalk_service.arn\n    max_age_in_days = 5\n    delete_source_from_s3 = true\n  }\n}",
+  "bleuScore": 0.132251,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/generated-source/row-0032-llm-947ee7063be2",
+  "generatedSourceFiles": [
+    "generated-source/row-0032-llm-947ee7063be2/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_elastic_beanstalk_application": true,
+    "aws_iam_role": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "Description: This Terraform configuration creates an AWS Elastic Beanstalk application and configures its application version lifecycle policy to retain application versions for 5 days. It also creates the required IAM service role that Elastic Beanstalk uses to manage application version lifecycle cleanup.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Elastic Beanstalk application will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"application_name\" {\n  description = \"Name of the Elastic Beanstalk application.\"\n  type        = string\n  default     = \"example-elastic-beanstalk-app\"\n}\n\nresource \"random_id\" \"suffix\" {\n  byte_length = 4\n}\n\nresource \"aws_iam_role\" \"elastic_beanstalk_service_role\" {\n  name = \"elastic-beanstalk-service-role-${random_id.suffix.hex}\"\n\n  assume_role_policy = jsonencode({\n    Version = \"2012-10-17\"\n    Statement = [\n      {\n        E",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/run-summaries/row-0032-llm-947ee7063be2.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an Elastic Beanstalk application with an app version lifecycle. Retain the version for 5 days",
+  "answer": "Description: This Terraform configuration creates an AWS Elastic Beanstalk application and configures its application version lifecycle policy to retain application versions for 5 days. It also creates the required IAM service role that Elastic Beanstalk uses to manage application version lifecycle cleanup.",
+  "failure_category": "",
+  "failure_reason": ""
+}

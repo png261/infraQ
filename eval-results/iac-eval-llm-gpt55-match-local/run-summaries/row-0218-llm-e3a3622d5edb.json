@@ -1,0 +1,94 @@
+{
+  "index": 218,
+  "rowId": "218",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-e3a3622d5edb",
+  "userId": "local-user",
+  "durationSeconds": 112.79,
+  "difficulty": "3",
+  "resource": "aws_rds_cluster, aws_vpc",
+  "prompt": "Create an mySQL cluster with 100 GB allocated to us-east-1a, us-east-1b, us-east-1c.",
+  "intent": "Has one \"aws_rds_cluster\" resource\nwith one \"allocated_storage\" = 100\nwith one \"availability_zones\" = [\"us-east-1a\", \"us-east-1b\", \"us-east-1c\"]\nwith one \"engine\" = \"mysql\"",
+  "referenceOutput": "terraform {\nrequired_providers {\naws = {\nsource = \"hashicorp/aws\"\nversion = \"~> 5.0\"\n}\n}\n}\n\n# Configure the AWS Provider\nprovider \"aws\" {\nregion = \"us-east-1\"\n}\n\nresource \"aws_vpc\" \"vpc\" {\ncidr_block = \"192.168.0.0/22\"\n}\n\nresource \"aws_rds_cluster\" \"example\" {\ncluster_identifier = \"example\"\navailability_zones = [\"us-east-1a\", \"us-east-1b\", \"us-east-1c\"]\nengine = \"mysql\"\ndb_cluster_instance_class = \"db.r6gd.large\"\nstorage_type = \"io1\"\nallocated_storage = 100\niops = 1000\nmaster_username = \"test\"\nmaster_password = \"mustbeeightcharaters\"\nskip_final_snapshot = true\n}",
+  "bleuScore": 0.069113,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0218-llm-e3a3622d5edb",
+  "generatedSourceFiles": [
+    "generated-source/row-0218-llm-e3a3622d5edb/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "131",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "169",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_rds_cluster": true,
+    "aws_vpc": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS RDS MySQL Multi-AZ DB cluster in `us-east-1`, spanning `us-east-1a`, `us-east-1b`, and `us-east-1c`. It provisions:\n\n- A new VPC\n- Three private subnets, one in each requested Availability Zone\n- An RDS subnet group\n- A security group for MySQL access\n- A 100 GB MySQL RDS Multi-AZ DB cluster\n- A generated master password\n- Outputs for the cluster endpoint and port\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nvariable \"project_name\" {\n  type    = string\n  default = \"mysql-cluster\"\n}\n\nvariable \"mysql_database_name\" {\n  type    = string\n  default = \"appdb\"\n}\n\nvariable \"mysql_master_username\" {\n  type    = string\n  default = \"adminuser\"\n}\n\nvariable \"mysql_instance_class\" {\n  type    = string\n  default = \"db.m6gd.large\"\n}\n\nvariable \"mysql_engine_version\" {\n  type    = string\n  default = \"8.0.35\"\n}\n\nvariable \"allowed_mysql_cidr\" {\n  type    = string\n  default = \"10.0.0.0/16\"\n}\n\nresource \"random_password\" \"mysql",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0218-llm-e3a3622d5edb.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an mySQL cluster with 100 GB allocated to us-east-1a, us-east-1b, us-east-1c.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS RDS MySQL Multi-AZ DB cluster in `us-east-1`, spanning `us-east-1a`, `us-east-1b`, and `us-east-1c`. It provisions:\n\n- A new VPC\n- Three private subnets, one in each requested Availability Zone\n- An RDS subnet group\n- A security group for MySQL access\n- A 100 GB MySQL RDS Multi-AZ DB cluster\n- A generated master password\n- Outputs for the cluster endpoint and port",
+  "failure_category": "",
+  "failure_reason": ""
+}

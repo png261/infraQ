@@ -1,0 +1,92 @@
+{
+  "index": 300,
+  "rowId": "300",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-dcd73175f5a3",
+  "userId": "local-user",
+  "durationSeconds": 122.84,
+  "difficulty": "6",
+  "resource": "aws_codebuild_project, aws_iam_policy, aws_iam_role, aws_iam_role_policy_attachment, aws_s3_bucket, aws_security_group, aws_subnet, aws_vpc, aws_iam_policy_document, aws_iam_policy_document",
+  "prompt": "Infrastructure for an autograder for a CS class. The autograde needs to run students' code stored on GitHub in a specific environment and store the result.  Make sure that the autograder prevents the students' code from reaching the internet. Accomplish this using the following resources: AWS S3 Bucket, AWS CodeBuild Project, AWS VPC, AWS VPC Subnet, AWS Security Group. Add any necessary resources.",
+  "intent": "have one \"aws_s3_bucket\" resource\nhave one \"aws_codebuild_project\" resource\n  with \"artifacts\" argument block\n    with \"type\" argument with value \"S3\"\n    with \"location\" argument\n    with \"name\" argument\n  with \"environment\" argument block\n    with \"computer_type\" argument\n    with \"image\" argument\n    with \"type\" argument\n  with \"source\" argument block\n    with \"type\" argument with value \"GITHUB\"\n    with \"location\" argument\n  with \"vpc_config\" argument block\n    with \"vpc_id\" argument\n    with \"subnets\" argument\n    with \"security_group_ids\" argument\nhave one \"aws_vpc\" resource\n  with \"cidr_block\" argument\nhave one \"aws_subnet\" argument\n  with \"vpc_id\" argument\n  with \"cidr_block\" argument\nwith one \"aws_security_group\" resource\n  with \"vpc_id\" argument",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_s3_bucket\" \"artifact_bucket\" {\n  bucket_prefix = \"artifact-bucket-\"\n}\n\nresource \"aws_codebuild_project\" \"autograder_build\" {\n  name         = \"autograder_build\"\n  service_role = aws_iam_role.autograder_build_role.arn\n\n  artifacts {\n    type     = \"S3\"\n    location = aws_s3_bucket.artifact_bucket.arn\n    name     = \"results.zip\" # include this\n  }\n\n  environment { # arguments required, exact value not specified\n    compute_type = \"BUILD_GENERAL1_SMALL\"\n    image        = \"aws/codebuild/standard:7.0-24.10.29\"\n    type         = \"LINUX_CONTAINER\"\n  }\n\n  source {\n    type            = \"GITHUB\"\n    git_clone_depth = 1 # good to have, not required\n    location        = \"github.com/source-location\"\n  }\n\n  vpc_config {\n    vpc_id             = aws_vpc.autograder_vpc.id\n    subnets            = [aws_subnet.autograder_vpc_subnet.id]\n    security_group_ids = [aws_security_group.autograder_vpc_securitygroup.id]\n  }\n}\n\nresource \"aws_vpc\" \"autograder_vpc\" {\n  cidr_block = \"10.0.0.0/16\" # extra value not specified\n}\n\nresource \"aws_subnet\" \"autograder_vpc_subnet\" {\n  vpc_id     = aws_vpc.autograder_vpc.id\n  cidr_block = \"10.0.0.0/24\" # include this\n}\n\nresource \"aws_security_group\" \"autograder_vpc_securitygroup\" {\n  vpc_id = aws_vpc.autograder_vpc.id\n}\n\nresource \"aws_iam_role\" \"autograder_build_role\" {\n  assume_role_policy = data.aws_iam_policy_document.autograder_build_policy_assume.json\n}\n\ndata \"aws_iam_policy_document\" \"autograder_build_policy_assume\" {\n  statement {\n    actions = [\"sts:AssumeRole\"]\n\n    principals {\n      type        = \"Service\"\n      identifiers = [\"codebuild.amazonaws.com\"]\n    }\n  }\n}\n\ndata \"aws_iam_policy_document\" \"autograder_build_policy\" {\n  statement {\n    effect = \"Allow\"\n    actions = [\n      \"ec2:DescribeSubnets\",\n      \"ec2:DescribeSecurityGroups\",\n      \"ec2:DescribeVpcs\"\n    ]\n    resources = [\n      \"*\"\n    ]\n  }\n\n  statement {\n    effect  = \"Allow\"\n    actions = [\"s3:*\"]\n    resources = [\n      aws_s3_bucket.artifact_bucket.arn,\n      \"${aws_s3_bucket.artifact_bucket.arn}/*\",\n    ]\n  }\n}\n\nresource \"aws_iam_policy\" \"autograder_build_policy\" {\n  name        = \"lambda_policy\"\n  description = \"Grants permissions to Lambda to describe vpc, subnet, security group\"\n\n  policy = data.aws_iam_policy_document.autograder_build_policy.json\n}\n\nresource \"aws_iam_role_policy_attachment\" \"lambda_policy_attach\" {\n  role       = aws_iam_role.autograder_build_role.name\n  policy_arn = aws_iam_policy.autograder_build_policy.arn\n}",
+  "bleuScore": 0.060635,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0300-llm-dcd73175f5a3",
+  "generatedSourceFiles": [
+    "generated-source/row-0300-llm-dcd73175f5a3/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"autograder\": {\"valid\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_codebuild_project": true,
+    "aws_iam_policy": false,
+    "aws_iam_role": true,
+    "aws_iam_role_policy_attachment": false,
+    "aws_s3_bucket": true,
+    "aws_security_group": true,
+    "aws_subnet": true,
+    "aws_vpc": true,
+    "aws_iam_policy_document": false
+  },
+  "missingMarkers": [
+    "aws_iam_policy",
+    "aws_iam_role_policy_attachment",
+    "aws_iam_policy_document"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "Description: This Terraform configuration provisions an AWS-based CS autograder environment using an S3 bucket for build artifacts/results, a CodeBuild project to run grading jobs against code stored in GitHub, and an isolated VPC network. The CodeBuild project runs inside a private subnet with no Internet Gateway, no NAT Gateway, and a restrictive security group. Student code therefore executes without general internet access. An S3 VPC Gateway Endpoint is added so the build can still write grading outputs to S3 without traversing the public internet. IAM roles and policies are included for CodeBuild to access S3, CloudWatch Logs, and VPC networking.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\n############################\n# Variables\n############################\n\nvariable \"aws_region\" {\n  description = \"AWS region to deploy the autograder infrastructure.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"project_name\" {\n  description = \"Name prefix for autograder resources.\"\n  type        = string\n  default   ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0300-llm-dcd73175f5a3.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Infrastructure for an autograder for a CS class. The autograde needs to run students' code stored on GitHub in a specific environment and store the result.  Make sure that the autograder prevents the students' code from reaching the internet. Accomplish this using the following resources: AWS S3 Bucket, AWS CodeBuild Project, AWS VPC, AWS VPC Subnet, AWS Security Group. Add any necessary resources.",
+  "promptStrategy": "default",
+  "answer": "Description: This Terraform configuration provisions an AWS-based CS autograder environment using an S3 bucket for build artifacts/results, a CodeBuild project to run grading jobs against code stored in GitHub, and an isolated VPC network. The CodeBuild project runs inside a private subnet with no Internet Gateway, no NAT Gateway, and a restrictive security group. Student code therefore executes without general internet access. An S3 VPC Gateway Endpoint is added so the build can still write grading outputs to S3 without traversing the public internet. IAM roles and policies are included for CodeBuild to access S3, CloudWatch Logs, and VPC networking.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"autograder\": {\"valid\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

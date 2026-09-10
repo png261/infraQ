@@ -1,0 +1,80 @@
+{
+  "index": 376,
+  "rowId": "376",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-e2c2d3c1d1d2",
+  "userId": "local-user",
+  "durationSeconds": 52.54,
+  "difficulty": "1",
+  "resource": "aws_lightsail_certificate",
+  "prompt": "Provides a lightsail certificate.",
+  "intent": "have one aws_lightsail_certificate\n    with name\n    with domain_name",
+  "referenceOutput": "resource \"aws_lightsail_certificate\" \"test\" {\n  name                      = \"test\"\n  domain_name               = \"testdomain.com\"\n  subject_alternative_names = [\"www.testdomain.com\"]\n}",
+  "bleuScore": 0.011265,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0376-llm-e2c2d3c1d1d2",
+  "generatedSourceFiles": [
+    "generated-source/row-0376-llm-e2c2d3c1d1d2/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: Unsupported attribute\n\n  on main.tf line 63, in output \"lightsail_certificate_status\":\n  63:   value       = aws_lightsail_certificate.this.status\n\nThis object has no argument, nested block, or exported attribute named\n\"status\".\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_lightsail_certificate": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration provisions an AWS Lightsail SSL/TLS certificate for a domain name, including optional subject alternative names such as `www.example.com`. The certificate will be created in AWS Lightsail and will require DNS validation before it becomes active.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region to use for the Lightsail certificate.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"certificate_name\" {\n  description = \"Name of the Lightsail certificate.\"\n  type        = string\n  default     = \"example-lightsail-certificate\"\n}\n\nvariable \"domain_name\" {\n  description = \"Primary domain name for the Lightsail certificate.\"\n  type        = string\n  default     = \"example.com\"\n}\n\nvariable \"subject_alternative_names\" {\n  description = \"Additional domain names to include in the Lightsail certificate.\"\n  type        = list(string)\n  default     = [\"www.example.com\"]\n}\n\nresource \"aws_lightsail_certificate\" \"this\" {\n  name                      = var",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0376-llm-e2c2d3c1d1d2.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Provides a lightsail certificate.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration provisions an AWS Lightsail SSL/TLS certificate for a domain name, including optional subject alternative names such as `www.example.com`. The certificate will be created in AWS Lightsail and will require DNS validation before it becomes active.",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: Unsupported attribute on main.tf line 63, in output \"lightsail_certificate_status\": 63: value = aws_lightsail_certificate.this.status This object has no argument, nested block, or exported attribute named \"status\"."
+}

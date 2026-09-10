@@ -1,0 +1,81 @@
+{
+  "index": 69,
+  "rowId": "69",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-0faea09766e2",
+  "userId": "local-user",
+  "durationSeconds": 52.23,
+  "difficulty": "2",
+  "resource": "aws_kinesis_stream, aws_kinesis_stream_consumer",
+  "prompt": "Generate a resource to manage a Kinesis Stream Consumer",
+  "intent": "Has one \"aws_kinesis_stream\" resource and one \"aws_kinesis_stream_consumer\" resource",
+  "referenceOutput": "provider \"aws\" {\n  region = \"us-west-2\"\n}\n\nresource \"aws_kinesis_stream\" \"example\" {\n  name        = \"example-stream\"\n  shard_count = 1\n}\n\nresource \"aws_kinesis_stream_consumer\" \"example\" {\n  name       = \"example-consumer\"\n  stream_arn = aws_kinesis_stream.example.arn\n}",
+  "bleuScore": 0.093904,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-2/generated-source/row-0069-llm-0faea09766e2",
+  "generatedSourceFiles": [
+    "generated-source/row-0069-llm-0faea09766e2/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_kinesis_stream": true,
+    "aws_kinesis_stream_consumer": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS Kinesis Data Stream and manages a Kinesis Stream Consumer for it using `aws_kinesis_stream_consumer`. The stream consumer enables enhanced fan-out consumption from the Kinesis stream.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"kinesis_stream_name\" {\n  description = \"Name of the Kinesis Data Stream.\"\n  type        = string\n  default     = \"example-kinesis-stream\"\n}\n\nvariable \"kinesis_consumer_name\" {\n  description = \"Name of the Kinesis Stream Consumer.\"\n  type        = string\n  default     = \"example-kinesis-consumer\"\n}\n\nresource \"aws_kinesis_stream\" \"example\" {\n  name             = var.kinesis_stream_name\n  shard_count      = 1\n  retention_period = 24\n\n  stream_mode_details {\n    stream_mode = \"PROVISIONED\"\n  }\n\n  tags = {\n    Name        = var.kinesis_stream_name\n    Environment = \"example\"\n    ManagedBy   = \"terraform\"\n  }\n}\n\nreso",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-2/run-summaries/row-0069-llm-0faea09766e2.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Generate a resource to manage a Kinesis Stream Consumer",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS Kinesis Data Stream and manages a Kinesis Stream Consumer for it using `aws_kinesis_stream_consumer`. The stream consumer enables enhanced fan-out consumption from the Kinesis stream.",
+  "failure_category": "",
+  "failure_reason": ""
+}

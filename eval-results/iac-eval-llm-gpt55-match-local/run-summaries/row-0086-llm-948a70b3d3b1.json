@@ -1,0 +1,80 @@
+{
+  "index": 86,
+  "rowId": "86",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-948a70b3d3b1",
+  "userId": "local-user",
+  "durationSeconds": 62.11,
+  "difficulty": "3",
+  "resource": "aws_route53_traffic_policy",
+  "prompt": "route 53 traffic policy",
+  "intent": "Has one \"aws_route53_traffic_policy\" resource\n    with \"name\"",
+  "referenceOutput": "provider \"aws\" {\n  region = \"us-east-1\"\n}\n\n\nresource \"aws_route53_traffic_policy\" \"example\" {\n  name     = \"example\"\n  comment  = \"example comment\"\n  document = <<EOF\n{\n  \"AWSPolicyFormatVersion\": \"2015-10-01\",\n  \"RecordType\": \"A\",\n  \"Endpoints\": {\n    \"endpoint-start-NkPh\": {\n      \"Type\": \"value\",\n      \"Value\": \"10.0.0.2\"\n    }\n  },\n  \"StartEndpoint\": \"endpoint-start-NkPh\"\n}\nEOF\n}",
+  "bleuScore": 0.021768,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0086-llm-948a70b3d3b1",
+  "generatedSourceFiles": [
+    "generated-source/row-0086-llm-948a70b3d3b1/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_route53_traffic_policy": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "Description: This Terraform configuration creates an AWS Route 53 public hosted zone and defines a Route 53 Traffic Policy for an `A` record. The traffic policy uses weighted routing to split traffic evenly between two IPv4 endpoints. A Route 53 Traffic Policy Instance is then created to publish the policy as `app.example.com`.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region used for provider operations. Route 53 is global, but the AWS provider still requires a region.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"domain_name\" {\n  description = \"Domain name for the Route 53 hosted zone.\"\n  type        = string\n  default     = \"example.com\"\n}\n\nvariable \"record_name\" {\n  description = \"DNS record name managed by the Route 53 traffic policy.\"\n  type        = string\n  default     = \"app.example.com\"\n}\n\nvariable \"endpoint_one_ip\" {\n  description = \"First IPv4 endpoint for weighted routing.\"\n  type        = string\n  default     = \"203.0.113.10\"\n}\n\nvariable \"endpoin",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0086-llm-948a70b3d3b1.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: route 53 traffic policy",
+  "promptStrategy": "default",
+  "answer": "Description: This Terraform configuration creates an AWS Route 53 public hosted zone and defines a Route 53 Traffic Policy for an `A` record. The traffic policy uses weighted routing to split traffic evenly between two IPv4 endpoints. A Route 53 Traffic Policy Instance is then created to publish the policy as `app.example.com`.",
+  "failure_category": "",
+  "failure_reason": ""
+}

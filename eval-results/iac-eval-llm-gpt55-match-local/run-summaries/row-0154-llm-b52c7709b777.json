@@ -1,0 +1,80 @@
+{
+  "index": 154,
+  "rowId": "154",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-b52c7709b777",
+  "userId": "local-user",
+  "durationSeconds": 79.46,
+  "difficulty": "1",
+  "resource": "aws_lambda_layer_version",
+  "prompt": "Create a Lambda Layer Version resource from \"lambda_layer_payload.zip\"",
+  "intent": "Create a aws_lambda_layer_version by using file_name = \"lambda_layer_payload.zip\". Layer name can be any.",
+  "referenceOutput": "resource \"aws_lambda_layer_version\" \"lambda_layer\" {\n  filename   = \"lambda_layer_payload.zip\"\n  layer_name = \"lambda_layer_name\"\n\n  compatible_runtimes = [\"nodejs16.x\"]\n}",
+  "bleuScore": 0.018598,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0154-llm-b52c7709b777",
+  "generatedSourceFiles": [
+    "generated-source/row-0154-llm-b52c7709b777/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: Error in function call\n\n  on main.tf line 49, in resource \"aws_lambda_layer_version\" \"lambda_layer\":\n  49:   source_code_hash    = filebase64sha256(var.lambda_layer_zip_path)\n    ├────────────────\n    │ while calling filebase64sha256(path)\n    │ var.lambda_layer_zip_path is \"lambda_layer_payload.zip\"\n\nCall to function \"filebase64sha256\" failed: open lambda_layer_payload.zip: no\nsuch file or directory.\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_lambda_layer_version": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS Lambda Layer Version from a local ZIP archive named `lambda_layer_payload.zip`. It configures the AWS provider, defines variables with defaults, and publishes the Lambda layer so it can be attached to Lambda functions.\n\n```hcl\nterraform {\n  required_version = \">= 1.3.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Lambda Layer Version will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"lambda_layer_name\" {\n  description = \"Name of the Lambda layer.\"\n  type        = string\n  default     = \"example-lambda-layer\"\n}\n\nvariable \"lambda_layer_zip_path\" {\n  description = \"Path to the Lambda layer ZIP file.\"\n  type        = string\n  default     = \"lambda_layer_payload.zip\"\n}\n\nvariable \"compatible_runtimes\" {\n  description = \"List of Lambda runtimes compatible with this layer.\"\n  type        = list(string)\n  default     = [\"python3.11\"]\n}\n\nvariable \"compatible_architectures\" {\n  description = \"List of instruction set architectures compatible with this l",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0154-llm-b52c7709b777.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a Lambda Layer Version resource from \"lambda_layer_payload.zip\"",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS Lambda Layer Version from a local ZIP archive named `lambda_layer_payload.zip`. It configures the AWS provider, defines variables with defaults, and publishes the Lambda layer so it can be attached to Lambda functions.",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: Error in function call on main.tf line 49, in resource \"aws_lambda_layer_version\" \"lambda_layer\": 49: source_code_hash = filebase64sha256(var.lambda_layer_zip_path) ├──────────────── │ while calling filebase64sha256(path) │ var.lambda_layer_zip_path is \"lambda_layer_payload.zip\" Call to function \"filebase64sha256\" failed: open lambda_layer_payload.zip: no such file or directory."
+}

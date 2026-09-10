@@ -1,0 +1,105 @@
+{
+  "index": 156,
+  "rowId": "156",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-49a1b8972f24",
+  "userId": "local-user",
+  "durationSeconds": 95.94,
+  "difficulty": "4",
+  "resource": "aws_cloudwatch_event_rule, aws_cloudwatch_event_target, aws_iam_role, aws_lambda_function, archive_file, aws_iam_policy_document",
+  "prompt": "Trigger a \"aws_lambda_function\" called test_lambda whenever an EC2 image is created",
+  "intent": "Needs to have an aws_lambda_function defined. Create a aws_cloudwatch_event_rule to trigger on EC2 creation and aws_lambda_permission to have permission to run lambda function. Create a target to trigger the lambda function.",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_cloudwatch_event_rule\" \"scan_ami\" {\n  name          = \"EC2CreateImageEvent\"\n  description   = \"EC2 Create Image Event...\"\n  role_arn      = aws_iam_role.cron.arn\n  event_pattern = <<EOF\n{\n  \"source\": [\"aws.ec2\"],\n  \"detail-type\": [\"AWS API Call via CloudTrail\"],\n  \"detail\": {\n    \"eventSource\": [\"ec2.amazonaws.com\"],\n    \"eventName\": [\"CreateImage\"]\n  }\n}\nEOF\n}\n\nresource \"aws_cloudwatch_event_target\" \"scan_ami_lambda_function\" {\n  rule = aws_cloudwatch_event_rule.scan_ami.name\n  arn  = aws_lambda_function.cron.arn\n}\n\ndata \"archive_file\" \"lambda-func\" {\n  type        = \"zip\"\n  source_file = \"./supplement/lambda_func.py\"\n  output_path = \"./supplement/lambda_func.zip\"\n}\n\nresource \"aws_lambda_function\" \"cron\" {\n  function_name = \"cron-lambda-function\"\n  role          = aws_iam_role.cron.arn\n  filename      = data.archive_file.lambda-func.output_path\n  source_code_hash = data.archive_file.lambda-func.output_base64sha256\n  handler       = \"lambda_func.handler\"\n  runtime       = \"python3.12\"\n}\n\nresource \"aws_lambda_permission\" \"cron\" {\n  function_name = aws_lambda_function.cron.function_name\n  action        = \"lambda:InvokeFunction\"\n  principal     = \"events.amazonaws.com\"\n  source_arn    = aws_cloudwatch_event_rule.scan_ami.arn\n}\n\ndata \"aws_iam_policy_document\" \"cron_assume_role\" {\n  statement {\n    actions = [\"sts:AssumeRole\"]\n    principals {\n      type = \"Service\"\n      identifiers = [\n        \"lambda.amazonaws.com\",\n        \"events.amazonaws.com\"\n      ]\n    }\n  }\n}\n\nresource \"aws_iam_role\" \"cron\" {\n  name               = \"cron_assume_role\"\n  assume_role_policy = data.aws_iam_policy_document.cron_assume_role.json\n}\n\nresource \"aws_iam_role_policy_attachment\" \"cron\" {\n  role       = aws_iam_role.cron.name\n  policy_arn = \"arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole\"\n}",
+  "bleuScore": 0.143522,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0156-llm-49a1b8972f24",
+  "generatedSourceFiles": [
+    "generated-source/row-0156-llm-49a1b8972f24/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": false,
+    "missingPathModuleFiles": [
+      "lambda_src",
+      "test_lambda.zip"
+    ],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "lambda_src",
+        "line": "",
+        "finding": "missing_path_module_file"
+      },
+      {
+        "severity": "high",
+        "file": "test_lambda.zip",
+        "line": "",
+        "finding": "missing_path_module_file"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"main\": {\"allow\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": [
+      "lambda_src",
+      "test_lambda.zip"
+    ]
+  },
+  "requiredMarkers": {
+    "aws_cloudwatch_event_rule": true,
+    "aws_cloudwatch_event_target": true,
+    "aws_iam_role": true,
+    "aws_lambda_function": true,
+    "aws_iam_policy_document": false
+  },
+  "missingMarkers": [
+    "aws_iam_policy_document"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates an AWS Lambda function named `test_lambda` and configures an Amazon EventBridge rule to trigger it whenever an EC2 AMI/image is created through the `CreateImage` API call. It includes the required IAM role, Lambda execution policy attachment, EventBridge rule, EventBridge target, and Lambda invoke permission.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    archive = {\n      source  = \"hashicorp/archive\"\n      version = \">= 2.4\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nlocals {\n  lambda_source_dir = \"${path.module}/lambda_src\"\n  lambda_zip_path   = \"${path.module}/test_lambda.zip\"\n}\n\nresource \"local_file\" \"lambda_index\" {\n  filename = \"${local.lambda_source_dir}/index.py\"\n\n  content = <<EOF\nimport json\n\ndef lambda_handler(event, context):\n    print(\"EC2 image creation event received:\")\n    print(json.dumps(event))\n    \n    image_id = event.get(\"detail\", {}).get(\"responseElements\", {}).",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0156-llm-49a1b8972f24.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Trigger a \"aws_lambda_function\" called test_lambda whenever an EC2 image is created",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS Lambda function named `test_lambda` and configures an Amazon EventBridge rule to trigger it whenever an EC2 AMI/image is created through the `CreateImage` API call. It includes the required IAM role, Lambda execution policy attachment, EventBridge rule, EventBridge target, and Lambda invoke permission.",
+  "failure_category": "artifact_incomplete",
+  "failure_reason": "Missing local files: lambda_src, test_lambda.zip"
+}

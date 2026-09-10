@@ -1,0 +1,107 @@
+{
+  "index": 38,
+  "rowId": "38",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-47b2cd80c1bc",
+  "userId": "local-user",
+  "durationSeconds": 92.41,
+  "difficulty": "4",
+  "resource": "aws_codebuild_project, aws_iam_role",
+  "prompt": "create a AWS codebuild project resource with example iam role and secondary sources",
+  "intent": "Has one \"aws_iam_role\" resource and one \"aws_codebuild_project\" resource with a \"secondary_sources\" block",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\ndata \"aws_iam_policy_document\" \"assume_role\" {\n  statement {\n    effect = \"Allow\"\n\n    principals {\n      type        = \"Service\"\n      identifiers = [\"codebuild.amazonaws.com\"]\n    }\n\n    actions = [\"sts:AssumeRole\"]\n  }\n}\n\nresource \"aws_iam_role\" \"test_role7\" {\n  name               = \"test_role7\"\n  assume_role_policy = data.aws_iam_policy_document.assume_role.json\n}\n\n\nresource \"aws_codebuild_project\" \"example7\" {\n  name          = \"test-project7\"\n  service_role  = aws_iam_role.test_role7.arn\n\n  artifacts {\n    type = \"NO_ARTIFACTS\"\n  }\n\n  environment {\n    compute_type = \"BUILD_GENERAL1_SMALL\"\n    image        = \"aws/codebuild/standard:7.0-24.10.29\"\n    type         = \"LINUX_CONTAINER\"\n  }\n\n  source {\n    type            = \"GITHUB\"\n    location        = \"https://github.com/neilbalch/SimplePythonTutorial.git\"\n    git_clone_depth = 1\n  }\n\n  secondary_sources {\n    source_identifier = \"SecondarySource\"\n    type            = \"GITHUB\"\n    location        = \"https://github.com/pH-7/Simple-Java-Calculator.git\"\n    git_clone_depth =  1\n  }\n}",
+  "bleuScore": 0.071149,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/generated-source/row-0038-llm-47b2cd80c1bc",
+  "generatedSourceFiles": [
+    "generated-source/row-0038-llm-47b2cd80c1bc/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": false,
+    "missingPathModuleFiles": [
+      "primary-source.zip",
+      "secondary-source-one.zip",
+      "secondary-source-two.zip"
+    ],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "primary-source.zip",
+        "line": "",
+        "finding": "missing_path_module_file"
+      },
+      {
+        "severity": "high",
+        "file": "secondary-source-one.zip",
+        "line": "",
+        "finding": "missing_path_module_file"
+      },
+      {
+        "severity": "high",
+        "file": "secondary-source-two.zip",
+        "line": "",
+        "finding": "missing_path_module_file"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": [
+      "primary-source.zip",
+      "secondary-source-one.zip",
+      "secondary-source-two.zip"
+    ]
+  },
+  "requiredMarkers": {
+    "aws_codebuild_project": true,
+    "aws_iam_role": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS CodeBuild project that uses:\n\n- A primary S3 source archive\n- Two secondary S3 source archives\n- An example IAM service role for CodeBuild\n- Inline IAM permissions for CloudWatch Logs and S3 source access\n- Locally generated ZIP source bundles uploaded to S3\n- A simple buildspec that lists the primary and secondary source directories\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    archive = {\n      source  = \"hashicorp/archive\"\n      version = \">= 2.4\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"project_name\" {\n  description = \"Name of the CodeBuild project.\"\n  type        = string\n  default     = \"cb-secondary-sources\"\n}\n\ndata \"aws_caller_identity\" \"current\" {}\n\nlocals {\n  source_bucket_name = \"${var.project_name}-${data.aws_caller_identity.current.account_id}-${var.aws_region}\"\n\n  primary_source_key    = \"sources/primary-source.zip\"\n  secondary_source_key1 = \"sources/s",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/run-summaries/row-0038-llm-47b2cd80c1bc.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: create a AWS codebuild project resource with example iam role and secondary sources",
+  "answer": "This Terraform configuration creates an AWS CodeBuild project that uses:\n\n- A primary S3 source archive\n- Two secondary S3 source archives\n- An example IAM service role for CodeBuild\n- Inline IAM permissions for CloudWatch Logs and S3 source access\n- Locally generated ZIP source bundles uploaded to S3\n- A simple buildspec that lists the primary and secondary source directories",
+  "failure_category": "",
+  "failure_reason": ""
+}

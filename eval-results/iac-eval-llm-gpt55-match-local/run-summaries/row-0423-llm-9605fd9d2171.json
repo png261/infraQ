@@ -1,0 +1,91 @@
+{
+  "index": 423,
+  "rowId": "423",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-9605fd9d2171",
+  "userId": "local-user",
+  "durationSeconds": 71.61,
+  "difficulty": "3",
+  "resource": "aws_efs_file_system, aws_efs_file_system_policy, aws_iam_policy_document",
+  "prompt": "create a AWS EFS with a system policy",
+  "intent": "Have one \"aws_efs_file_system\" resource\n\nHave one \"aws_efs_file_system_policy\" resource\nwith one \"file_system_id\"\nwith one \"policy\"",
+  "referenceOutput": "resource \"aws_efs_file_system\" \"fs\" {\n  creation_token = \"my-product\"\n}\n\ndata \"aws_iam_policy_document\" \"policy\" {\n  statement {\n    sid    = \"ExampleStatement01\"\n    effect = \"Allow\"\n\n    principals {\n      type        = \"AWS\"\n      identifiers = [\"*\"]\n    }\n\n    actions = [\n      \"elasticfilesystem:ClientMount\",\n      \"elasticfilesystem:ClientWrite\",\n    ]\n\n    resources = [aws_efs_file_system.fs.arn]\n\n    condition {\n      test     = \"Bool\"\n      variable = \"aws:SecureTransport\"\n      values   = [\"true\"]\n    }\n  }\n}\n\nresource \"aws_efs_file_system_policy\" \"policy\" {\n  file_system_id = aws_efs_file_system.fs.id\n  policy         = data.aws_iam_policy_document.policy.json\n}",
+  "bleuScore": 0.014442,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0423-llm-9605fd9d2171",
+  "generatedSourceFiles": [
+    "generated-source/row-0423-llm-9605fd9d2171/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "134",
+        "finding": "broad_ingress_or_egress_cidr"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_efs_file_system": true,
+    "aws_efs_file_system_policy": true,
+    "aws_iam_policy_document": false
+  },
+  "missingMarkers": [
+    "aws_iam_policy_document"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates an AWS Elastic File System (EFS) with:\n\n- A dedicated VPC\n- Two public subnets in separate Availability Zones\n- Security group allowing NFS traffic on port `2049`\n- EFS file system\n- EFS mount targets in both subnets\n- An EFS file system policy that:\n  - Denies non-TLS client access\n  - Allows the AWS account root principal to mount, write, and perform root access through IAM authorization\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the EFS file system will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"project_name\" {\n  description = \"Name prefix for all resources.\"\n  type        = string\n  default     = \"efs-system-policy-demo\"\n}\n\nvariable \"vpc_cidr\" {\n  description = \"CIDR block for the VPC.\"\n  type        = string\n  default     = \"10.20.0.0/16\"\n}\n\nvariable \"subnet_a_cidr\" {\n  description = \"CIDR block for the first subnet.\"\n  type        = string\n  default     = \"10.20.1.0/24\"\n}\n\nvariable \"subnet_b",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0423-llm-9605fd9d2171.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: create a AWS EFS with a system policy",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS Elastic File System (EFS) with:\n\n- A dedicated VPC\n- Two public subnets in separate Availability Zones\n- Security group allowing NFS traffic on port `2049`\n- EFS file system\n- EFS mount targets in both subnets\n- An EFS file system policy that:\n  - Denies non-TLS client access\n  - Allows the AWS account root principal to mount, write, and perform root access through IAM authorization",
+  "failure_category": "",
+  "failure_reason": ""
+}

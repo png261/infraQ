@@ -1,0 +1,108 @@
+{
+  "index": 217,
+  "rowId": "217",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-e691d50a0991",
+  "userId": "local-user",
+  "durationSeconds": 102.69,
+  "difficulty": "3",
+  "resource": "aws_rds_cluster, aws_vpc",
+  "prompt": "Create an mySQL cluster with 100 GB allocated to each zone.",
+  "intent": "Has one \"aws_rds_cluster\" resource\nwith one \"allocated_storage\" = 100",
+  "referenceOutput": "terraform {\nrequired_providers {\naws = {\nsource = \"hashicorp/aws\"\nversion = \"~> 5.0\"\n}\n}\n}\n\n# Configure the AWS Provider\nprovider \"aws\" {\nregion = \"us-east-1\"\n}\n\nresource \"aws_vpc\" \"vpc\" {\ncidr_block = \"192.168.0.0/22\"\n}\n\nresource \"aws_rds_cluster\" \"example\" {\ncluster_identifier = \"example\"\navailability_zones = [\"us-east-1a\", \"us-east-1b\", \"us-east-1c\"]\nengine = \"mysql\"\ndb_cluster_instance_class = \"db.r6gd.large\"\nstorage_type = \"io1\"\nallocated_storage = 100\niops = 1000\nmaster_username = \"test\"\nmaster_password = \"mustbeeightcharaters\"\nskip_final_snapshot = true\n}",
+  "bleuScore": 0.041215,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0217-llm-e691d50a0991",
+  "generatedSourceFiles": [
+    "generated-source/row-0217-llm-e691d50a0991/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "111",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "168",
+        "finding": "rds_final_snapshot_disabled"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "197",
+        "finding": "rds_final_snapshot_disabled"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "230",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"main\": {\"allow\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_rds_cluster": false,
+    "aws_vpc": true
+  },
+  "missingMarkers": [
+    "aws_rds_cluster"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "The following Terraform configuration deploys an AWS-based MySQL “cluster” pattern using Amazon RDS:\n\n- One primary MySQL RDS instance\n- Two MySQL read replicas\n- Each instance is placed in a different Availability Zone\n- Each zone receives a MySQL instance with `100 GB` of allocated storage\n- A dedicated VPC, subnets, DB subnet group, and security group are created\n- MySQL access is allowed from within the VPC CIDR only\n- Default variables are provided for region, credentials, storage size, and instance class\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the MySQL cluster will be deployed.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"db_username\" {\n  description = \"Master username for the primary MySQL database.\"\n  type        = string\n  default     = \"adminuser\"\n}\n\nvariable \"db_password\" {\n  description = \"Master password for the primary MySQL database.\"\n  type        = string\n  sensitive   = true\n  default     = \"ChangeMe12345!\"\n}\n\nvariable \"db_na",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0217-llm-e691d50a0991.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an mySQL cluster with 100 GB allocated to each zone.",
+  "promptStrategy": "default",
+  "answer": "The following Terraform configuration deploys an AWS-based MySQL “cluster” pattern using Amazon RDS:\n\n- One primary MySQL RDS instance\n- Two MySQL read replicas\n- Each instance is placed in a different Availability Zone\n- Each zone receives a MySQL instance with `100 GB` of allocated storage\n- A dedicated VPC, subnets, DB subnet group, and security group are created\n- MySQL access is allowed from within the VPC CIDR only\n- Default variables are provided for region, credentials, storage size, and instance class",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"main\": {\"allow\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

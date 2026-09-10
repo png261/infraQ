@@ -1,0 +1,87 @@
+{
+  "index": 370,
+  "rowId": "370",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-ff8a19b3147b",
+  "userId": "local-user",
+  "durationSeconds": 79.59,
+  "difficulty": "2",
+  "resource": "aws_lightsail_database",
+  "prompt": "AWS Lightsail that creates a postgres database, which enable applying changes immediately instead of waiting for a maintiance window",
+  "intent": "\"have one \"\"aws_lightsail_database\"\" resource\n    with relational_database_name argument\n    with master_database_name \n    with master_password\n    with master_username\n    with blueprint_id = postgres_12\n    with bundle_id\n    apply_immediately  = true",
+  "referenceOutput": "resource \"aws_lightsail_database\" \"test\" {\n  relational_database_name = \"test\"\n  availability_zone        = \"us-east-1a\"\n  master_database_name     = \"testdatabasename\"\n  master_password          = \"testdatabasepassword\"\n  master_username          = \"test\"\n  blueprint_id             = \"postgres_12\"\n  bundle_id                = \"micro_1_0\"\n  apply_immediately        = true\n}",
+  "bleuScore": 0.012129,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0370-llm-ff8a19b3147b",
+  "generatedSourceFiles": [
+    "generated-source/row-0370-llm-ff8a19b3147b/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "104",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_valid_lightsail_database\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_lightsail_database": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration deploys an AWS Lightsail PostgreSQL managed database. It enables `apply_immediately = true`, so supported configuration changes are applied immediately instead of waiting for the configured maintenance window. The configuration includes default variables, provider setup, password generation, the Lightsail PostgreSQL database resource, and useful outputs.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Lightsail PostgreSQL database will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"database_name\" {\n  description = \"Name of the Lightsail relational database instance.\"\n  type        = string\n  default     = \"lightsail-postgres-db\"\n}\n\nvariable \"master_database_name\" {\n  description = \"Name of the default PostgreSQL database to create.\"\n  type        = string\n  default     = \"appdb\"\n}\n\nvariable \"master_username\" {\n  description = \"Ma",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0370-llm-ff8a19b3147b.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: AWS Lightsail that creates a postgres database, which enable applying changes immediately instead of waiting for a maintiance window",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration deploys an AWS Lightsail PostgreSQL managed database. It enables `apply_immediately = true`, so supported configuration changes are applied immediately instead of waiting for the configured maintenance window. The configuration includes default variables, provider setup, password generation, the Lightsail PostgreSQL database resource, and useful outputs.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_valid_lightsail_database\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

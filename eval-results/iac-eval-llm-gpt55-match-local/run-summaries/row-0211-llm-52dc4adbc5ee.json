@@ -1,0 +1,91 @@
+{
+  "index": 211,
+  "rowId": "211",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-52dc4adbc5ee",
+  "userId": "local-user",
+  "durationSeconds": 79.54,
+  "difficulty": "5",
+  "resource": "aws_msk_serverless_cluster, aws_security_group, aws_subnet, aws_subnet, aws_subnet, aws_vpc, aws_availability_zones",
+  "prompt": "Create a serverless MSK cluster in us-east2.",
+  "intent": "Has one \"aws_msk_serverless_cluster\" resource\nRequires aws provider with alias of \"aws\" with a region of us-east-2",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-2\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_vpc\" \"vpc\" {\n    cidr_block = \"192.168.0.0/22\"\n    enable_dns_support = true\n    enable_dns_hostnames = true\n}\n\ndata \"aws_availability_zones\" \"azs\" {\n    state = \"available\"\n}\n\nresource \"aws_subnet\" \"subnet_az1\" {\n    availability_zone = data.aws_availability_zones.azs.names[0]\n    cidr_block = \"192.168.0.0/24\"\n    vpc_id = aws_vpc.vpc.id\n    map_public_ip_on_launch = true\n}\n\nresource \"aws_subnet\" \"subnet_az2\" {\n    availability_zone = data.aws_availability_zones.azs.names[1]\n    cidr_block = \"192.168.1.0/24\"\n    vpc_id = aws_vpc.vpc.id\n    map_public_ip_on_launch = true\n}\n\nresource \"aws_subnet\" \"subnet_az3\" {\n    availability_zone = data.aws_availability_zones.azs.names[2]\n    cidr_block = \"192.168.2.0/24\"\n    vpc_id = aws_vpc.vpc.id\n    map_public_ip_on_launch = true\n}\n\nresource \"aws_internet_gateway\" \"main\" {\n  vpc_id = aws_vpc.vpc.id\n}\n\nresource \"aws_route_table\" \"main\" {\n  vpc_id = aws_vpc.vpc.id\n\n  route {\n    cidr_block = \"0.0.0.0/0\"\n    gateway_id = aws_internet_gateway.main.id\n  }\n}\n\nresource \"aws_route_table_association\" \"first\" {\n  subnet_id      = aws_subnet.subnet_az1.id\n  route_table_id = aws_route_table.main.id\n}\n\nresource \"aws_route_table_association\" \"second\" {\n  subnet_id      = aws_subnet.subnet_az2.id\n  route_table_id = aws_route_table.main.id\n}\n\nresource \"aws_route_table_association\" \"third\" {\n  subnet_id      = aws_subnet.subnet_az3.id\n  route_table_id = aws_route_table.main.id\n}\n\nresource \"aws_security_group\" \"sg\" {\n    vpc_id = aws_vpc.vpc.id\n}\n\nresource \"aws_vpc_security_group_ingress_rule\" \"ingress1\" {\n  security_group_id = aws_security_group.sg.id\n  cidr_ipv4 = \"0.0.0.0/0\"\n  ip_protocol = \"-1\"\n}\n\nresource \"aws_vpc_security_group_egress_rule\" \"egress1\" {\n  security_group_id = aws_security_group.sg.id\n  cidr_ipv4         = \"0.0.0.0/0\"\n  ip_protocol       = \"-1\"\n}\n\nresource \"aws_msk_serverless_cluster\" \"example\" {\n    cluster_name = \"Example\"\n\n    vpc_config {\n        subnet_ids = [aws_subnet.subnet_az1.id, aws_subnet.subnet_az2.id, aws_subnet.subnet_az3.id]\n        security_group_ids = [aws_security_group.sg.id]\n    }\n\n    client_authentication {\n        sasl {\n            iam {\n                enabled = true\n            }\n        }\n    }\n}",
+  "bleuScore": 0.103687,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0211-llm-52dc4adbc5ee",
+  "generatedSourceFiles": [
+    "generated-source/row-0211-llm-52dc4adbc5ee/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "81",
+        "finding": "broad_ingress_or_egress_cidr"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_msk_serverless_cluster": true,
+    "aws_security_group": true,
+    "aws_subnet": true,
+    "aws_vpc": true,
+    "aws_availability_zones": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "Description: This Terraform configuration creates an AWS MSK Serverless cluster in the AWS `us-east-2` region. It provisions a dedicated VPC, two private subnets across available Availability Zones, a security group allowing Kafka client traffic within the VPC, the MSK Serverless cluster with IAM authentication enabled, and an example IAM role/policy that can be assumed by EC2 instances or other AWS workloads to connect to and use the MSK cluster.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-2\"\n}\n\nvariable \"cluster_name\" {\n  description = \"Name of the MSK Serverless cluster.\"\n  type        = string\n  default     = \"serverless-msk-cluster\"\n}\n\nvariable \"vpc_cidr\" {\n  description = \"CIDR block for the MSK VPC.\"\n  type        = string\n  default     = \"10.20.0.0/16\"\n}\n\nvariable \"private_subnet_cidrs\" {\n  description = \"CIDR blocks for private subnets used by MSK Serverless.\"\n  type        = list(string)\n  default     = [\"10.20.1.0/24\", \"10.20.2.0/24\"]\n}\n\ndata \"aws_availability_zones\" \"available\" {\n  state = \"available\"\n}\n\ndata \"aws_caller_",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0211-llm-52dc4adbc5ee.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a serverless MSK cluster in us-east2.",
+  "promptStrategy": "default",
+  "answer": "Description: This Terraform configuration creates an AWS MSK Serverless cluster in the AWS `us-east-2` region. It provisions a dedicated VPC, two private subnets across available Availability Zones, a security group allowing Kafka client traffic within the VPC, the MSK Serverless cluster with IAM authentication enabled, and an example IAM role/policy that can be assumed by EC2 instances or other AWS workloads to connect to and use the MSK cluster.",
+  "failure_category": "",
+  "failure_reason": ""
+}

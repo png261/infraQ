@@ -1,0 +1,85 @@
+{
+  "index": 59,
+  "rowId": "59",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-c8395ca58988",
+  "userId": "local-user",
+  "durationSeconds": 85.93,
+  "difficulty": "5",
+  "resource": "aws_iam_role, aws_kinesis_firehose_delivery_stream, aws_s3_bucket, aws_iam_policy_document",
+  "prompt": "Generate a Kinesis Firehose Delivery Stream with an extended S3 Destination with Dynamic Partitioning enabled",
+  "intent": "Has one \"aws_iam_role\" resource, one \"aws_s3_bucket\" resource, and one \"aws_kinesis_firehose_delivery_stream\" resource with the argument \"enabled\" within the \"dynamic_partitioning_configuration\" block set to \"true\"",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\n# even though this program seems to be problematic, it's copied from https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kinesis_firehose_delivery_stream\n# so I'll leave it unmodified\n\ndata \"aws_iam_policy_document\" \"firehose_assume_role\" {\n  statement {\n    effect = \"Allow\"\n\n    principals {\n      type        = \"Service\"\n      identifiers = [\"firehose.amazonaws.com\"]\n    }\n\n    actions = [\"sts:AssumeRole\"]\n  }\n}\n\nresource \"aws_iam_role\" \"firehose_role\" {\n  name               = \"firehose_test_role\"\n  assume_role_policy = data.aws_iam_policy_document.firehose_assume_role.json\n}\n\nresource \"aws_s3_bucket\" \"decemberthirtysecond\" {\n  bucket = \"decemberthirtysecond\"\n}\nresource \"aws_kinesis_firehose_delivery_stream\" \"extended_s3_stream\" {\n  name        = \"terraform-kinesis-firehose-extended-s3-test-stream\"\n  destination = \"extended_s3\"\n\n  extended_s3_configuration {\n    role_arn   = aws_iam_role.firehose_role.arn\n    bucket_arn = aws_s3_bucket.decemberthirtysecond.arn\n    buffering_size = 64\n\n    # https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning.html\n    dynamic_partitioning_configuration {\n      enabled = \"true\"\n    }\n\n    # Example prefix using partitionKeyFromQuery, applicable to JQ processor\n    prefix              = \"data/customer_id=!{partitionKeyFromQuery:customer_id}/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/\"\n    error_output_prefix = \"errors/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/!{firehose:error-output-type}/\"\n\n    processing_configuration {\n      enabled = \"true\"\n\n      # Multi-record deaggregation processor example\n      processors {\n        type = \"RecordDeAggregation\"\n        parameters {\n          parameter_name  = \"SubRecordType\"\n          parameter_value = \"JSON\"\n        }\n      }\n\n      # New line delimiter processor example\n      processors {\n        type = \"AppendDelimiterToRecord\"\n      }\n\n      # JQ processor example\n      processors {\n        type = \"MetadataExtraction\"\n        parameters {\n          parameter_name  = \"JsonParsingEngine\"\n          parameter_value = \"JQ-1.6\"\n        }\n        parameters {\n          parameter_name  = \"MetadataExtractionQuery\"\n          parameter_value = \"{customer_id:.customer_id}\"\n        }\n      }\n    }\n  }\n}",
+  "bleuScore": 0.23475,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-0/generated-source/row-0059-llm-c8395ca58988",
+  "generatedSourceFiles": [
+    "generated-source/row-0059-llm-c8395ca58988/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_valid_bucket\": true, \"has_valid_resources\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_iam_role": true,
+    "aws_kinesis_firehose_delivery_stream": true,
+    "aws_s3_bucket": true,
+    "aws_iam_policy_document": false
+  },
+  "missingMarkers": [
+    "aws_iam_policy_document"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "The Terraform configuration below creates an AWS Kinesis Data Firehose delivery stream using an Extended S3 destination with Dynamic Partitioning enabled. It provisions:\n\n- An S3 bucket for Firehose delivery\n- An IAM role assumed by Firehose\n- IAM permissions for Firehose to write to S3\n- A Firehose delivery stream with:\n  - Extended S3 destination\n  - Dynamic partitioning enabled\n  - Metadata extraction using `jq`\n  - Partitioned S3 prefixes based on JSON fields from incoming records\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"project_name\" {\n  description = \"Name prefix for all resources.\"\n  type        = string\n  default     = \"dynamic-partition-firehose\"\n}\n\nresource \"random_id\" \"suffix\" {\n  byte_length = 4\n}\n\nresource \"aws_s3_bucket\" \"firehose_destination\" {\n  bucket = \"${var.project_name}-bucket-${random_id.suffix.hex}\"\n}\n\nresource \"aws_s3_bucket_public_access_block\" \"fire",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-0/run-summaries/row-0059-llm-c8395ca58988.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Generate a Kinesis Firehose Delivery Stream with an extended S3 Destination with Dynamic Partitioning enabled",
+  "promptStrategy": "default",
+  "answer": "The Terraform configuration below creates an AWS Kinesis Data Firehose delivery stream using an Extended S3 destination with Dynamic Partitioning enabled. It provisions:\n\n- An S3 bucket for Firehose delivery\n- An IAM role assumed by Firehose\n- IAM permissions for Firehose to write to S3\n- A Firehose delivery stream with:\n  - Extended S3 destination\n  - Dynamic partitioning enabled\n  - Metadata extraction using `jq`\n  - Partitioned S3 prefixes based on JSON fields from incoming records",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_valid_bucket\": true, \"has_valid_resources\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

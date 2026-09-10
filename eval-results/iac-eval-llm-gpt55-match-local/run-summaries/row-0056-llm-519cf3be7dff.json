@@ -1,0 +1,80 @@
+{
+  "index": 56,
+  "rowId": "56",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-519cf3be7dff",
+  "userId": "local-user",
+  "durationSeconds": 60.25,
+  "difficulty": "2",
+  "resource": "aws_kinesis_stream",
+  "prompt": "Generate a basic Amazon Kinesis stream",
+  "intent": "Has one \"aws_kinesis_stream\" resource",
+  "referenceOutput": "provider \"aws\" {\n  region = \"us-west-2\"\n}\n\nresource \"aws_kinesis_stream\" \"test_stream\" {\n  name             = \"drow1\"\n  shard_count      = 1\n  retention_period = 48\n\n  shard_level_metrics = [\n    \"IncomingBytes\",\n    \"OutgoingBytes\",\n  ]\n\n  stream_mode_details {\n    stream_mode = \"PROVISIONED\"\n  }\n\n  tags = {\n    Environment = \"test\"\n  }\n}",
+  "bleuScore": 0.092522,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-1/generated-source/row-0056-llm-519cf3be7dff",
+  "generatedSourceFiles": [
+    "generated-source/row-0056-llm-519cf3be7dff/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_kinesis_stream": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a basic Amazon Kinesis Data Stream in AWS using provisioned capacity mode. It includes a valid AWS provider configuration, default variables, and a simple Kinesis stream with one shard and 24-hour retention.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Kinesis stream will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"stream_name\" {\n  description = \"Name of the Amazon Kinesis Data Stream.\"\n  type        = string\n  default     = \"basic-kinesis-stream\"\n}\n\nvariable \"shard_count\" {\n  description = \"Number of shards for the Kinesis stream.\"\n  type        = number\n  default     = 1\n}\n\nvariable \"retention_period\" {\n  description = \"Retention period for records in the stream, in hours.\"\n  type        = number\n  default     = 24\n}\n\nresource \"aws_kinesis_stream\" \"basic_stream\" {\n  name             = var.stream_name\n  shard_count      = var.shard_count\n  retention_period = var.retention_period\n\n  stream_mode_d",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-1/run-summaries/row-0056-llm-519cf3be7dff.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Generate a basic Amazon Kinesis stream",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a basic Amazon Kinesis Data Stream in AWS using provisioned capacity mode. It includes a valid AWS provider configuration, default variables, and a simple Kinesis stream with one shard and 24-hour retention.",
+  "failure_category": "",
+  "failure_reason": ""
+}

@@ -1,0 +1,94 @@
+{
+  "index": 419,
+  "rowId": "419",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-e8370367cdf7",
+  "userId": "local-user",
+  "durationSeconds": 73.44,
+  "difficulty": "2",
+  "resource": "aws_db_instance, aws_kms_key",
+  "prompt": "create an aws database that Managed Master Passwords via Secrets Manager, with specific KMS Key",
+  "intent": "Has one \"aws_db_instance\" resource\n    with one \"allocated_storage\"\n    with one \"engine\" and a valid engine value\n    with one \"instance_class\" and a valid instance class type\n    with one \"username\"\n    with one manage_master_user_password\n    with one \"master_user_secret_kms_key_id\"  \n \nhas one \"aws_kms_key\"",
+  "referenceOutput": "resource \"aws_db_instance\" \"default\" {\n  allocated_storage    = 20\n  engine               = \"mysql\"\n  instance_class       = \"db.t3.micro\"\n  username             = \"foo\"\n  manage_master_user_password = true\n  master_user_secret_kms_key_id = aws_kms_key.example.key_id\n}\n\nresource \"aws_kms_key\" \"example\" {\n  description = \"Example KMS Key\"\n}",
+  "bleuScore": 0.01787,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0419-llm-e8370367cdf7",
+  "generatedSourceFiles": [
+    "generated-source/row-0419-llm-e8370367cdf7/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "144",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "181",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_db_instance": true,
+    "aws_kms_key": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS RDS PostgreSQL database instance whose master password is managed automatically by AWS Secrets Manager. It also creates a customer-managed AWS KMS key and configures the RDS-managed master user secret to be encrypted with that specific KMS key. The database is deployed into the default VPC using its existing subnets, with a security group allowing PostgreSQL access from within the default VPC.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"db_identifier\" {\n  description = \"Identifier for the RDS database instance.\"\n  type        = string\n  default     = \"managed-master-password-db\"\n}\n\nvariable \"db_name\" {\n  description = \"Initial database name.\"\n  type        = string\n  default     = \"appdb\"\n}\n\nvariable \"db_username\" {\n  description = \"Master username for the RDS database.\"\n  type        = string\n  default     = \"dbadmin\"\n}\n\ndata \"aws_ca",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0419-llm-e8370367cdf7.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: create an aws database that Managed Master Passwords via Secrets Manager, with specific KMS Key",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS RDS PostgreSQL database instance whose master password is managed automatically by AWS Secrets Manager. It also creates a customer-managed AWS KMS key and configures the RDS-managed master user secret to be encrypted with that specific KMS key. The database is deployed into the default VPC using its existing subnets, with a security group allowing PostgreSQL access from within the default VPC.",
+  "failure_category": "",
+  "failure_reason": ""
+}

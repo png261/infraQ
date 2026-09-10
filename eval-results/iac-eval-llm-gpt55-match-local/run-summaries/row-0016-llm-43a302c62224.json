@@ -1,0 +1,111 @@
+{
+  "index": 16,
+  "rowId": "16",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-43a302c62224",
+  "userId": "local-user",
+  "durationSeconds": 107.66,
+  "difficulty": "6",
+  "resource": "aws_db_instance, aws_db_snapshot, aws_elastic_beanstalk_application, aws_elastic_beanstalk_environment, aws_elastic_beanstalk_environment, aws_iam_instance_profile, aws_iam_role, aws_iam_role_policy_attachment",
+  "prompt": "Configure blue/green deployment with Elastic Beanstalk Environments that are associated with an RDS database. Take a snapshot of the database prior to deployment and name the database \"my_db\" and the instance profile \"ec2_eb_profile1\"",
+  "intent": "Has one \"aws_iam_role\" resource\n    with \"name\"\n    with \"assume_role_policy\" and \"Service\" set to \"ec2.amazonaws.com\"\n\nHas one \"aws_iam_role_policy_attachment\" resource\n    with \"role\" referencing the \"aws_iam_role\"\n    with \"policy_arn\" set to \"arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier\"\n\nHas one \"aws_iam_instance_profile\" resource\n    with \"name\"\n    with \"role\" referencing the \"aws_iam_role\" resource\n\nHas one \"aws_elastic_beanstalk_application\" resource\n    with \"name\"\n\nHas two \"aws_elastic_beanstalk_environment\" resources\n    with \"name\"\n    with \"application\" referencing the \"aws_elastic_beanstalk_application\" resource\n    with \"solution_stack_name\"\n    with one \"setting\" block which has a \"value\" that references the \"aws_iam_instance_profile\" resource\n    with a \"setting\" block that has a \"value\"  that references the \"address\" from the \"db_instance\" resource\n    with a \"setting\" block that has a \"value\"  that references the \"username\" from the \"db_instance\" resource \n    with a \"setting\" block that has a \"value\"  that references the \"password\" from the \"db_instance\" resource\n\n\nHas one \"aws_db_instance\" resource\n    with \"instance_class\"\n    with \"allocated_storage\"\n    with \"engine\"\n    with \"username\"\n    with \"password\"\n    with \"skip_final_snapshot\" set to false\n    with \"multi_az\" set to true\n    with \"backup_retention_period\" set to a non-zero number \n    with \"final_snapshot_identifier\"\n\nHas a \"aws_db_snapshot\" resource\n    with \"db_instance_identifier\" referencing the \"aws_db_instance\" resource\n    with \"db_snapshot_identifier\"",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_iam_role\" \"eb_ec2_role\" {\n  name = \"elastic_beanstalk_ec2_role\"\n\n  assume_role_policy = jsonencode({\n    Version = \"2012-10-17\",\n    Statement = [\n      {\n        Action = \"sts:AssumeRole\",\n        Effect = \"Allow\",\n        Principal = {\n          Service = \"ec2.amazonaws.com\"\n        },\n      },\n    ]\n  })\n}\n\n# Attach the AWS managed policy for Elastic Beanstalk to the role\nresource \"aws_iam_role_policy_attachment\" \"eb_managed_policy\" {\n  role       = aws_iam_role.eb_ec2_role.name\n  policy_arn = \"arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier\"\n}\n\n\n# Create an instance profile tied to the role\nresource \"aws_iam_instance_profile\" \"eb_ec2_profile\" {\n  name = \"elastic_beanstalk_ec2_profile\"\n  role = aws_iam_role.eb_ec2_role.name\n}\n# RDS Database Configuration\nresource \"aws_db_instance\" \"my_db\" {\n  allocated_storage    = 20\n  storage_type         = \"gp2\"\n  engine               = \"mysql\"\n  engine_version       = \"5.7\"\n  instance_class       = \"db.t3.micro\"\n  username             = \"mydbuser\"\n  password             = \"mypassword\"\n  parameter_group_name = \"default.mysql5.7\"\n  multi_az             = true\n  skip_final_snapshot  = true\n  backup_retention_period = 7  # Enable backups with 7-day retention\n  apply_immediately       = true\n}\n\n# Elastic Beanstalk Application\nresource \"aws_elastic_beanstalk_application\" \"my_app\" {\n  name        = \"my-app\"\n  description = \"My Application\"\n}\n\n# Original Elastic Beanstalk Environment (Blue)\nresource \"aws_elastic_beanstalk_environment\" \"blue_env\" {\n  name                = \"my-app-blue-env\"\n  application         = aws_elastic_beanstalk_application.my_app.name\n  solution_stack_name = \"64bit Amazon Linux 2023 v4.3.0 running Python 3.9\"\n  tier                = \"WebServer\"\n\n  setting {\n    namespace = \"aws:elasticbeanstalk:application:environment\"\n    name      = \"DATABASE_HOST\"\n    value     = aws_db_instance.my_db.address\n  }\n\n  setting {\n    namespace = \"aws:elasticbeanstalk:application:environment\"\n    name      = \"DATABASE_USER\"\n    value     = aws_db_instance.my_db.username\n  }\n\n  setting {\n    namespace = \"aws:elasticbeanstalk:application:environment\"\n    name      = \"DATABASE_PASS\"\n    value     = aws_db_instance.my_db.password\n  }\n\n  setting {\n      namespace = \"aws:autoscaling:launchconfiguration\"\n      name      = \"IamInstanceProfile\"\n      value     = aws_iam_instance_profile.eb_ec2_profile.name\n  }\n}\n\n# New Elastic Beanstalk Environment (Green), for the new version\nresource \"aws_elastic_beanstalk_environment\" \"green_env\" {\n  name                = \"my-app-green-env\"\n  application         = aws_elastic_beanstalk_application.my_app.name\n  solution_stack_name = \"64bit Amazon Linux 2023 v4.3.0 running Python 3.9\"\n  tier                = \"WebServer\"\n\n  setting {\n    namespace = \"aws:elasticbeanstalk:application:environment\"\n    name      = \"DATABASE_HOST\"\n    value     = aws_db_instance.my_db.address\n  }\n\n  setting {\n    namespace = \"aws:elasticbeanstalk:application:environment\"\n    name      = \"DATABASE_USER\"\n    value     = aws_db_instance.my_db.username\n  }\n\n  setting {\n    namespace = \"aws:elasticbeanstalk:application:environment\"\n    name      = \"DATABASE_PASS\"\n    value     = aws_db_instance.my_db.password\n  }\n\n  setting {\n      namespace = \"aws:autoscaling:launchconfiguration\"\n      name      = \"IamInstanceProfile\"\n      value     = aws_iam_instance_profile.eb_ec2_profile.name\n    }\n}\n\n# Taking a snapshot before deployment\nresource \"aws_db_snapshot\" \"my_db_snapshot\" {\n  db_instance_identifier = aws_db_instance.my_db.identifier\n  db_snapshot_identifier = \"my-db-snapshot-${formatdate(\"YYYYMMDDHHmmss\", timestamp())}\"\n}\n\n# Route53 Hosted Zone\nresource \"aws_route53_zone\" \"main\" {\n  name = \"example53.com\"\n}\n\n# Weighted DNS records for Blue and Green environments\nresource \"aws_route53_record\" \"blue\" {\n  zone_id = aws_route53_zone.main.zone_id\n  name    = \"app.example.com\"\n  type    = \"CNAME\"\n  ttl     = \"60\"\n  weighted_routing_policy {\n    weight = 120\n  }\n  set_identifier = \"BlueEnvironment\"\n  records = [\n    aws_elastic_beanstalk_environment.blue_env.cname\n  ]\n}\n\nresource \"aws_route53_record\" \"green\" {\n  zone_id = aws_route53_zone.main.zone_id\n  name    = \"app.example.com\"\n  type    = \"CNAME\"\n  ttl     = \"60\"\n  weighted_routing_policy {\n    weight = 60\n  }\n  set_identifier = \"GreenEnvironment\"\n  records = [\n    aws_elastic_beanstalk_environment.green_env.cname\n  ]\n}",
+  "bleuScore": 0.138272,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/generated-source/row-0016-llm-43a302c62224",
+  "generatedSourceFiles": [
+    "generated-source/row-0016-llm-43a302c62224/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "74",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "82",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "90",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "116",
+        "finding": "broad_ingress_or_egress_cidr"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: Request cancelled\n\n  with data.aws_vpc.default,\n  on main.tf line 45, in data \"aws_vpc\" \"default\":\n  45: data \"aws_vpc\" \"default\" {\n\nThe plugin.(*GRPCProvider).ReadDataSource request was cancelled.\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_db_instance": true,
+    "aws_db_snapshot": true,
+    "aws_elastic_beanstalk_application": true,
+    "aws_elastic_beanstalk_environment": true,
+    "aws_iam_instance_profile": true,
+    "aws_iam_role": true,
+    "aws_iam_role_policy_attachment": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "Description: This Terraform configuration creates an AWS Elastic Beanstalk blue/green deployment setup backed by a shared Amazon RDS MySQL database. The database is named `my_db`. Before the Elastic Beanstalk environments are created, Terraform creates an RDS snapshot of the database. Two Elastic Beanstalk environments, `blue` and `green`, are provisioned for the same application and are configured to connect to the RDS database. An EC2 instance profile named `ec2_eb_profile1` is created and attached to the Elastic Beanstalk EC2 instances.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region to deploy resources into.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"db_username\" {\n  description = \"Master username for the RDS database.\"\n  type        = string\n  default     = \"adminuser\"\n}\n\nvariable \"db_password\" {\n  description = \"Master password for the RDS database.\"\n  type        = stri",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/run-summaries/row-0016-llm-43a302c62224.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Configure blue/green deployment with Elastic Beanstalk Environments that are associated with an RDS database. Take a snapshot of the database prior to deployment and name the database \"my_db\" and the instance profile \"ec2_eb_profile1\"",
+  "promptStrategy": "default",
+  "answer": "Description: This Terraform configuration creates an AWS Elastic Beanstalk blue/green deployment setup backed by a shared Amazon RDS MySQL database. The database is named `my_db`. Before the Elastic Beanstalk environments are created, Terraform creates an RDS snapshot of the database. Two Elastic Beanstalk environments, `blue` and `green`, are provisioned for the same application and are configured to connect to the RDS database. An EC2 instance profile named `ec2_eb_profile1` is created and attached to the Elastic Beanstalk EC2 instances.",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: Request cancelled with data.aws_vpc.default, on main.tf line 45, in data \"aws_vpc\" \"default\": 45: data \"aws_vpc\" \"default\" { The plugin.(*GRPCProvider).ReadDataSource request was cancelled."
+}

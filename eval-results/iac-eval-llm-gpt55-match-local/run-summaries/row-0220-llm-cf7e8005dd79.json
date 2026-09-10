@@ -1,0 +1,93 @@
+{
+  "index": 220,
+  "rowId": "220",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-cf7e8005dd79",
+  "userId": "local-user",
+  "durationSeconds": 83.3,
+  "difficulty": "3",
+  "resource": "aws_db_instance",
+  "prompt": "Create a PostgresQL instance.",
+  "intent": "Has one \"aws_db_instance\" resource\nwith one \"engine\" = \"postgres\"",
+  "referenceOutput": "terraform {\nrequired_providers {\naws = {\nsource = \"hashicorp/aws\"\nversion = \"~> 5.0\"\n}\n}\n}\n\n# Configure the AWS Provider\nprovider \"aws\" {\nregion = \"us-east-1\"\n}\n\nresource \"aws_db_instance\" \"default\" {\nallocated_storage = 10\ndb_name = \"mydb\"\nengine = \"postgres\"\ninstance_class = \"db.t3.micro\"\nusername = \"USERNAME\"\npassword = \"PASSWORD\"\nskip_final_snapshot = true\n}",
+  "bleuScore": 0.052237,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0220-llm-cf7e8005dd79",
+  "generatedSourceFiles": [
+    "generated-source/row-0220-llm-cf7e8005dd79/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "138",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "187",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_db_instance": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS PostgreSQL RDS database instance. It includes:\n\n- AWS provider configuration in `us-east-1`\n- A dedicated VPC with two public subnets across two Availability Zones\n- Internet Gateway and route table associations\n- Security group allowing PostgreSQL access from within the VPC CIDR\n- RDS subnet group\n- PostgreSQL RDS instance using `db.t3.micro`\n- Default username, password, database name, and storage settings\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the PostgreSQL RDS instance will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"db_name\" {\n  description = \"Name of the PostgreSQL database.\"\n  type        = string\n  default     = \"appdb\"\n}\n\nvariable \"db_username\" {\n  description = \"Master username for the PostgreSQL database.\"\n  type        = string\n  default     = \"postgresadmin\"\n}\n\nvariable \"db_password\" {\n  description = \"Master password for the PostgreSQL database.\"\n  type        = string\n  s",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0220-llm-cf7e8005dd79.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a PostgresQL instance.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS PostgreSQL RDS database instance. It includes:\n\n- AWS provider configuration in `us-east-1`\n- A dedicated VPC with two public subnets across two Availability Zones\n- Internet Gateway and route table associations\n- Security group allowing PostgreSQL access from within the VPC CIDR\n- RDS subnet group\n- PostgreSQL RDS instance using `db.t3.micro`\n- Default username, password, database name, and storage settings",
+  "failure_category": "",
+  "failure_reason": ""
+}

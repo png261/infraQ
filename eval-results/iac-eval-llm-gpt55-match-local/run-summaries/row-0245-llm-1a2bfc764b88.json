@@ -1,0 +1,99 @@
+{
+  "index": 245,
+  "rowId": "245",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-1a2bfc764b88",
+  "userId": "local-user",
+  "durationSeconds": 100.54,
+  "difficulty": "5",
+  "resource": "aws_neptune_cluster, aws_neptune_cluster_instance, aws_neptune_cluster_parameter_group, aws_neptune_parameter_group, aws_neptune_subnet_group, aws_subnet, aws_subnet, aws_vpc",
+  "prompt": "Set up a basic AWS Neptune cluster with a custom parameter group and an instance in that cluster with its own custom parameter group. Only allow connections to the instance from an example subnet.",
+  "intent": "Has \"aws_neptune_cluster\"\nwith \"neptune_cluster_parameter_group_name\"\nwith \"neptune_cluster_subnet_group\" same as instance\n\nHas \"aws_neptune_cluster_parameter_group\"\nwith family = \"neptune1.2\"\n\nHas \"aws_neptune_cluster_instance\"\nwith \"cluster_identifier\"\nwith \"neptune_parameter_group_name\"\nwith \"neptune_cluster_subnet_group\" same as cluster\n\nHas \"aws_neptune_parameter_group\"\nwith family = \"neptune1.2\"\n\nHas \"aws_vpc\"\n\nHas \"aws_subnet\"\n\nHas \"aws_neptune_subnet_group\"\nwith subnet_ids = array with \"aws_subnet\" id",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\n\ndata \"aws_availability_zones\" \"azs\" {\n    state = \"available\"\n}\n\nresource \"aws_vpc\" \"example_vpc\" {\n  cidr_block = \"10.0.0.0/16\"\n}\nresource \"aws_subnet\" \"subnet1\" {\n  vpc_id     = aws_vpc.example_vpc.id\n  cidr_block = \"10.0.1.0/24\"\n  availability_zone = data.aws_availability_zones.azs.names[0]\n}\nresource \"aws_subnet\" \"subnet2\" {\n  vpc_id     = aws_vpc.example_vpc.id\n  cidr_block = \"10.0.2.0/24\"\n  availability_zone = data.aws_availability_zones.azs.names[1]\n}\nresource \"aws_neptune_subnet_group\" \"default\" {\n  name       = \"main\"\n  subnet_ids = [aws_subnet.subnet1.id, aws_subnet.subnet2.id]\n}\n\nresource \"aws_neptune_cluster_parameter_group\" \"example\" {\n  family      = \"neptune1.3\"\n  name        = \"example\"\n  description = \"neptune cluster parameter group\"\n\n  parameter {\n    name  = \"neptune_enable_audit_log\"\n    value = 1\n  }\n}\n\nresource \"aws_neptune_parameter_group\" \"example\" {\n  family = \"neptune1.3\"\n  name   = \"example\"\n\n  parameter {\n    name  = \"neptune_query_timeout\"\n    value = \"25\"\n  }\n}\n\nresource \"aws_neptune_cluster\" \"default\" {\n  cluster_identifier                  = \"neptune-cluster-demo\"\n  engine                              = \"neptune\"\n  backup_retention_period             = 5\n  preferred_backup_window             = \"07:00-09:00\"\n  skip_final_snapshot                 = true\n  iam_database_authentication_enabled = true\n  apply_immediately                   = true\n  neptune_cluster_parameter_group_name = aws_neptune_cluster_parameter_group.example.id\n  neptune_subnet_group_name = aws_neptune_subnet_group.default.id\n}\n\nresource \"aws_neptune_cluster_instance\" \"example\" {\n  count              = 2\n  cluster_identifier = aws_neptune_cluster.default.id\n  engine             = \"neptune\"\n  instance_class     = \"db.t3.medium\"\n  apply_immediately  = true\n  publicly_accessible = false\n  neptune_parameter_group_name = aws_neptune_parameter_group.example.id\n  neptune_subnet_group_name = aws_neptune_subnet_group.default.id\n}",
+  "bleuScore": 0.090446,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0245-llm-1a2bfc764b88",
+  "generatedSourceFiles": [
+    "generated-source/row-0245-llm-1a2bfc764b88/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "146",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "198",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_neptune_cluster": true,
+    "aws_neptune_cluster_instance": true,
+    "aws_neptune_cluster_parameter_group": true,
+    "aws_neptune_parameter_group": true,
+    "aws_neptune_subnet_group": true,
+    "aws_subnet": true,
+    "aws_vpc": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "The following Terraform configuration creates a basic AWS Neptune deployment with:\n\n- A dedicated VPC\n- Two private subnets for the Neptune subnet group\n- One example client subnet whose CIDR is allowed to connect to Neptune\n- A Neptune cluster\n- A custom Neptune cluster parameter group\n- A Neptune instance in the cluster\n- A custom Neptune instance parameter group\n- A security group that only allows inbound Neptune traffic on port `8182` from the example subnet CIDR\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Neptune cluster will be deployed.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"project_name\" {\n  description = \"Name prefix for all resources.\"\n  type        = string\n  default     = \"example-neptune\"\n}\n\nvariable \"vpc_cidr\" {\n  description = \"CIDR block for the Neptune VPC.\"\n  type        = string\n  default     = \"10.0.0.0/16\"\n}\n\nvariable \"neptune_subnet_1_cidr\" {\n  description = \"CIDR block for the first Neptune subnet.\"\n  type        = ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0245-llm-1a2bfc764b88.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Set up a basic AWS Neptune cluster with a custom parameter group and an instance in that cluster with its own custom parameter group. Only allow connections to the instance from an example subnet.",
+  "promptStrategy": "default",
+  "answer": "The following Terraform configuration creates a basic AWS Neptune deployment with:\n\n- A dedicated VPC\n- Two private subnets for the Neptune subnet group\n- One example client subnet whose CIDR is allowed to connect to Neptune\n- A Neptune cluster\n- A custom Neptune cluster parameter group\n- A Neptune instance in the cluster\n- A custom Neptune instance parameter group\n- A security group that only allows inbound Neptune traffic on port `8182` from the example subnet CIDR",
+  "failure_category": "",
+  "failure_reason": ""
+}

@@ -1,0 +1,80 @@
+{
+  "index": 360,
+  "rowId": "360",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-554ecc0d01cf",
+  "userId": "local-user",
+  "durationSeconds": 45.31,
+  "difficulty": "2",
+  "resource": "aws_lightsail_instance",
+  "prompt": "generate aws lightsail with auto snapshots enabled",
+  "intent": "have one \"aws_lightsail_instance\" resource\nwith \"name\" argument\nwith \"availability_zone\" argument\nwith \"blueprint_id\" argument\nwith \"bundle_id\" argument\nwith \"add_on\" argument\n    with type = \"AutoSnapshot\"\n    with snapshot_time argument\n    with status = \"Enabled\"",
+  "referenceOutput": "provider \"aws\" {\n  region     = \"us-east-1\"\n}\n\nresource \"aws_lightsail_instance\" \"test\" {\n  name              = \"custom_instance\"\n  availability_zone = \"us-east-1b\"\n  blueprint_id      = \"amazon_linux_2\"\n  bundle_id         = \"nano_2_0\"\n  add_on {\n    type          = \"AutoSnapshot\"\n    snapshot_time = \"06:00\"\n    status        = \"Enabled\"\n  }\n  tags = {\n    foo = \"bar\"\n  }\n}",
+  "bleuScore": 0.073876,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0360-llm-554ecc0d01cf",
+  "generatedSourceFiles": [
+    "generated-source/row-0360-llm-554ecc0d01cf/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: Missing required argument\n\n  on main.tf line 58, in resource \"aws_lightsail_instance\" \"this\":\n  58:   add_on {\n\nThe argument \"snapshot_time\" is required, but no definition was found.\n\nError: Unsupported argument\n\n  on main.tf line 60, in resource \"aws_lightsail_instance\" \"this\":\n  60:     snapshot_time_of_day = var.snapshot_time_of_day\n\nAn argument named \"snapshot_time_of_day\" is not expected here.\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_lightsail_instance": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS Lightsail instance with automatic snapshots enabled. It uses the AWS provider in `us-east-1`, provisions an Ubuntu Lightsail instance, and enables the Lightsail `AutoSnapshot` add-on with a daily snapshot time.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Lightsail instance will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"lightsail_instance_name\" {\n  description = \"Name of the Lightsail instance.\"\n  type        = string\n  default     = \"example-lightsail-instance\"\n}\n\nvariable \"availability_zone\" {\n  description = \"Availability zone for the Lightsail instance.\"\n  type        = string\n  default     = \"us-east-1a\"\n}\n\nvariable \"blueprint_id\" {\n  description = \"Lightsail blueprint ID.\"\n  type        = string\n  default     = \"ubuntu_22_04\"\n}\n\nvariable \"bundle_id\" {\n  description = \"Lightsail bundle ID.\"\n  type        = string\n  default     = \"nano_3_0\"\n}\n\nvariable \"snapshot_time_of_day\" {\n  desc",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0360-llm-554ecc0d01cf.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: generate aws lightsail with auto snapshots enabled",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS Lightsail instance with automatic snapshots enabled. It uses the AWS provider in `us-east-1`, provisions an Ubuntu Lightsail instance, and enables the Lightsail `AutoSnapshot` add-on with a daily snapshot time.",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: Missing required argument on main.tf line 58, in resource \"aws_lightsail_instance\" \"this\": 58: add_on { The argument \"snapshot_time\" is required, but no definition was found. Error: Unsupported argument on main.tf line 60, in resource \"aws_lightsail_instance\" \"this\": 60: snapshot_time_of_day = var.snapshot_time_of_day An argument named \"snapshot_time_of_day\" is not expected here."
+}

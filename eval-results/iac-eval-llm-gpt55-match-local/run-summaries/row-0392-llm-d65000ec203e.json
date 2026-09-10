@@ -1,0 +1,90 @@
+{
+  "index": 392,
+  "rowId": "392",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-d65000ec203e",
+  "userId": "local-user",
+  "durationSeconds": 85.55,
+  "difficulty": "6",
+  "resource": "aws_eip, aws_eip, aws_instance, aws_lb, aws_lb_listener, aws_lb_target_group, aws_lb_target_group_attachment, aws_subnet, aws_subnet, aws_vpc",
+  "prompt": "generate an Load Balancer that Specifying Elastic IPs",
+  "intent": "has one \"aws_lb\" resource\n    with one of either \"subnets\" or \"subnet_mapping\"\n    with load_balancer_type = \"network\"\n\nhas at least two aws_subnet\n    has one of cidr_block, ipv6_cidr_block argument\n\nhas one aws_vpc\n    has one of cider_block, ipv4_ipam_pool_id \n\nhas one \"aws_lb_listener\" resource\n    with one default_action argument\n        with one type argument\n            with one of following values: forward, redirect, fixed-response, authenticate-cognito and authenticate-oidc\n    with one load_balancer_arn argument\n    with one protocol argument\n        with one of following values: TCP, UDP, TLS, TCP_UDP\n\nhas one \"aws_lb_target_group\"\n    with port\n    with protocol\n    with vpc_id\n\nhas one aws_lb_target_group_attachment\n    with one target_group_arn\n    with one target_id\n\nhas at least one \"aws_instance\"\n    with either launch_template or (ami and instance_type) argument\n\nhas at least one \"aws_eip\"",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\ndata \"aws_availability_zones\" \"azs\" {\n    state = \"available\"\n}\n\nmodule \"vpc\" {\n  source  = \"terraform-aws-modules/vpc/aws\"\n\n  name = \"main-vpc\"\n  cidr = \"10.0.0.0/16\"\n\n  azs                  = data.aws_availability_zones.azs.names\n  public_subnets       = [\"10.0.4.0/24\", \"10.0.5.0/24\", \"10.0.6.0/24\"]\n}\n\ndata \"aws_ami\" \"ubuntu\" {\n  most_recent = true\n  owners      = [\"amazon\"]\n\n  filter {\n    name   = \"name\"\n    values = [\"*ubuntu-noble-24.04-amd64-server-*\"]\n  }\n}\n\nresource \"aws_instance\" \"my_instance\" {\n  ami           = data.aws_ami.ubuntu.id\n  instance_type = \"t2.micro\"     # Replace with your desired instance type\n  subnet_id     = module.vpc.public_subnets[0]\n}\n\nresource \"aws_lb\" \"test\" {\n  load_balancer_type = \"network\"\n\n  subnet_mapping {\n    subnet_id     = module.vpc.public_subnet_arns[0]\n    allocation_id = aws_eip.example1.id\n  }\n\n  subnet_mapping {\n    subnet_id     = module.vpc.public_subnet_arns[1]\n    allocation_id = aws_eip.example2.id\n  }\n}\n\nresource \"aws_lb_listener\" \"my_listener\" {\n  load_balancer_arn = aws_lb.test.arn\n  port              = \"80\"\n  protocol          = \"HTTP\"\n\n  default_action {\n    type             = \"forward\"\n    target_group_arn = aws_lb_target_group.target_group.arn\n  }\n}\n\nresource \"aws_lb_target_group\" \"target_group\" {\n  port     = 80\n  protocol = \"HTTP\"\n  vpc_id   = module.vpc.vpc_id\n}\n\nresource \"aws_lb_target_group_attachment\" \"ec2_attach\" {\n  target_group_arn = aws_lb_target_group.target_group.arn\n  target_id = aws_instance.my_instance.id\n}\n\nresource \"aws_eip\" \"example1\" {\n  \n}\n\nresource \"aws_eip\" \"example2\" {\n  \n}",
+  "bleuScore": 0.117485,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0392-llm-d65000ec203e",
+  "generatedSourceFiles": [
+    "generated-source/row-0392-llm-d65000ec203e/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_valid_default_action\": true, \"has_valid_subnet\": true, \"have_required_subnet_argument\": true, \"is_valid_app_lb\": true, \"is_valid_configuration\": false, \"is_valid_eip\": true, \"is_valid_lb\": true, \"is_valid_lb_listener\": true, \"is_valid_lb_target_group\": true, \"is_valid_subnet\": true, \"valid_instances\": []}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_eip": true,
+    "aws_instance": false,
+    "aws_lb": true,
+    "aws_lb_listener": true,
+    "aws_lb_target_group": true,
+    "aws_lb_target_group_attachment": false,
+    "aws_subnet": true,
+    "aws_vpc": true
+  },
+  "missingMarkers": [
+    "aws_instance",
+    "aws_lb_target_group_attachment"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates an AWS Network Load Balancer that uses explicitly assigned Elastic IP addresses. It provisions a VPC, two public subnets in separate Availability Zones, an Internet Gateway, routing, two Elastic IPs, a Network Load Balancer with subnet mappings to those Elastic IPs, a TCP target group, and a TCP listener on port 80.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the load balancer will be deployed.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"vpc_cidr\" {\n  description = \"CIDR block for the VPC.\"\n  type        = string\n  default     = \"10.0.0.0/16\"\n}\n\nvariable \"public_subnet_1_cidr\" {\n  description = \"CIDR block for the first public subnet.\"\n  type        = string\n  default     = \"10.0.1.0/24\"\n}\n\nvariable \"public_subnet_2_cidr\" {\n  description = \"CIDR block for the second public subnet.\"\n  type        = string\n  default     = \"10.0.2.0/24\"\n}\n\ndata \"aws_availability_zones\" \"available\" {\n  state = \"available\"\n}\n\nresour",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0392-llm-d65000ec203e.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: generate an Load Balancer that Specifying Elastic IPs",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS Network Load Balancer that uses explicitly assigned Elastic IP addresses. It provisions a VPC, two public subnets in separate Availability Zones, an Internet Gateway, routing, two Elastic IPs, a Network Load Balancer with subnet mappings to those Elastic IPs, a TCP target group, and a TCP listener on port 80.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_valid_default_action\": true, \"has_valid_subnet\": true, \"have_required_subnet_argument\": true, \"is_valid_app_lb\": true, \"is_valid_configuration\": false, \"is_valid_eip\": true, \"is_valid_lb\": true, \"is_valid_lb_listener\": true, \"is_valid_lb_target_group\": true, \"is_valid_subnet\": true, \"valid_instances\": []}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

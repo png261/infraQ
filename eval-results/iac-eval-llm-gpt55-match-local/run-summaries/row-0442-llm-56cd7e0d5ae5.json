@@ -1,0 +1,82 @@
+{
+  "index": 442,
+  "rowId": "442",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-56cd7e0d5ae5",
+  "userId": "local-user",
+  "durationSeconds": 55.83,
+  "difficulty": "3",
+  "resource": "aws_vpc_dhcp_options, aws_vpc_dhcp_options_association",
+  "prompt": "creates DHCP options named \"pike\" for an AWS VPC, specifying Google's DNS servers (8.8.8.8 and 8.8.4.4), and then associates these DHCP options with a specified VPC, tagging both the DHCP options and their association with \"permissions\".",
+  "intent": "Has one \"aws_vpc_dhcp_options\" resource:\nSpecifies Google's DNS servers (8.8.8.8 and 8.8.4.4) as the DNS servers for the DHCP options\nTagged with \"permissions\" to categorize or specify its role or access levels within the infrastructure\n\nHas one \n\"aws_vpc_dhcp_options_association\" resource:\nAssociates the \"aws_vpc_dhcp_options\" with a specified \"aws_vpc\" resource\nTagged with \"permissions\" to ensure consistent labeling and access management across related resources",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 4.16\"\n    }\n  }\n\n  required_version = \">= 1.2.0\"\n}\n# Define the provider block for AWS\nprovider \"aws\" {\n  region = \"us-east-2\" # Set your desired AWS region\n}\n\n\nresource \"aws_vpc_dhcp_options_association\" \"pike\" {\n  dhcp_options_id = aws_vpc_dhcp_options.pike.id\n  vpc_id          = \"vpc-0c33dc8cd64f408c4\"\n}\n\nresource \"aws_vpc_dhcp_options\" \"pike\" {\n  domain_name_servers = [\"8.8.8.8\", \"8.8.4.4\"]\n  tags = {\n    pike = \"permissions\"\n  }\n}",
+  "bleuScore": 0.141009,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0442-llm-56cd7e0d5ae5",
+  "generatedSourceFiles": [
+    "generated-source/row-0442-llm-56cd7e0d5ae5/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_vpc_dhcp_options": true,
+    "aws_vpc_dhcp_options_association": true,
+    "aws_vpc": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates AWS VPC DHCP options named `pike` using Google DNS servers `8.8.8.8` and `8.8.4.4`, then associates those DHCP options with a VPC. By default, the configuration creates a VPC to make the program immediately deployable, but you may provide an existing VPC ID via `var.vpc_id`. The DHCP options are tagged with `permissions`.\n\n> Note: AWS does not support tags directly on `aws_vpc_dhcp_options_association`; the association resource is still explicitly managed by Terraform.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"vpc_id\" {\n  description = \"Existing VPC ID to associate with the DHCP options. Leave empty to create a new VPC.\"\n  type        = string\n  default     = \"\"\n}\n\nvariable \"vpc_cidr_block\" {\n  description = \"CIDR block for the default VPC created when var.vpc_id is empty.\"\n  type        = string\n  default     = \"10.0.0.0/16\"\n}\n\nresource \"",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0442-llm-56cd7e0d5ae5.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: creates DHCP options named \"pike\" for an AWS VPC, specifying Google's DNS servers (8.8.8.8 and 8.8.4.4), and then associates these DHCP options with a specified VPC, tagging both the DHCP options and their association with \"permissions\".",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates AWS VPC DHCP options named `pike` using Google DNS servers `8.8.8.8` and `8.8.4.4`, then associates those DHCP options with a VPC. By default, the configuration creates a VPC to make the program immediately deployable, but you may provide an existing VPC ID via `var.vpc_id`. The DHCP options are tagged with `permissions`.\n\n> Note: AWS does not support tags directly on `aws_vpc_dhcp_options_association`; the association resource is still explicitly managed by Terraform.",
+  "failure_category": "",
+  "failure_reason": ""
+}

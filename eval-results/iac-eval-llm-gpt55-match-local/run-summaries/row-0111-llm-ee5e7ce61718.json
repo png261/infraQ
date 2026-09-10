@@ -1,0 +1,81 @@
+{
+  "index": 111,
+  "rowId": "111",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-ee5e7ce61718",
+  "userId": "local-user",
+  "durationSeconds": 52.92,
+  "difficulty": "2",
+  "resource": "aws_s3_bucket, aws_s3_bucket_object_lock_configuration",
+  "prompt": "Create an AWS S3 bucket named 'example-bucket' with object lock enabled. Configure object lock governance mode with a retention period of 90 days for objects in the bucket.",
+  "intent": "has one aws_s3_bucket resource\nwith bucket\n\nhas one aws_s3_bucket_object_lock_configuration resource\nwith bucket\nwith rule\n     with default_retention\n          with mode (GOVERNANCE or COMPLIANCE)\n          with days or years",
+  "referenceOutput": "provider \"aws\" {\n    region = \"us-west-1\"\n}\n\nresource \"aws_s3_bucket\" \"example\" {\n  bucket = \"example-bucket\"\n}\n\nresource \"aws_s3_bucket_object_lock_configuration\" \"example\" {\n  bucket = aws_s3_bucket.example.bucket\n\n  rule {\n    default_retention {\n      mode  = \"GOVERNANCE\"\n      days  = 90\n    }\n  }\n}",
+  "bleuScore": 0.238933,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0111-llm-ee5e7ce61718",
+  "generatedSourceFiles": [
+    "generated-source/row-0111-llm-ee5e7ce61718/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_s3_bucket\": false, \"has_s3_bucket_object_lock_configuration\": false, \"valid_configuration\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_s3_bucket": true,
+    "aws_s3_bucket_object_lock_configuration": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS S3 bucket named `example-bucket` with Object Lock enabled. It also enables bucket versioning, which is required for S3 Object Lock, and configures a default Object Lock retention rule using governance mode with a retention period of 90 days.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_s3_bucket\" \"example_bucket\" {\n  bucket              = \"example-bucket\"\n  object_lock_enabled = true\n\n  tags = {\n    Name        = \"example-bucket\"\n    Environment = \"example\"\n  }\n}\n\nresource \"aws_s3_bucket_versioning\" \"example_bucket_versioning\" {\n  bucket = aws_s3_bucket.example_bucket.id\n\n  versioning_configuration {\n    status = \"Enabled\"\n  }\n}\n\nresource \"aws_s3_bucket_object_lock_configuration\" \"example_bucket_object_lock\" {\n  bucket = aws_s3_bucket.example_bucket.id\n\n  rule {\n    default_retention {\n      mode = \"GOVERNANCE\"\n      days = 90\n    }\n  }\n\n  depends_on = [\n    aws_s3_bucket_versioning.example_bucket_versioning\n  ]\n}\n```",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0111-llm-ee5e7ce61718.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an AWS S3 bucket named 'example-bucket' with object lock enabled. Configure object lock governance mode with a retention period of 90 days for objects in the bucket.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS S3 bucket named `example-bucket` with Object Lock enabled. It also enables bucket versioning, which is required for S3 Object Lock, and configures a default Object Lock retention rule using governance mode with a retention period of 90 days.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_s3_bucket\": false, \"has_s3_bucket_object_lock_configuration\": false, \"valid_configuration\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

@@ -1,0 +1,105 @@
+{
+  "index": 388,
+  "rowId": "388",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-4f51cb697549",
+  "userId": "local-user",
+  "durationSeconds": 99.11,
+  "difficulty": "4",
+  "resource": "aws_instance, aws_lb, aws_lb_listener, aws_lb_target_group, aws_lb_target_group_attachment, aws_subnet, aws_vpc",
+  "prompt": "Write a Terraform script to establish a Network Load Balancer attached to an ec2 instance of t2.micro",
+  "intent": "has one \"aws_lb\" resource\n    with load_balancer_type = \"network\"\n\nhas one \"aws_lb_listener\" resource\n    with one default_action argument\n        with one type argument\n            with one of following values: forward, redirect, fixed-response, authenticate-cognito and authenticate-oidc\n    with one load_balancer_arn argument\n\nhas one aws_lb_target_group_attachment\n    with one target_group_arn\n    with one target_id\n\nhas one \"aws_lb_target_group\"\n\nhas at least one \"aws_instance\"\n    with either launch_template or (ami and instance_type) argument",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\ndata \"aws_ami\" \"ubuntu\" {\n  most_recent = true\n  owners      = [\"amazon\"]\n\n  filter {\n    name   = \"name\"\n    values = [\"*ubuntu-noble-24.04-amd64-server-*\"]\n  }\n}\n\nresource \"aws_instance\" \"my_instance\" {\n  ami           = data.aws_ami.ubuntu.id\n  instance_type = \"t2.micro\"     # Replace with your desired instance type\n}\n\nresource \"aws_vpc\" \"main\" {\n  cidr_block = \"10.0.0.0/16\"\n}\n\nresource \"aws_subnet\" \"test\" {\n  vpc_id     = aws_vpc.main.id\n  cidr_block = \"10.0.1.0/24\"\n}\n\nresource \"aws_lb\" \"test\" {\n    load_balancer_type = \"application\"\n    subnets = [aws_subnet.test.id]\n}\n\nresource \"aws_lb_target_group\" \"target_group\" {\n    port = 80\n    protocol = \"HTTP\"\n    vpc_id   = aws_vpc.main.id\n}\n\nresource \"aws_lb_listener\" \"my_listener\" {\n  load_balancer_arn = aws_lb.test.arn\n\n  default_action {\n    type             = \"forward\"\n    target_group_arn = aws_lb_target_group.target_group.arn\n  }\n}\n\nresource \"aws_lb_target_group_attachment\" \"ec2_attach\" {\n  target_group_arn = aws_lb_target_group.target_group.arn\n  target_id = aws_instance.my_instance.id\n}",
+  "bleuScore": 0.13471,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0388-llm-4f51cb697549",
+  "generatedSourceFiles": [
+    "generated-source/row-0388-llm-4f51cb697549/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "111",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "119",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "127",
+        "finding": "broad_ingress_or_egress_cidr"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_instance\": false, \"is_valid_lb_listener\": false, \"is_valid_lb_target_group\": true, \"is_valid_lb_target_group_attachment\": true, \"valid_instances\": {}}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_instance": true,
+    "aws_lb": true,
+    "aws_lb_listener": true,
+    "aws_lb_target_group": true,
+    "aws_lb_target_group_attachment": true,
+    "aws_subnet": true,
+    "aws_vpc": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a complete AWS setup with:\n\n- A custom VPC\n- Public subnet\n- Internet Gateway and route table\n- Security group allowing HTTP access\n- A `t2.micro` EC2 instance running a simple web server\n- A Network Load Balancer\n- Target group attached to the EC2 instance\n- TCP listener on port `80`\n- Outputs for the EC2 public IP and NLB DNS name\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region to deploy resources into\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"vpc_cidr\" {\n  description = \"CIDR block for the VPC\"\n  type        = string\n  default     = \"10.0.0.0/16\"\n}\n\nvariable \"public_subnet_cidr\" {\n  description = \"CIDR block for the public subnet\"\n  type        = string\n  default     = \"10.0.1.0/24\"\n}\n\ndata \"aws_availability_zones\" \"available\" {\n  state = \"available\"\n}\n\ndata \"aws_ami\" \"amazon_linux_2023\" {\n  most_recent = true\n  owners      = [\"amazon\"]\n\n  filter {\n    name   = \"name\"\n    values = [\"al2023-ami-*-x86_64\"]\n  }\n\n  filt",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0388-llm-4f51cb697549.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Write a Terraform script to establish a Network Load Balancer attached to an ec2 instance of t2.micro",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a complete AWS setup with:\n\n- A custom VPC\n- Public subnet\n- Internet Gateway and route table\n- Security group allowing HTTP access\n- A `t2.micro` EC2 instance running a simple web server\n- A Network Load Balancer\n- Target group attached to the EC2 instance\n- TCP listener on port `80`\n- Outputs for the EC2 public IP and NLB DNS name",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_instance\": false, \"is_valid_lb_listener\": false, \"is_valid_lb_target_group\": true, \"is_valid_lb_target_group_attachment\": true, \"valid_instances\": {}}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

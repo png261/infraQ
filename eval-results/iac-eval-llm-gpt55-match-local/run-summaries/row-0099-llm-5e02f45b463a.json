@@ -1,0 +1,88 @@
+{
+  "index": 99,
+  "rowId": "99",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-5e02f45b463a",
+  "userId": "local-user",
+  "durationSeconds": 105.1,
+  "difficulty": "5",
+  "resource": "aws_eks_cluster, aws_eks_pod_identity_association, aws_iam_role, aws_iam_role, aws_iam_role_policy_attachment, aws_subnet, aws_subnet, aws_vpc, aws_iam_policy_document",
+  "prompt": "Create a Terraform script for an AWS EKS setup with pod identity management. Start by defining an IAM policy document (called \"example\") for assuming a role by EKS pods. Then, create an IAM role (called \"example\") using this policy. Attach a policy for S3 read-only access to this role. Finally, define an EKS pod identity association linking the role to a specific EKS cluster (called \"example\"), namespace, and service account.",
+  "intent": "has one \"data\" block for \"aws_iam_policy_document\" named \"assume_role\"\nwith one \"statement\" block containing:\none \"effect\"\none \"principals\" block with \"type\" and \"identifiers\"\none \"actions\" list\n\nhas one \"aws_iam_role\" resource named \"example\"\nwith one \"name\"\nwith one \"assume_role_policy\" referencing the data block\n\nhas one \"aws_iam_role_policy_attachment\" resource named \"example_s3\"\nwith one \"policy_arn\"\nwith one \"role\" referencing the \"aws_iam_role.example.name\"\n\nhas one \"aws_eks_pod_identity_association\" resource named \"example\"\nwith one \"cluster_name\"\nwith one \"namespace\"\nwith one \"service_account\"\nwith one \"role_arn\" referencing the \"aws_iam_role.example.arn\"",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_vpc\" \"main\" {\n  cidr_block = \"10.0.0.0/16\"\n}\n\nresource \"aws_subnet\" \"example1\" {\n  vpc_id     = aws_vpc.main.id\n  cidr_block = \"10.0.1.0/24\"\n}\n\nresource \"aws_subnet\" \"example2\" {\n  vpc_id     = aws_vpc.main.id\n  cidr_block = \"10.0.2.0/24\"\n}\n\nresource \"aws_iam_role\" \"example1\" {\n  name = \"eks-cluster-1\"\n\n  assume_role_policy = <<POLICY\n{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Principal\": {\n        \"Service\": \"eks.amazonaws.com\"\n      },\n      \"Action\": \"sts:AssumeRole\"\n    }\n  ]\n}\nPOLICY\n}\n\nresource \"aws_iam_role_policy_attachment\" \"eks_cluster_policy\" {\n  policy_arn = \"arn:aws:iam::aws:policy/AmazonEKSClusterPolicy\"\n  role       = aws_iam_role.example1.name\n}\n\nresource \"aws_iam_role_policy_attachment\" \"eks_service_policy\" {\n  policy_arn = \"arn:aws:iam::aws:policy/AmazonEKSServicePolicy\"\n  role       = aws_iam_role.example1.name\n}\n\nresource \"aws_eks_cluster\" \"example\" {\n  name     = \"example\"\n  role_arn = aws_iam_role.example1.arn\n\n  vpc_config {\n    subnet_ids = [aws_subnet.example1.id, aws_subnet.example2.id]\n  }\n\n  depends_on = [ \n    aws_iam_role_policy_attachment.eks_cluster_policy,\n    aws_iam_role_policy_attachment.eks_service_policy,\n  ]\n}\n\ndata \"aws_iam_policy_document\" \"assume_role\" {\n  statement {\n    effect = \"Allow\"\n\n    principals {\n      type        = \"Service\"\n      identifiers = [\"pods.eks.amazonaws.com\"]\n    }\n\n    actions = [\n      \"sts:AssumeRole\",\n      \"sts:TagSession\"\n    ]\n  }\n}\n\nresource \"aws_iam_role\" \"example\" {\n  name               = \"eks-pod-identity-example\"\n  assume_role_policy = data.aws_iam_policy_document.assume_role.json\n}\n\nresource \"aws_iam_role_policy_attachment\" \"example_s3\" {\n  policy_arn = \"arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess\"\n  role       = aws_iam_role.example.name\n}\n\nresource \"aws_eks_pod_identity_association\" \"example\" {\n  cluster_name    = aws_eks_cluster.example.name\n  namespace       = \"example\"\n  service_account = \"example-sa\"\n  role_arn        = aws_iam_role.example.arn\n}",
+  "bleuScore": 0.125218,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0099-llm-5e02f45b463a",
+  "generatedSourceFiles": [
+    "generated-source/row-0099-llm-5e02f45b463a/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_aws_eks_pod_identity_association_example\": false, \"has_aws_iam_policy_document_assume_role\": true, \"has_aws_iam_role_example\": true, \"has_aws_iam_role_policy_attachment_example_s3\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_eks_cluster": true,
+    "aws_eks_pod_identity_association": true,
+    "aws_iam_role": true,
+    "aws_iam_role_policy_attachment": true,
+    "aws_subnet": true,
+    "aws_vpc": true,
+    "aws_iam_policy_document": true,
+    "aws_iam_role.example.name": true,
+    "aws_iam_role.example.arn": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a complete AWS EKS environment with EKS Pod Identity management. It includes:\n\n- A VPC with two public subnets\n- IAM roles for the EKS cluster and worker nodes\n- An EKS cluster named `example`\n- A managed EKS node group\n- The EKS Pod Identity Agent add-on\n- An IAM policy document named `example` allowing EKS pods to assume a role\n- An IAM role named `example-eks-pod-identity-role`\n- Attachment of the AWS-managed `AmazonS3ReadOnlyAccess` policy to that role\n- An EKS Pod Identity Association linking the IAM role to the `example` cluster, namespace, and service account\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.34.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the EKS cluster will be deployed.\"\n  type        = string\n  default     = \"us-west-2\"\n}\n\nvariable \"cluster_name\" {\n  description = \"Name of the EKS cluster.\"\n  type        = string\n  default     = \"example\"\n}\n\nvariable \"pod_namespace\" {\n  description = \"Kubernetes namespace for the pod identity association.\"\n  type        =",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0099-llm-5e02f45b463a.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a Terraform script for an AWS EKS setup with pod identity management. Start by defining an IAM policy document (called \"example\") for assuming a role by EKS pods. Then, create an IAM role (called \"example\") using this policy. Attach a policy for S3 read-only access to this role. Finally, define an EKS pod identity association linking the role to a specific EKS cluster (called \"example\"), namespace, and service account.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a complete AWS EKS environment with EKS Pod Identity management. It includes:\n\n- A VPC with two public subnets\n- IAM roles for the EKS cluster and worker nodes\n- An EKS cluster named `example`\n- A managed EKS node group\n- The EKS Pod Identity Agent add-on\n- An IAM policy document named `example` allowing EKS pods to assume a role\n- An IAM role named `example-eks-pod-identity-role`\n- Attachment of the AWS-managed `AmazonS3ReadOnlyAccess` policy to that role\n- An EKS Pod Identity Association linking the IAM role to the `example` cluster, namespace, and service account",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_aws_eks_pod_identity_association_example\": false, \"has_aws_iam_policy_document_assume_role\": true, \"has_aws_iam_role_example\": true, \"has_aws_iam_role_policy_attachment_example_s3\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

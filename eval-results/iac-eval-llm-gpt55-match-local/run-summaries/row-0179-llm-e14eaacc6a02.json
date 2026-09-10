@@ -1,0 +1,85 @@
+{
+  "index": 179,
+  "rowId": "179",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-e14eaacc6a02",
+  "userId": "local-user",
+  "durationSeconds": 52.41,
+  "difficulty": "3",
+  "resource": "aws_iam_role, aws_sagemaker_notebook_instance, aws_iam_policy_document, aws_sagemaker_prebuilt_ecr_image",
+  "prompt": "Create an aws_sagemaker_notebook_instance on an ml.t2.medium",
+  "intent": "",
+  "referenceOutput": "resource \"aws_sagemaker_notebook_instance\" \"ni\" {\n  name          = \"my-notebook-instance\"\n  role_arn      = aws_iam_role.example.arn\n  instance_type = \"ml.t2.medium\"\n}\n\nresource \"aws_iam_role\" \"example\" {\n  assume_role_policy = data.aws_iam_policy_document.assume_role.json\n}\n\ndata \"aws_iam_policy_document\" \"assume_role\" {\n  statement {\n    actions = [\"sts:AssumeRole\"]\n\n    principals {\n      type        = \"Service\"\n      identifiers = [\"sagemaker.amazonaws.com\"]\n    }\n  }\n}\n\ndata \"aws_sagemaker_prebuilt_ecr_image\" \"test\" {\n  repository_name = \"kmeans\"\n}",
+  "bleuScore": 0.079779,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0179-llm-e14eaacc6a02",
+  "generatedSourceFiles": [
+    "generated-source/row-0179-llm-e14eaacc6a02/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_iam_role": true,
+    "aws_sagemaker_notebook_instance": true,
+    "aws_iam_policy_document": true,
+    "aws_sagemaker_prebuilt_ecr_image": false
+  },
+  "missingMarkers": [
+    "aws_sagemaker_prebuilt_ecr_image"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates an AWS SageMaker Notebook Instance using instance type `ml.t2.medium`. It also creates an IAM role that SageMaker can assume and attaches the AWS-managed `AmazonSageMakerFullAccess` policy so the notebook instance has the necessary permissions.\n\n```hcl\nterraform {\n  required_version = \">= 1.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the SageMaker notebook instance will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"notebook_instance_name\" {\n  description = \"Name of the SageMaker notebook instance.\"\n  type        = string\n  default     = \"example-sagemaker-notebook\"\n}\n\nvariable \"notebook_instance_type\" {\n  description = \"Instance type for the SageMaker notebook instance.\"\n  type        = string\n  default     = \"ml.t2.medium\"\n}\n\ndata \"aws_iam_policy_document\" \"sagemaker_assume_role_policy\" {\n  statement {\n    effect = \"Allow\"\n\n    principals {\n      type        = \"Service\"\n      identifiers = [\"sagemaker.amazonaws.com\"]\n    }\n\n    actions = [\"sts:Assu",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0179-llm-e14eaacc6a02.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an aws_sagemaker_notebook_instance on an ml.t2.medium",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS SageMaker Notebook Instance using instance type `ml.t2.medium`. It also creates an IAM role that SageMaker can assume and attaches the AWS-managed `AmazonSageMakerFullAccess` policy so the notebook instance has the necessary permissions.",
+  "failure_category": "",
+  "failure_reason": ""
+}

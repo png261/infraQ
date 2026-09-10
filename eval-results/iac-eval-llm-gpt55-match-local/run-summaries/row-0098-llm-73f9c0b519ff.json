@@ -1,0 +1,85 @@
+{
+  "index": 98,
+  "rowId": "98",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-73f9c0b519ff",
+  "userId": "local-user",
+  "durationSeconds": 115.83,
+  "difficulty": "6",
+  "resource": "aws_eks_cluster, aws_eks_node_group, aws_iam_role, aws_iam_role_policy_attachment, aws_iam_role_policy_attachment, aws_iam_role_policy_attachment, aws_subnet, aws_subnet, aws_vpc",
+  "prompt": "Create a Terraform script for an AWS EKS node group (with name attribute set to \"example\") linked to a specific EKS cluster (with name attribute set to \"example\"). Define a resource with details including the node group name, node role ARN, and subnet IDs. Configure scaling parameters (desired size is 1, max size is 2, and min size is 1, with max unavailable set to 1) and update settings for node management. Include dependencies on IAM role policy attachments to ensure proper permissions management during lifecycle events of EC2 instances and network interfaces (in particular, make sure the EKS worker node policy, the EKS CNI policy, and the EC2 container registry read only policy are attached).",
+  "intent": "has one \"aws_eks_node_group\" resource\nwith one \"cluster_name\"\nwith one \"node_group_name\"\nwith one \"node_role_arn\"\nwith one \"subnet_ids\"\nwith one \"scaling_config\" containing:\none \"desired_size\"\none \"max_size\"\none \"min_size\"\nwith one \"update_config\" containing:\none \"max_unavailable\"\nwith dependencies on three IAM role policy attachments",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_vpc\" \"main\" {\n  cidr_block = \"10.0.0.0/16\"\n}\n\ndata \"aws_availability_zones\" \"available\" {\n  state = \"available\"\n}\n\nresource \"aws_subnet\" \"test_eks_1\" {\n  vpc_id     = aws_vpc.main.id\n  cidr_block = \"10.0.1.0/24\"\n  map_public_ip_on_launch = true\n\n  availability_zone = data.aws_availability_zones.available.names[0]\n}\n\nresource \"aws_subnet\" \"test_eks_2\" {\n  vpc_id     = aws_vpc.main.id\n  cidr_block = \"10.0.2.0/24\"\n  map_public_ip_on_launch = true\n\n  availability_zone = data.aws_availability_zones.available.names[1]\n}\n\nresource \"aws_internet_gateway\" \"main\" {\n  vpc_id = aws_vpc.main.id\n}\n\nresource \"aws_route_table\" \"main\" {\n  vpc_id = aws_vpc.main.id\n\n  route {\n    cidr_block = \"0.0.0.0/0\"\n    gateway_id = aws_internet_gateway.main.id\n  }\n}\n\nresource \"aws_route_table_association\" \"first\" {\n  subnet_id      = aws_subnet.test_eks_1.id\n  route_table_id = aws_route_table.main.id\n}\n\nresource \"aws_route_table_association\" \"second\" {\n  subnet_id      = aws_subnet.test_eks_2.id\n  route_table_id = aws_route_table.main.id\n}\n\nresource \"aws_security_group\" \"first\" {\n  name        = \"test-security-group\"\n  description = \"Allow traffic for Elasticsearch\"\n  vpc_id      = aws_vpc.main.id\n}\n\nresource \"aws_vpc_security_group_ingress_rule\" \"ingress1\" {\n  security_group_id = aws_security_group.first.id\n  cidr_ipv4 = \"0.0.0.0/0\"\n  ip_protocol = \"-1\"\n}\n\nresource \"aws_vpc_security_group_egress_rule\" \"egress1\" {\n  security_group_id = aws_security_group.first.id\n  cidr_ipv4         = \"0.0.0.0/0\"\n  ip_protocol       = \"-1\"\n}\n\nresource \"aws_iam_role\" \"example-cluster\" {\n  name = \"eks-cluster-role\"\n\n  assume_role_policy = jsonencode({\n    Statement = [{\n      Action = \"sts:AssumeRole\"\n      Effect = \"Allow\"\n      Principal = {\n        Service = \"eks.amazonaws.com\"\n      }\n    }]\n    Version = \"2012-10-17\"\n  })\n}\n\nresource \"aws_iam_role_policy_attachment\" \"eks_cluster_policy\" {\n  policy_arn = \"arn:aws:iam::aws:policy/AmazonEKSClusterPolicy\"\n  role       = aws_iam_role.example-cluster.name\n}\n\nresource \"aws_iam_role_policy_attachment\" \"eks_service_policy\" {\n  policy_arn = \"arn:aws:iam::aws:policy/AmazonEKSServicePolicy\"\n  role       = aws_iam_role.example-cluster.name\n}\n\nresource \"aws_eks_cluster\" \"example\" {\n  name     = \"example\"\n  role_arn = aws_iam_role.example-cluster.arn\n\n  vpc_config {\n    subnet_ids = [ aws_subnet.test_eks_1.id, aws_subnet.test_eks_2.id ]\n  }\n}\n\nresource \"aws_iam_role\" \"example-group\" {\n  name = \"eks-cluster-group-role\"\n\n  assume_role_policy = <<POLICY\n{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Principal\": {\n        \"Service\": [\"eks.amazonaws.com\", \"ec2.amazonaws.com\"]\n      },\n      \"Action\": \"sts:AssumeRole\"\n    }\n  ]\n}\nPOLICY\n}\n\nresource \"aws_iam_role_policy_attachment\" \"example-AmazonEKSWorkerNodePolicy\" {\n  policy_arn = \"arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy\"\n  role       = aws_iam_role.example-group.name\n}\n\nresource \"aws_iam_role_policy_attachment\" \"example-AmazonEKS_CNI_Policy\" {\n  policy_arn = \"arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy\"\n  role       = aws_iam_role.example-group.name\n}\n\nresource \"aws_iam_role_policy_attachment\" \"example-AmazonEC2ContainerRegistryReadOnly\" {\n  policy_arn = \"arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly\"\n  role       = aws_iam_role.example-group.name\n}\n\nresource \"aws_eks_node_group\" \"example\" {\n  cluster_name    = aws_eks_cluster.example.name\n  node_group_name = \"example\"\n  node_role_arn   = aws_iam_role.example-group.arn\n  subnet_ids      = [ aws_subnet.test_eks_1.id, aws_subnet.test_eks_2.id ]\n\n  scaling_config {\n    desired_size = 1\n    max_size     = 2\n    min_size     = 1\n  }\n\n  update_config {\n    max_unavailable = 1\n  }\n\n  # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.\n  # Otherwise, EKS will not be able to properly delete EC2 Instances and Elastic Network Interfaces.\n  depends_on = [\n    aws_iam_role_policy_attachment.example-AmazonEKSWorkerNodePolicy,\n    aws_iam_role_policy_attachment.example-AmazonEKS_CNI_Policy,\n    aws_iam_role_policy_attachment.example-AmazonEC2ContainerRegistryReadOnly,\n  ]\n}",
+  "bleuScore": 0.326948,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0098-llm-73f9c0b519ff",
+  "generatedSourceFiles": [
+    "generated-source/row-0098-llm-73f9c0b519ff/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_eks_cluster": true,
+    "aws_eks_node_group": true,
+    "aws_iam_role": true,
+    "aws_iam_role_policy_attachment": true,
+    "aws_subnet": true,
+    "aws_vpc": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a deployable AWS EKS environment in `us-east-1`. It defines:\n\n- A VPC with two public subnets for EKS networking\n- An EKS cluster named `example`\n- IAM roles for the EKS cluster and EKS managed node group\n- Required IAM policy attachments:\n  - `AmazonEKSWorkerNodePolicy`\n  - `AmazonEKS_CNI_Policy`\n  - `AmazonEC2ContainerRegistryReadOnly`\n- An EKS managed node group named `example`\n- Node group scaling configuration:\n  - desired size: `1`\n  - minimum size: `1`\n  - maximum size: `2`\n- Node group update configuration:\n  - max unavailable: `1`\n- Explicit dependencies on IAM role policy attachments to ensure correct lifecycle behavior\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_vpc\" \"example\" {\n  cidr_block           = \"10.0.0.0/16\"\n  enable_dns_hostnames = true\n  enable_dns_support   = true\n\n  tags = {\n    Name = \"example-eks-vpc\"\n  }\n}\n\nresource \"aws_internet_gateway\" \"example\" {\n  vpc_id = aws_vpc.example.id\n\n  tags = {\n    Name = \"example-eks-igw\"\n  }\n}\n\nresource \"aws_route_tabl",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0098-llm-73f9c0b519ff.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a Terraform script for an AWS EKS node group (with name attribute set to \"example\") linked to a specific EKS cluster (with name attribute set to \"example\"). Define a resource with details including the node group name, node role ARN, and subnet IDs. Configure scaling parameters (desired size is 1, max size is 2, and min size is 1, with max unavailable set to 1) and update settings for node management. Include dependencies on IAM role policy attachments to ensure proper permissions management during lifecycle events of EC2 instances and network interfaces (in particular, make sure the EKS worker node policy, the EKS CNI policy, and the EC2 container registry read only policy are attached).",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a deployable AWS EKS environment in `us-east-1`. It defines:\n\n- A VPC with two public subnets for EKS networking\n- An EKS cluster named `example`\n- IAM roles for the EKS cluster and EKS managed node group\n- Required IAM policy attachments:\n  - `AmazonEKSWorkerNodePolicy`\n  - `AmazonEKS_CNI_Policy`\n  - `AmazonEC2ContainerRegistryReadOnly`\n- An EKS managed node group named `example`\n- Node group scaling configuration:\n  - desired size: `1`\n  - minimum size: `1`\n  - maximum size: `2`\n- Node group update configuration:\n  - max unavailable: `1`\n- Explicit dependencies on IAM role policy attachments to ensure correct lifecycle behavior",
+  "failure_category": "",
+  "failure_reason": ""
+}

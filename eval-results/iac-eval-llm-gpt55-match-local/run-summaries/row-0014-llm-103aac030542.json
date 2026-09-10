@@ -1,0 +1,115 @@
+{
+  "index": 14,
+  "rowId": "14",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-103aac030542",
+  "userId": "local-user",
+  "durationSeconds": 101.32,
+  "difficulty": "6",
+  "resource": "aws_db_instance, aws_elastic_beanstalk_application, aws_elastic_beanstalk_environment, aws_iam_instance_profile, aws_iam_role, aws_iam_role_policy_attachment",
+  "prompt": "Configure an Elastic Beanstalk environment that is linked to a relational database instance. Call the db_instance \"default\" and the instance profile \"eb_ec2_profile\"",
+  "intent": "Has one \"aws_iam_role\" resource\n    with \"name\"\n    with \"assume_role_policy\" and \"Service\" set to \"ec2.amazonaws.com\"\n\nHas one \"aws_iam_role_policy_attachment\" resource\n    with \"role\" referencing the \"aws_iam_role\"\n    with \"policy_arn\" set to \"arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier\"\n\nHas one \"aws_iam_instance_profile\" resource\n    with \"name\"\n    with \"role\" referencing the \"aws_iam_role\" resource\n\nHas one \"aws_elastic_beanstalk_application\" resource\n    with \"name\"\n\n\nHas one \"aws_elastic_beanstalk_environment\" resource\n    with \"name\"\n    with \"application\" referencing the \"aws_elastic_beanstalk_application\" resource\n    with \"solution_stack_name\"\n    with one \"setting\" block which has a \"value\" that references the \"aws_iam_instance_profile\" resource\n    with two \"setting\" blocks that have \"namespace\" set to \"aws:autoscaling:asg\"\n    with a \"setting\" block that has a \"value\"  that references the \"address\" from the production \"db_instance\" resource\n    with a \"setting\" block that has a \"value\"  that references the \"username\" from the \"db_instance\" resource \n    with a \"setting\" block that has a \"value\"  that references the \"password\" from the \"db_instance\" resource \n\nHas a \"aws_db_instance\" resource\n    with \"identifier\"\n    with \"instance_class\"\n    with \"allocated_storage\"\n    with \"engine\"\n    with \"username\"\n    with \"password\"\n    with \"backup_retention_period\" set to a non-zero number\n    with \"skip_final_snapshot\"",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_iam_role\" \"eb_ec2_role\" {\n  name = \"elastic_beanstalk_ec2_role\"\n\n  assume_role_policy = jsonencode({\n    Version = \"2012-10-17\",\n    Statement = [\n      {\n        Action = \"sts:AssumeRole\",\n        Effect = \"Allow\",\n        Principal = {\n          Service = \"ec2.amazonaws.com\"\n        },\n      },\n    ]\n  })\n}\n\n# Attach the AWS managed policy for Elastic Beanstalk to the role\nresource \"aws_iam_role_policy_attachment\" \"eb_managed_policy\" {\n  role       = aws_iam_role.eb_ec2_role.name\n  policy_arn = \"arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier\"\n}\n\n\n# Create an instance profile tied to the role\nresource \"aws_iam_instance_profile\" \"eb_ec2_profile\" {\n  name = \"elastic_beanstalk_ec2_profile\"\n  role = aws_iam_role.eb_ec2_role.name\n}\n\n\nresource \"aws_db_instance\" \"default\" {\n  allocated_storage    = 20\n  storage_type         = \"gp2\"\n  engine               = \"mysql\"\n  engine_version       = \"5.7\"\n  instance_class       = \"db.t3.micro\"\n  username             = \"user\"\n  password             = \"mypassword\"\n  parameter_group_name = \"default.mysql5.7\"\n  skip_final_snapshot  = true\n}\n\nresource \"aws_s3_bucket\" \"sample_bucket\" {\n  bucket_prefix = \"sample-\"\n}\n\nresource \"aws_s3_object\" \"examplebucket_object\" {\n  key    = \"randofile\"\n  bucket = aws_s3_bucket.sample_bucket.id\n  source = \"./supplement/app.zip\"\n}\n\n# Define the Elastic Beanstalk application\nresource \"aws_elastic_beanstalk_application\" \"default\" {\n  name        = \"my-app\"\n  description = \"My awesome application\"\n}\n\n# Define the Elastic Beanstalk application version\nresource \"aws_elastic_beanstalk_application_version\" \"version\" {\n  name        = \"app-version\"\n  application = aws_elastic_beanstalk_application.default.name\n  bucket = aws_s3_object.examplebucket_object.bucket\n  key    = aws_s3_object.examplebucket_object.key\n}\n\nresource \"aws_elastic_beanstalk_environment\" \"default\" {\n  name                = \"my-app-env\"\n  application         = aws_elastic_beanstalk_application.default.name\n  solution_stack_name = \"64bit Amazon Linux 2023 v4.3.0 running Python 3.9\"\n\n  setting {\n    namespace = \"aws:ec2:vpc\"\n    name      = \"ELBScheme\"\n    value     = \"public\"\n  }\n\n  setting {\n    namespace = \"aws:autoscaling:asg\"\n    name      = \"MinSize\"\n    value     = \"1\"\n  }\n\n  setting {\n    namespace = \"aws:autoscaling:asg\"\n    name      = \"MaxSize\"\n    value     = \"3\"\n  }\n\n  setting {\n    namespace = \"aws:elasticbeanstalk:application:environment\"\n    name      = \"DB_USER\"\n    value     = aws_db_instance.default.username\n  }\n\n  setting {\n    namespace = \"aws:elasticbeanstalk:application:environmente\"\n    name      = \"DB_PASSWORD\"\n    value     = aws_db_instance.default.password\n  }\n\n  setting {\n    namespace = \"aws:elasticbeanstalk:application:environment\"\n    name      = \"DB_HOST\"\n    value     = aws_db_instance.default.address\n  }\n\n  setting {\n      namespace = \"aws:autoscaling:launchconfiguration\"\n      name      = \"IamInstanceProfile\"\n      value     = aws_iam_instance_profile.eb_ec2_profile.name\n    }\n}",
+  "bleuScore": 0.1627,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/generated-source/row-0014-llm-103aac030542",
+  "generatedSourceFiles": [
+    "generated-source/row-0014-llm-103aac030542/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "78",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "86",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "94",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "120",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "151",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_required_main_db_arguments\": true, \"is_configuration_valid\": false, \"is_valid_db_instance\": true, \"is_valid_eb_app\": true, \"is_valid_eb_env\": false, \"is_valid_iam_instance_profile\": true, \"is_valid_iam_role\": true, \"is_valid_iam_role_policy_attachment\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_db_instance": true,
+    "aws_elastic_beanstalk_application": true,
+    "aws_elastic_beanstalk_environment": true,
+    "aws_iam_instance_profile": true,
+    "aws_iam_role": true,
+    "aws_iam_role_policy_attachment": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS Elastic Beanstalk application and environment connected to an Amazon RDS relational database instance. The RDS instance is declared as `aws_db_instance.default`, and the Elastic Beanstalk EC2 instance profile is named `eb_ec2_profile`. It also creates the required IAM roles, security groups, subnet group, and environment variables so the Elastic Beanstalk application can connect to the database.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region to deploy resources into.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"db_name\" {\n  description = \"Name of the application database.\"\n  type        = string\n  default     = \"appdb\"\n}\n\nvariable \"db_username\" {\n  description = \"Username for the RDS database.\"\n  type        = string\n  default     = \"dbadmin\"\n}\n\nvariable \"environment_name\" {\n  description = \"Elastic Beanstalk environment name.\"\n  typ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/run-summaries/row-0014-llm-103aac030542.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Configure an Elastic Beanstalk environment that is linked to a relational database instance. Call the db_instance \"default\" and the instance profile \"eb_ec2_profile\"",
+  "answer": "This Terraform configuration creates an AWS Elastic Beanstalk application and environment connected to an Amazon RDS relational database instance. The RDS instance is declared as `aws_db_instance.default`, and the Elastic Beanstalk EC2 instance profile is named `eb_ec2_profile`. It also creates the required IAM roles, security groups, subnet group, and environment variables so the Elastic Beanstalk application can connect to the database.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_required_main_db_arguments\": true, \"is_configuration_valid\": false, \"is_valid_db_instance\": true, \"is_valid_eb_app\": true, \"is_valid_eb_env\": false, \"is_valid_iam_instance_profile\": true, \"is_valid_iam_role\": true, \"is_valid_iam_role_policy_attachment\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

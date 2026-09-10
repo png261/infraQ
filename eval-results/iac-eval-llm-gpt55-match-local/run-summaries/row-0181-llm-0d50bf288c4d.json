@@ -1,0 +1,85 @@
+{
+  "index": 181,
+  "rowId": "181",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-0d50bf288c4d",
+  "userId": "local-user",
+  "durationSeconds": 80.46,
+  "difficulty": "3",
+  "resource": "aws_iam_role, aws_sagemaker_pipeline, aws_iam_policy_document, aws_sagemaker_prebuilt_ecr_image",
+  "prompt": "Create a SageMaker Pipeline resource.",
+  "intent": "",
+  "referenceOutput": "resource \"aws_sagemaker_pipeline\" \"example\" {\n  pipeline_name         = \"example\"\n  pipeline_display_name = \"example\"\n  role_arn              = aws_iam_role.example.arn\n\n  pipeline_definition = jsonencode({\n    Version = \"2020-12-01\"\n    Steps = [{\n      Name = \"Test\"\n      Type = \"Fail\"\n      Arguments = {\n        ErrorMessage = \"test\"\n      }\n    }]\n  })\n}\n\nresource \"aws_iam_role\" \"example\" {\n  assume_role_policy = data.aws_iam_policy_document.assume_role.json\n}\n\ndata \"aws_iam_policy_document\" \"assume_role\" {\n  statement {\n    actions = [\"sts:AssumeRole\"]\n\n    principals {\n      type        = \"Service\"\n      identifiers = [\"sagemaker.amazonaws.com\"]\n    }\n  }\n}\n\ndata \"aws_sagemaker_prebuilt_ecr_image\" \"test\" {\n  repository_name = \"kmeans\"\n}",
+  "bleuScore": 0.108865,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0181-llm-0d50bf288c4d",
+  "generatedSourceFiles": [
+    "generated-source/row-0181-llm-0d50bf288c4d/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: invalid value for pipeline_display_name (Valid characters are a-z, A-Z, 0-9, and - (hyphen).)\n\n  with aws_sagemaker_pipeline.this,\n  on main.tf line 62, in resource \"aws_sagemaker_pipeline\" \"this\":\n  62:   pipeline_display_name = \"Example SageMaker Pipeline\"\n\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_iam_role": true,
+    "aws_sagemaker_pipeline": true,
+    "aws_iam_policy_document": true,
+    "aws_sagemaker_prebuilt_ecr_image": false
+  },
+  "missingMarkers": [
+    "aws_sagemaker_prebuilt_ecr_image"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "The following Terraform configuration creates an AWS SageMaker Pipeline resource with a minimal valid pipeline definition. It also creates the required IAM execution role for SageMaker and attaches the AWS-managed `AmazonSageMakerFullAccess` policy so the pipeline has permissions to run SageMaker workflows.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the SageMaker Pipeline will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"pipeline_name_prefix\" {\n  description = \"Prefix for the SageMaker Pipeline name.\"\n  type        = string\n  default     = \"example-sagemaker-pipeline\"\n}\n\nresource \"random_id\" \"suffix\" {\n  byte_length = 4\n}\n\ndata \"aws_iam_policy_document\" \"sagemaker_assume_role\" {\n  statement {\n    effect = \"Allow\"\n\n    principals {\n      type        = \"Service\"\n      identifiers = [\"sagemaker.amazonaws.com\"]\n    }\n\n    actions = [\"sts:AssumeRole\"]\n  }\n}\n\nr",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0181-llm-0d50bf288c4d.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a SageMaker Pipeline resource.",
+  "promptStrategy": "default",
+  "answer": "The following Terraform configuration creates an AWS SageMaker Pipeline resource with a minimal valid pipeline definition. It also creates the required IAM execution role for SageMaker and attaches the AWS-managed `AmazonSageMakerFullAccess` policy so the pipeline has permissions to run SageMaker workflows.",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: invalid value for pipeline_display_name (Valid characters are a-z, A-Z, 0-9, and - (hyphen).) with aws_sagemaker_pipeline.this, on main.tf line 62, in resource \"aws_sagemaker_pipeline\" \"this\": 62: pipeline_display_name = \"Example SageMaker Pipeline\""
+}

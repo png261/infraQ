@@ -1,0 +1,80 @@
+{
+  "index": 33,
+  "rowId": "33",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-671e27a14024",
+  "userId": "local-user",
+  "durationSeconds": 54.95,
+  "difficulty": "4",
+  "resource": "aws_codebuild_project, aws_iam_role",
+  "prompt": "create a Basic AWS codebuild project resource with example iam role and an example GITHUB source",
+  "intent": "Has one \"aws_iam_role\" resource and one \"aws_codebuild_project\" resource with the \"type\" argument within the \"source\" block equal to \"GITHUB\"",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\ndata \"aws_iam_policy_document\" \"assume_role\" {\n  statement {\n    effect = \"Allow\"\n\n    principals {\n      type        = \"Service\"\n      identifiers = [\"codebuild.amazonaws.com\"]\n    }\n\n    actions = [\"sts:AssumeRole\"]\n  }\n}\n\nresource \"aws_iam_role\" \"test_role\" {\n  name               = \"test_role\"\n  assume_role_policy = data.aws_iam_policy_document.assume_role.json\n}\n\n\nresource \"aws_codebuild_project\" \"example\" {\n  name          = \"test-project\"\n  service_role  = aws_iam_role.test_role.arn\n\n  artifacts {\n    type = \"NO_ARTIFACTS\"\n  }\n\n  environment {\n    compute_type = \"BUILD_GENERAL1_SMALL\"\n    image        = \"aws/codebuild/standard:7.0-24.10.29\"\n    type         = \"LINUX_CONTAINER\"\n  }\n\n  source {\n    type            = \"GITHUB\"\n    location        = \"github.com/source-location\"\n    git_clone_depth = 1\n  }\n}",
+  "bleuScore": 0.137522,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/generated-source/row-0033-llm-671e27a14024",
+  "generatedSourceFiles": [
+    "generated-source/row-0033-llm-671e27a14024/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_codebuild_project": true,
+    "aws_iam_role": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a basic AWS CodeBuild project using a GitHub repository as its source. It also creates an example IAM service role for CodeBuild with permissions to write logs to CloudWatch Logs and access CodeBuild report groups. The project uses a managed Linux build image and expects a `buildspec.yml` file in the GitHub repository.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the CodeBuild project will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"codebuild_project_name\" {\n  description = \"Name of the AWS CodeBuild project.\"\n  type        = string\n  default     = \"example-github-codebuild-project\"\n}\n\nvariable \"github_repository_url\" {\n  description = \"GitHub repository HTTPS URL used as the CodeBuild source.\"\n  type        = string\n  default     = \"https://github.com/aws-samples/aws-codebuild-samples.git\"\n}\n\nresource \"aws_iam_role\" \"codebuild_service_role\" {\n  name = \"example-codebuild-service-role\"\n\n  assume_role_",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/run-summaries/row-0033-llm-671e27a14024.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: create a Basic AWS codebuild project resource with example iam role and an example GITHUB source",
+  "answer": "This Terraform configuration creates a basic AWS CodeBuild project using a GitHub repository as its source. It also creates an example IAM service role for CodeBuild with permissions to write logs to CloudWatch Logs and access CodeBuild report groups. The project uses a managed Linux build image and expects a `buildspec.yml` file in the GitHub repository.",
+  "failure_category": "",
+  "failure_reason": ""
+}

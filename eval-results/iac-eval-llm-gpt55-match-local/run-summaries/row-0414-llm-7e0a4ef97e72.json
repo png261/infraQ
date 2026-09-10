@@ -1,0 +1,99 @@
+{
+  "index": 414,
+  "rowId": "414",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-7e0a4ef97e72",
+  "userId": "local-user",
+  "durationSeconds": 74.65,
+  "difficulty": "1",
+  "resource": "aws_db_instance",
+  "prompt": "create a basic AWS RDS instance, with gp3 storage type",
+  "intent": "Has one \"aws_db_instance\" resource\n    with one \"allocated_storage\"\n    with one \"engine\" and a valid engine value\n    with one \"instance_class\" and a valid instance class type\n    with one \"password\"\n    with one \"username\"",
+  "referenceOutput": "resource \"aws_db_instance\" \"default\" {\n  allocated_storage    = 20\n  engine               = \"mysql\"\n  instance_class       = \"db.t3.micro\"\n  username             = \"foo\"\n  password             = \"foobarbaz\"\n  storage_type        = \"gp3\"\n}",
+  "bleuScore": 0.012964,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0414-llm-7e0a4ef97e72",
+  "generatedSourceFiles": [
+    "generated-source/row-0414-llm-7e0a4ef97e72/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "80",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "115",
+        "finding": "public_rds_instance"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "120",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_db_instance": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a basic AWS RDS MySQL instance using `gp3` storage. It uses the default VPC and its subnets, creates a security group allowing MySQL access on port `3306`, generates a random database password, and provisions the RDS instance with publicly accessible networking for simplicity.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the RDS instance will be deployed.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"db_name\" {\n  description = \"Initial database name.\"\n  type        = string\n  default     = \"appdb\"\n}\n\nvariable \"db_username\" {\n  description = \"Master username for the RDS instance.\"\n  type        = string\n  default     = \"dbadmin\"\n}\n\nvariable \"allowed_cidr\" {\n  description = \"CIDR block allowed to connect to the RDS instance on port 3306.\"\n  type        = string\n  default     = \"0.0.0.0/0\"\n}\n\ndata \"aws_vpc\" \"default\" {\n  default = true\n",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0414-llm-7e0a4ef97e72.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: create a basic AWS RDS instance, with gp3 storage type",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a basic AWS RDS MySQL instance using `gp3` storage. It uses the default VPC and its subnets, creates a security group allowing MySQL access on port `3306`, generates a random database password, and provisions the RDS instance with publicly accessible networking for simplicity.",
+  "failure_category": "",
+  "failure_reason": ""
+}

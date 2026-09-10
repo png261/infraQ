@@ -1,0 +1,80 @@
+{
+  "index": 350,
+  "rowId": "350",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-5311e33a298f",
+  "userId": "local-user",
+  "durationSeconds": 84.61,
+  "difficulty": "3",
+  "resource": "aws_db_option_group",
+  "prompt": "defines an AWS RDS option group named \"option-group-pike\" with major engine version 11, and use the sqlserver-ee engine",
+  "intent": "Has one \"aws_db_option_group\" resource\n    with one \"engine_name\" = \"sqlserver-ee\"\n    with one \"major_engine_version\" = \"11.00\"",
+  "referenceOutput": "provider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_db_option_group\" \"example\" {\n  name                     = \"option-group-pike\"\n  option_group_description = \"Terraform Option Group\"\n  engine_name              = \"sqlserver-ee\"\n  major_engine_version     = \"11.00\"\n\n  option {\n    db_security_group_memberships  = []\n    option_name                    = \"SQLSERVER_AUDIT\"\n    port                           = 0\n    vpc_security_group_memberships = []\n\n    option_settings {\n      name  = \"IAM_ROLE_ARN\"\n      value = \"arn:aws:iam::680235478471:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS\"\n    }\n    option_settings {\n      name  = \"S3_BUCKET_ARN\"\n      value = \"arn:aws:s3:::testbucketineu-west2/rds\"\n    }\n  }\n\n  option {\n    option_name = \"TDE\"\n    port        = 0\n  }\n\n  tags = {\n    pike = \"permissions\"\n  }\n}",
+  "bleuScore": 0.265685,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0350-llm-5311e33a298f",
+  "generatedSourceFiles": [
+    "generated-source/row-0350-llm-5311e33a298f/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"rds_new\": {\"is_valid_db_option_group\": false, \"pattern\": \"^11(\\\\.0+)?$\"}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_db_option_group": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "The Terraform configuration below creates an AWS RDS Option Group named `option-group-pike` for the `sqlserver-ee` engine, using SQL Server major engine version `11.00`.\n\n```hcl\nterraform {\n  required_version = \">= 1.0.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_db_option_group\" \"option_group_pike\" {\n  name                     = \"option-group-pike\"\n  option_group_description = \"Option group for SQL Server Enterprise Edition major version 11\"\n  engine_name              = \"sqlserver-ee\"\n  major_engine_version     = \"11.00\"\n\n  tags = {\n    Name = \"option-group-pike\"\n  }\n}\n```",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0350-llm-5311e33a298f.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: defines an AWS RDS option group named \"option-group-pike\" with major engine version 11, and use the sqlserver-ee engine",
+  "promptStrategy": "default",
+  "answer": "The Terraform configuration below creates an AWS RDS Option Group named `option-group-pike` for the `sqlserver-ee` engine, using SQL Server major engine version `11.00`.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"rds_new\": {\"is_valid_db_option_group\": false, \"pattern\": \"^11(\\\\.0+)?$\"}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

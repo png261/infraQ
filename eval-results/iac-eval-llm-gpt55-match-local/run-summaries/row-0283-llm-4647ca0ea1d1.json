@@ -1,0 +1,81 @@
+{
+  "index": 283,
+  "rowId": "283",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-4647ca0ea1d1",
+  "userId": "local-user",
+  "durationSeconds": 65.42,
+  "difficulty": "2",
+  "resource": "aws_s3_bucket, aws_s3_bucket_cors_configuration",
+  "prompt": "Create a S3 bucket with a CORS configuration that allows POSTs and GETs from my website \"https://domain.com\".",
+  "intent": "Has an aws_s3_bucket\n\nHas an aws_s3_bucket_cors_configuration\nwith bucket = bucket id OR name\nwith cors rule {\n    allowed_headers = [\"*\"]\n    allowed_methods = [\"GET\", \"POST\"]\n    allowed_origins = [\"https://domain.com\"]\n  }",
+  "referenceOutput": "resource \"aws_s3_bucket\" \"example\" {\n  bucket = \"mybucket\"\n}\n\nresource \"aws_s3_bucket_cors_configuration\" \"example\" {\n  bucket = aws_s3_bucket.example.id\n\n  cors_rule {\n    allowed_headers = [\"*\"]\n    allowed_methods = [\"GET\", \"POST\"]\n    allowed_origins = [\"https://domain.com\"]\n  }\n}",
+  "bleuScore": 0.054923,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0283-llm-4647ca0ea1d1",
+  "generatedSourceFiles": [
+    "generated-source/row-0283-llm-4647ca0ea1d1/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_s3_bucket": true,
+    "aws_s3_bucket_cors_configuration": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS S3 bucket with a CORS policy allowing `GET` and `POST` requests from `https://domain.com`. The bucket name is generated with a random suffix to help ensure global uniqueness.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the S3 bucket will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"bucket_name_prefix\" {\n  description = \"Prefix for the S3 bucket name. A random suffix will be added.\"\n  type        = string\n  default     = \"domain-com-cors-bucket\"\n}\n\nresource \"random_id\" \"bucket_suffix\" {\n  byte_length = 4\n}\n\nresource \"aws_s3_bucket\" \"cors_bucket\" {\n  bucket = \"${var.bucket_name_prefix}-${random_id.bucket_suffix.hex}\"\n\n  tags = {\n    Name        = \"CORS Enabled S3 Bucket\"\n    Environment = \"production\"\n  }\n}\n\nresource \"aws_s3_bucket_ownership_controls\" \"cors_bucket\" {\n  bucket = aws_s3_bucket.cors_bucket.id\n\n  rule ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0283-llm-4647ca0ea1d1.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a S3 bucket with a CORS configuration that allows POSTs and GETs from my website \"https://domain.com\".",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS S3 bucket with a CORS policy allowing `GET` and `POST` requests from `https://domain.com`. The bucket name is generated with a random suffix to help ensure global uniqueness.",
+  "failure_category": "",
+  "failure_reason": ""
+}

@@ -1,0 +1,84 @@
+{
+  "index": 177,
+  "rowId": "177",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-dc153f48ea90",
+  "userId": "local-user",
+  "durationSeconds": 59.51,
+  "difficulty": "2",
+  "resource": "aws_iam_role, aws_sagemaker_image, aws_iam_policy_document",
+  "prompt": "Create a aws_sagemaker_image",
+  "intent": "",
+  "referenceOutput": "resource \"aws_iam_role\" \"example\" {\n  name               = \"example\"\n  path               = \"/\"\n  assume_role_policy = data.aws_iam_policy_document.example.json\n}\n\ndata \"aws_iam_policy_document\" \"example\" {\n  statement {\n    actions = [\"sts:AssumeRole\"]\n\n    principals {\n      type        = \"Service\"\n      identifiers = [\"sagemaker.amazonaws.com\"]\n    }\n  }\n}\n\nresource \"aws_sagemaker_image\" \"example\" {\n  image_name = \"example\"\n  role_arn   = aws_iam_role.example.arn\n}",
+  "bleuScore": 0.045347,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0177-llm-dc153f48ea90",
+  "generatedSourceFiles": [
+    "generated-source/row-0177-llm-dc153f48ea90/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_iam_role": true,
+    "aws_sagemaker_image": true,
+    "aws_iam_policy_document": false
+  },
+  "missingMarkers": [
+    "aws_iam_policy_document"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "Description: This Terraform configuration creates an AWS SageMaker Image with an associated IAM role that SageMaker can assume. The IAM role includes a trust policy for SageMaker and attaches the AWS-managed `AmazonSageMakerFullAccess` policy so the image can be managed and used by SageMaker services.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the SageMaker Image will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"sagemaker_image_name\" {\n  description = \"Name of the SageMaker Image.\"\n  type        = string\n  default     = \"example-sagemaker-image\"\n}\n\nvariable \"sagemaker_image_display_name\" {\n  description = \"Display name for the SageMaker Image.\"\n  type        = string\n  default     = \"Example SageMaker Image\"\n}\n\nvariable \"sagemaker_image_description\" {\n  description = \"Description of the SageMaker Image.\"\n  type        = string\n  default     = \"A custom AWS SageMaker Image created with Terraform.\"\n}\n\nresource \"aws_iam_role\" \"sagemaker_i",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0177-llm-dc153f48ea90.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a aws_sagemaker_image",
+  "promptStrategy": "default",
+  "answer": "Description: This Terraform configuration creates an AWS SageMaker Image with an associated IAM role that SageMaker can assume. The IAM role includes a trust policy for SageMaker and attaches the AWS-managed `AmazonSageMakerFullAccess` policy so the image can be managed and used by SageMaker services.",
+  "failure_category": "",
+  "failure_reason": ""
+}

@@ -1,0 +1,85 @@
+{
+  "index": 120,
+  "rowId": "120",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-074f0dd5e22e",
+  "userId": "local-user",
+  "durationSeconds": 102.12,
+  "difficulty": "2",
+  "resource": "aws_s3_bucket, aws_s3_bucket_acl, aws_s3_bucket_ownership_controls",
+  "prompt": "Generate a Terraform configuration for managing AWS S3 resources. Start by creating an S3 bucket with a specific name. Follow this with a configuration block for S3 bucket ownership controls, referencing the bucket's ID and setting the object ownership policy to a predefined setting. Then, define an S3 bucket ACL resource that depends on the successful application of the ownership controls. This ACL should set the bucket access to private and also reference the bucket's ID. Ensure each resource block is defined clearly and connected appropriately through references.",
+  "intent": "Resource \"aws_s3_bucket\"\nhas one \"bucket\"\n\nResource \"aws_s3_bucket_ownership_controls\"\nhas one \"bucket\"\nwithin \"rule\", it specifies:\n\"object_ownership\"\n\nResource \"aws_s3_bucket_acl\"\nhas a dependency on \"aws_s3_bucket_ownership_controls.example\"\nhas one \"bucket\"\nhas one \"acl\"",
+  "referenceOutput": "provider \"aws\" {\n    region = \"us-west-1\"\n}\n\nresource \"aws_s3_bucket\" \"example\" {\n  bucket = \"my-tf-example-bucket\"\n}\n\nresource \"aws_s3_bucket_ownership_controls\" \"example\" {\n  bucket = aws_s3_bucket.example.id\n  rule {\n    object_ownership = \"BucketOwnerPreferred\"\n  }\n}\n\nresource \"aws_s3_bucket_acl\" \"example\" {\n  depends_on = [aws_s3_bucket_ownership_controls.example]\n\n  bucket = aws_s3_bucket.example.id\n  acl    = \"private\"\n}",
+  "bleuScore": 0.120805,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0120-llm-074f0dd5e22e",
+  "generatedSourceFiles": [
+    "generated-source/row-0120-llm-074f0dd5e22e/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_aws_s3_bucket\": false, \"has_aws_s3_bucket_acl\": false, \"has_aws_s3_bucket_ownership_controls\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_s3_bucket": true,
+    "aws_s3_bucket_acl": true,
+    "aws_s3_bucket_ownership_controls": true,
+    "aws_s3_bucket_ownership_controls.example": false
+  },
+  "missingMarkers": [
+    "aws_s3_bucket_ownership_controls.example"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates an AWS S3 bucket, applies ownership controls to it using `BucketOwnerPreferred`, and then configures a private ACL for the bucket. The ACL resource explicitly depends on the ownership controls so Terraform applies them in the correct order.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \"~> 3.6\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the S3 bucket will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"bucket_name_prefix\" {\n  description = \"Prefix for the S3 bucket name. A random suffix is added to ensure global uniqueness.\"\n  type        = string\n  default     = \"terraformai-managed-s3-bucket\"\n}\n\nresource \"random_id\" \"bucket_suffix\" {\n  byte_length = 4\n}\n\nresource \"aws_s3_bucket\" \"managed_bucket\" {\n  bucket = \"${var.bucket_name_prefix}-${random_id.bucket_suffix.hex}\"\n\n  tags = {\n    Name        = \"TerraformAI Managed S3 Bucket\"\n    Environment = \"dev\"\n    ManagedBy   = \"Terr",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0120-llm-074f0dd5e22e.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Generate a Terraform configuration for managing AWS S3 resources. Start by creating an S3 bucket with a specific name. Follow this with a configuration block for S3 bucket ownership controls, referencing the bucket's ID and setting the object ownership policy to a predefined setting. Then, define an S3 bucket ACL resource that depends on the successful application of the ownership controls. This ACL should set the bucket access to private and also reference the bucket's ID. Ensure each resource block is defined clearly and connected appropriately through references.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS S3 bucket, applies ownership controls to it using `BucketOwnerPreferred`, and then configures a private ACL for the bucket. The ACL resource explicitly depends on the ownership controls so Terraform applies them in the correct order.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_aws_s3_bucket\": false, \"has_aws_s3_bucket_acl\": false, \"has_aws_s3_bucket_ownership_controls\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

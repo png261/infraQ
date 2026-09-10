@@ -1,0 +1,94 @@
+{
+  "index": 140,
+  "rowId": "140",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-3ae5e93b327d",
+  "userId": "local-user",
+  "durationSeconds": 90.67,
+  "difficulty": "2",
+  "resource": "aws_redshift_cluster, aws_redshift_usage_limit",
+  "prompt": "Create a 2 node RedShift cluster and limit the concurrency scaling to 60 minutes",
+  "intent": "Has an aws_redshift_cluster resource and check cluster_type is \"single_node\" or number of nodes is 2, check there is a aws_redshift_usage_limit resouce where the feature type is concurrency_scaling, limit_type is \"time\", and amount is 60",
+  "referenceOutput": "resource \"aws_redshift_cluster\" \"example\" {\n  cluster_identifier = \"redshift-cluster-1\"\n  node_type          = \"dc2.large\"\n  number_of_nodes    = 2\n\n  database_name = \"mydb\"\n  master_username = \"foo\"\n  master_password = \"Mustbe8characters\"\n\n  skip_final_snapshot = true\n}\n\nresource \"aws_redshift_usage_limit\" \"example\" {\n  cluster_identifier = aws_redshift_cluster.example.id\n  feature_type       = \"concurrency-scaling\"\n  limit_type         = \"time\"\n  amount             = 60\n}",
+  "bleuScore": 0.037291,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0140-llm-3ae5e93b327d",
+  "generatedSourceFiles": [
+    "generated-source/row-0140-llm-3ae5e93b327d/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "118",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "143",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_redshift_cluster": true,
+    "aws_redshift_usage_limit": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "Description: This Terraform configuration creates a private 2-node Amazon Redshift cluster in `us-east-1`. It provisions a dedicated VPC, two private subnets, a Redshift subnet group, and a security group. It also configures a Redshift usage limit that restricts concurrency scaling usage to 60 minutes per day.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be deployed.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"redshift_cluster_identifier\" {\n  description = \"Identifier for the Redshift cluster.\"\n  type        = string\n  default     = \"example-redshift-cluster\"\n}\n\nvariable \"redshift_database_name\" {\n  description = \"Initial database name for Redshift.\"\n  type        = string\n  default     = \"dev\"\n}\n\nvariable \"redshift_master_username\" {\n  description = \"Master username for Redshift.\"\n  type        = string\n  default     = \"adminuser\"\n}\n\nvariable \"redshift_master_password\" {\n  description = \"Master password for Redshift. Must meet Redsh",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0140-llm-3ae5e93b327d.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a 2 node RedShift cluster and limit the concurrency scaling to 60 minutes",
+  "promptStrategy": "default",
+  "answer": "Description: This Terraform configuration creates a private 2-node Amazon Redshift cluster in `us-east-1`. It provisions a dedicated VPC, two private subnets, a Redshift subnet group, and a security group. It also configures a Redshift usage limit that restricts concurrency scaling usage to 60 minutes per day.",
+  "failure_category": "",
+  "failure_reason": ""
+}

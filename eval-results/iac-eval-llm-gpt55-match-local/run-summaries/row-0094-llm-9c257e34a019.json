@@ -1,0 +1,84 @@
+{
+  "index": 94,
+  "rowId": "94",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-9c257e34a019",
+  "userId": "local-user",
+  "durationSeconds": 82.84,
+  "difficulty": "5",
+  "resource": "aws_eks_cluster, aws_iam_role, aws_iam_role_policy_attachment, aws_iam_role_policy_attachment, aws_subnet, aws_subnet, aws_vpc",
+  "prompt": "Create a Terraform script for provisioning an AWS EKS cluster with name \"example\". Define a resource with the cluster's name and associated IAM role ARN. Configure the VPC settings with specific subnet IDs. Include dependencies on IAM role policy attachments for proper resource management during creation and deletion. Finally, add outputs for the cluster's endpoint and the kubeconfig certificate authority data.",
+  "intent": "has one \"aws_eks_cluster\" resource\nwith one \"name\"\nwith one \"role_arn\"\nwith one \"vpc_config\" containing \"subnet_ids\"\nwith dependencies on two IAM role policy attachments\n\nhas one \"output\" for \"endpoint\"\nwith one \"value\"\n\nhas one \"output\" for \"kubeconfig-certificate-authority-data\"\nwith one \"value\"",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_vpc\" \"main\" {\n  cidr_block = \"10.0.0.0/16\"\n}\n\nresource \"aws_subnet\" \"example1\" {\n  vpc_id     = aws_vpc.main.id\n  cidr_block = \"10.0.1.0/24\"\n}\n\nresource \"aws_subnet\" \"example2\" {\n  vpc_id     = aws_vpc.main.id\n  cidr_block = \"10.0.2.0/24\"\n}\n\nresource \"aws_iam_role\" \"example\" {\n  name = \"eks-cluster-1\"\n\n  assume_role_policy = <<POLICY\n{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Principal\": {\n        \"Service\": \"eks.amazonaws.com\"\n      },\n      \"Action\": \"sts:AssumeRole\"\n    }\n  ]\n}\nPOLICY\n}\n\nresource \"aws_iam_role_policy_attachment\" \"example-AmazonEKSClusterPolicy\" {\n  policy_arn = \"arn:aws:iam::aws:policy/AmazonEKSClusterPolicy\"\n  role       = aws_iam_role.example.name\n}\n\nresource \"aws_iam_role_policy_attachment\" \"example-AmazonEKSVPCResourceController\" {\n  policy_arn = \"arn:aws:iam::aws:policy/AmazonEKSVPCResourceController\"\n  role       = aws_iam_role.example.name\n}\n\nresource \"aws_iam_role_policy_attachment\" \"eks_service_policy\" {\n  policy_arn = \"arn:aws:iam::aws:policy/AmazonEKSServicePolicy\"\n  role       = aws_iam_role.example.name\n}\n\nresource \"aws_eks_cluster\" \"example\" {\n  name     = \"example\"\n  role_arn = aws_iam_role.example.arn\n\n  vpc_config {\n    subnet_ids = [aws_subnet.example1.id, aws_subnet.example2.id]\n  }\n\n  # Ensure that IAM Role permissions are created before and deleted after EKS Cluster handling.\n  # Otherwise, EKS will not be able to properly delete EKS managed EC2 infrastructure such as Security Groups.\n  depends_on = [\n    aws_iam_role_policy_attachment.example-AmazonEKSClusterPolicy,\n    aws_iam_role_policy_attachment.example-AmazonEKSVPCResourceController,\n    aws_iam_role_policy_attachment.eks_service_policy,\n  ]\n}\n\noutput \"endpoint\" {\n  value = aws_eks_cluster.example.endpoint\n}\n\noutput \"kubeconfig-certificate-authority-data\" {\n  value = aws_eks_cluster.example.certificate_authority[0].data\n}",
+  "bleuScore": 0.148253,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0094-llm-9c257e34a019",
+  "generatedSourceFiles": [
+    "generated-source/row-0094-llm-9c257e34a019/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_aws_eks_cluster_example\": false, \"has_output_endpoint\": true, \"has_output_kubeconfig_certificate_authority_data\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_eks_cluster": true,
+    "aws_iam_role": true,
+    "aws_iam_role_policy_attachment": true,
+    "aws_subnet": true,
+    "aws_vpc": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration provisions an AWS EKS cluster named `example`. It creates a dedicated IAM role for the EKS control plane, attaches the required AWS-managed EKS policies, creates a VPC with two public subnets, and configures the EKS cluster to use those subnet IDs. The cluster resource explicitly depends on the IAM role policy attachments to ensure correct creation and deletion ordering. Outputs are included for the EKS cluster endpoint and kubeconfig certificate authority data.\n\n```hcl\nterraform {\n  required_version = \">= 1.3.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region to deploy the EKS cluster into.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"cluster_name\" {\n  description = \"Name of the EKS cluster.\"\n  type        = string\n  default     = \"example\"\n}\n\nvariable \"vpc_cidr\" {\n  description = \"CIDR block for the EKS VPC.\"\n  type        = string\n  default     = \"10.0.0.0/16\"\n}\n\nvariable \"subnet_cidrs\" {\n  description = \"CIDR blocks for EKS subnets.\"\n  type        = list(string)\n  default     ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0094-llm-9c257e34a019.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a Terraform script for provisioning an AWS EKS cluster with name \"example\". Define a resource with the cluster's name and associated IAM role ARN. Configure the VPC settings with specific subnet IDs. Include dependencies on IAM role policy attachments for proper resource management during creation and deletion. Finally, add outputs for the cluster's endpoint and the kubeconfig certificate authority data.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration provisions an AWS EKS cluster named `example`. It creates a dedicated IAM role for the EKS control plane, attaches the required AWS-managed EKS policies, creates a VPC with two public subnets, and configures the EKS cluster to use those subnet IDs. The cluster resource explicitly depends on the IAM role policy attachments to ensure correct creation and deletion ordering. Outputs are included for the EKS cluster endpoint and kubeconfig certificate authority data.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_aws_eks_cluster_example\": false, \"has_output_endpoint\": true, \"has_output_kubeconfig_certificate_authority_data\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

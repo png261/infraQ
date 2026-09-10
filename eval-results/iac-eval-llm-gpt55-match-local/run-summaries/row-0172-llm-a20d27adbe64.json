@@ -1,0 +1,86 @@
+{
+  "index": 172,
+  "rowId": "172",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-a20d27adbe64",
+  "userId": "local-user",
+  "durationSeconds": 77.94,
+  "difficulty": "3",
+  "resource": "aws_iam_role, aws_sagemaker_domain, aws_subnet, aws_vpc, aws_iam_policy_document",
+  "prompt": "Create a SageMaker Domain resource.",
+  "intent": "Has a sagemaker domain resources which requires a an iam role and a subnet",
+  "referenceOutput": "resource \"aws_vpc\" \"example\" {\n  cidr_block = \"10.0.0.0/16\"\n}\n\nresource \"aws_subnet\" \"example\" {\n  vpc_id     = aws_vpc.example.id\n  cidr_block = \"10.0.1.0/24\"\n}\n\nresource \"aws_sagemaker_domain\" \"example\" {\n  domain_name = \"example\"\n  auth_mode   = \"IAM\"\n  vpc_id      = aws_vpc.example.id\n  subnet_ids  = [aws_subnet.example.id]\n\n  default_user_settings {\n    execution_role = aws_iam_role.example.arn\n  }\n}\n\nresource \"aws_iam_role\" \"example\" {\n  name               = \"example\"\n  path               = \"/\"\n  assume_role_policy = data.aws_iam_policy_document.example.json\n}\n\ndata \"aws_iam_policy_document\" \"example\" {\n  statement {\n    actions = [\"sts:AssumeRole\"]\n\n    principals {\n      type        = \"Service\"\n      identifiers = [\"sagemaker.amazonaws.com\"]\n    }\n  }\n}",
+  "bleuScore": 0.06219,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0172-llm-a20d27adbe64",
+  "generatedSourceFiles": [
+    "generated-source/row-0172-llm-a20d27adbe64/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_iam_role": true,
+    "aws_sagemaker_domain": true,
+    "aws_subnet": true,
+    "aws_vpc": true,
+    "aws_iam_policy_document": false
+  },
+  "missingMarkers": [
+    "aws_iam_policy_document"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "The Terraform configuration below creates a deployable AWS SageMaker Domain using IAM authentication. It includes:\n\n- AWS provider configuration\n- A new VPC\n- Two private subnets across available Availability Zones\n- An IAM execution role for SageMaker\n- An attached AWS-managed SageMaker policy\n- A SageMaker Domain resource\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the SageMaker Domain will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"domain_name\" {\n  description = \"Name of the SageMaker Domain.\"\n  type        = string\n  default     = \"example-sagemaker-domain\"\n}\n\nvariable \"vpc_cidr\" {\n  description = \"CIDR block for the SageMaker VPC.\"\n  type        = string\n  default     = \"10.0.0.0/16\"\n}\n\ndata \"aws_availability_zones\" \"available\" {\n  state = \"available\"\n}\n\nresource \"aws_vpc\" \"sagemaker_vpc\" {\n  cidr_block           = var.vpc_cidr\n  enable_dns_support   = true\n  enable_dns_hostnames = true\n\n  tags = {\n    Name = \"sagemaker-domain-vp",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0172-llm-a20d27adbe64.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a SageMaker Domain resource.",
+  "promptStrategy": "default",
+  "answer": "The Terraform configuration below creates a deployable AWS SageMaker Domain using IAM authentication. It includes:\n\n- AWS provider configuration\n- A new VPC\n- Two private subnets across available Availability Zones\n- An IAM execution role for SageMaker\n- An attached AWS-managed SageMaker policy\n- A SageMaker Domain resource",
+  "failure_category": "",
+  "failure_reason": ""
+}

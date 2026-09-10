@@ -1,0 +1,121 @@
+{
+  "index": 4,
+  "rowId": "4",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-48cd2e98d89a",
+  "userId": "local-user",
+  "durationSeconds": 89.42,
+  "difficulty": "6",
+  "resource": "aws_db_instance, aws_db_instance, aws_db_subnet_group, aws_route53_record, aws_route53_record, aws_route53_zone, aws_route53_zone, aws_subnet, aws_subnet, aws_vpc",
+  "prompt": "Configure Route 53 to return different database endpoints to internal versus external users. Internal users are routed to an internal RDS instance, while external users are routed to a publicly accessible one. Name the zones \"private\" and \"public\", the databases \"internal\" and \"public\", and the subnet group \"main\"",
+  "intent": "Has one \"aws_vpc\" resource\n    with a specified \"cidr_block\"\n\nHas multiple \"aws_subnet\" resources\n    with \"vpc_id\" referencing the \"aws_vpc\" resource\n    with specified \"cidr_block\" for each\n    with \"availability_zone\" set\n\nHas one \"aws_db_subnet_group\" resource\n    with \"subnet_ids\" referencing the IDs of \"aws_subnet\" resources\n\nHas one \"aws_route53_zone\" resource\n    with \"name\"\n\nHas one \"aws_route53_zone\" resource\n    with \"name\"\n    with a \"vpc\" block with \"vpc_id\" referencing the \"aws_vpc\" resource\n\n\nHas one \"aws_db_instance\" resource for internal use\n    with \"allocated_storage\" set to a specific size\n    with a specified \"engine\" \n    with a specified \"instance_class\"\n    with \"username\" and \"password\"\n    with \"skip_final_snapshot\" set to true\n    with \"identifier\"\n    with \"password\"\n    with \"db_subnet_group_name\" referencing the \"aws_db_subnet_group\" resource\n\nHas one \"aws_db_instance\" resource for public use\n    with \"allocated_storage\" set to a specific size\n    with a specified \"engine\"\n    with a specified \"instance_class\"\n    with \"username\" and \"password\"\n    with \"skip_final_snapshot\" set to true\n    with \"identifier\"\n    with \"password\"\n    with \"publicly_accessible\" set to true\n\nHas two \"aws_route53_record\" resources\n    with \"zone_id\" referencing one of the \"aws_route53_zone\" resources\n    with \"type\"\n    with \"ttl\"\n    with \"records\" referencing one of the \"aws_db_instance\" resources",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\n\nprovider \"aws\" {\n  region = \"us-east-1\" \n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\n# Create a VPC for internal resources\nresource \"aws_vpc\" \"main\" {\n  cidr_block = \"10.0.0.0/24\"\n}\n\n\n# RDS instances\nresource \"aws_db_instance\" \"internal\" {\n  # Internal DB configuration\n  allocated_storage    = 20\n  engine               = \"mysql\"\n  instance_class       = \"db.t3.micro\"\n  identifier =  \"internal\"\n  username             = \"user\"\n  password             = \"password\"\n  db_subnet_group_name = aws_db_subnet_group.main.name\n  skip_final_snapshot  = true\n}\n\nresource \"aws_db_instance\" \"public\" {\n  # Public DB configuration\n  publicly_accessible  = true\n  allocated_storage    = 20\n  engine               = \"mysql\"\n  instance_class       = \"db.t3.micro\"\n  identifier = \"public\"\n  username             = \"user\"\n  password             = \"password\"\n  skip_final_snapshot  = true\n}\n\nresource \"aws_db_subnet_group\" \"main\" {\n  name       = \"mydb-subnet-group\"\n  subnet_ids = [aws_subnet.maina.id, aws_subnet.mainb.id]\n}\n\ndata \"aws_availability_zones\" \"available\" {}\n\n# Subnet for RDS\nresource \"aws_subnet\" \"maina\" {\n  vpc_id            = aws_vpc.main.id\n  cidr_block        = \"10.0.0.0/25\"\n  availability_zone = data.aws_availability_zones.available.names[0]\n}\n\nresource \"aws_subnet\" \"mainb\" {\n  vpc_id            = aws_vpc.main.id\n  cidr_block        = \"10.0.0.128/25\"\n  availability_zone = data.aws_availability_zones.available.names[1]\n}\n\n# Route 53 Public Hosted Zone for external users\nresource \"aws_route53_zone\" \"public\" {\n  name = \"example53.com\"\n}\n\n# Route 53 Private Hosted Zone for internal users\nresource \"aws_route53_zone\" \"private\" {\n  name = \"example53.com\"\n  vpc {\n    vpc_id = aws_vpc.main.id\n  }\n}\n\n# Route 53 Record for Public DB (External Endpoint)\nresource \"aws_route53_record\" \"public_db\" {\n  zone_id = aws_route53_zone.public.zone_id\n  name    = \"public-db.example.com\"\n  type    = \"CNAME\"\n  ttl     = \"300\"\n  records = [aws_db_instance.public.address]\n}\n\n# Route 53 Record for Internal DB (Internal Endpoint)\nresource \"aws_route53_record\" \"internal_db\" {\n  zone_id = aws_route53_zone.private.zone_id\n  name    = \"internal-db.example.com\"\n  type    = \"CNAME\"\n  ttl     = \"300\"\n  records = [aws_db_instance.internal.address]\n}",
+  "bleuScore": 0.117417,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/generated-source/row-0004-llm-48cd2e98d89a",
+  "generatedSourceFiles": [
+    "generated-source/row-0004-llm-48cd2e98d89a/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "185",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "203",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "211",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "256",
+        "finding": "rds_final_snapshot_disabled"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "278",
+        "finding": "public_rds_instance"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "279",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_db_instance": true,
+    "aws_db_subnet_group": true,
+    "aws_route53_record": true,
+    "aws_route53_zone": true,
+    "aws_subnet": true,
+    "aws_vpc": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a split-horizon Route 53 DNS setup for database access:\n\n- A public Route 53 hosted zone named `public`\n- A private Route 53 hosted zone named `private`\n- Both zones serve the same DNS name so internal and external users can resolve the same database hostname differently\n- Internal users inside the VPC resolve the database hostname to an internal/private RDS instance named `internal`\n- External users resolve the same hostname to a publicly accessible RDS instance named `public`\n- A DB subnet group named `main`\n- Supporting VPC, subnets, internet gateway, route tables, security groups, RDS instances, and DNS records\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \"~> 3.6\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region to deploy into.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"domain_name\" {\n  description = \"DNS zone name used for split-horizon Route 53 resolution.\"\n  type        = string\n  defau",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/run-summaries/row-0004-llm-48cd2e98d89a.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Configure Route 53 to return different database endpoints to internal versus external users. Internal users are routed to an internal RDS instance, while external users are routed to a publicly accessible one. Name the zones \"private\" and \"public\", the databases \"internal\" and \"public\", and the subnet group \"main\"",
+  "answer": "This Terraform configuration creates a split-horizon Route 53 DNS setup for database access:\n\n- A public Route 53 hosted zone named `public`\n- A private Route 53 hosted zone named `private`\n- Both zones serve the same DNS name so internal and external users can resolve the same database hostname differently\n- Internal users inside the VPC resolve the database hostname to an internal/private RDS instance named `internal`\n- External users resolve the same hostname to a publicly accessible RDS instance named `public`\n- A DB subnet group named `main`\n- Supporting VPC, subnets, internet gateway, route tables, security groups, RDS instances, and DNS records",
+  "failure_category": "",
+  "failure_reason": ""
+}

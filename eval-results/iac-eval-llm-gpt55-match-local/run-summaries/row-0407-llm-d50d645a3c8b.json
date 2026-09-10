@@ -1,0 +1,99 @@
+{
+  "index": 407,
+  "rowId": "407",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-d50d645a3c8b",
+  "userId": "local-user",
+  "durationSeconds": 132.07,
+  "difficulty": "1",
+  "resource": "aws_db_instance",
+  "prompt": "create a basic AWS SQL database",
+  "intent": "Has one \"aws_db_instance\" resource\n    with one \"allocated_storage\"\n    with one \"engine\" and a valid engine value\n    with one \"instance_class\" and a valid instance class type\n    with one \"password\"\n    with one \"username\"",
+  "referenceOutput": "resource \"aws_db_instance\" \"default\" {\n  allocated_storage    = 10\n  engine               = \"mysql\"\n  instance_class       = \"db.t3.micro\"\n  username             = \"foo\"\n  password             = \"foobarbaz\"\n}",
+  "bleuScore": 0.00564,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0407-llm-d50d645a3c8b",
+  "generatedSourceFiles": [
+    "generated-source/row-0407-llm-d50d645a3c8b/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "139",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "178",
+        "finding": "public_rds_instance"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "183",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_db_instance\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_db_instance": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a basic AWS SQL database using Amazon RDS MySQL. It includes:\n\n- AWS provider configuration in `us-east-1`\n- A small custom VPC with two public subnets\n- Internet gateway and route table\n- Security group allowing MySQL access on port `3306`\n- Randomly generated RDS master password\n- Amazon RDS MySQL instance\n- Outputs for the database endpoint, username, database name, and password\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"db_name\" {\n  description = \"Name of the initial database to create.\"\n  type        = string\n  default     = \"basicdb\"\n}\n\nvariable \"db_username\" {\n  description = \"Master username for the RDS database.\"\n  type        = string\n  default     = \"adminuser\"\n}\n\nvariable \"db_instance_class\" {\n  description = \"RDS instance class.\"\n  type        = s",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0407-llm-d50d645a3c8b.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: create a basic AWS SQL database",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a basic AWS SQL database using Amazon RDS MySQL. It includes:\n\n- AWS provider configuration in `us-east-1`\n- A small custom VPC with two public subnets\n- Internet gateway and route table\n- Security group allowing MySQL access on port `3306`\n- Randomly generated RDS master password\n- Amazon RDS MySQL instance\n- Outputs for the database endpoint, username, database name, and password",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_db_instance\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

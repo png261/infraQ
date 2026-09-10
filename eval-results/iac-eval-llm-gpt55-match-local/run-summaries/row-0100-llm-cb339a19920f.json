@@ -1,0 +1,88 @@
+{
+  "index": 100,
+  "rowId": "100",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-cb339a19920f",
+  "userId": "local-user",
+  "durationSeconds": 114.33,
+  "difficulty": "4",
+  "resource": "aws_eks_cluster, aws_iam_role, aws_iam_role_policy_attachment, aws_iam_role_policy_attachment, aws_subnet, aws_subnet, aws_vpc, aws_iam_policy_document",
+  "prompt": "Create a Terraform configuration to set up an AWS IAM role (demo_eks) for an Amazon EKS cluster. The role should allow assuming roles for EKS services and have policies attached for AmazonEKSClusterPolicy and AmazonEKSVPCResourceController. Also, create an AWS EKS cluster (demo_eks) with specified VPC configurations. Ensure proper dependency handling for IAM role permissions during cluster management.",
+  "intent": "has one \"data\" block for \"aws_iam_policy_document\" containing:\none \"effect\"\none \"principals\" block with \"type\" and \"identifiers\"\none \"actions\" list\n\nhas one \"aws_iam_role\" \nwith one \"name\"\nwith one \"assume_role_policy\" referencing the data block\n\nhas two \"aws_iam_role_policy_attachment\"\n\"demo_eks_AmazonEKSClusterPolicy\"\nwith one \"policy_arn\"\nwith one \"role\" referencing the \"aws_iam_role.demo_eks.name\"\n\"demo_eks_AmazonEKSVPCResourceController\"\nwith one \"policy_arn\"\nwith one \"role\" referencing the \"aws_iam_role.demo_eks.name\"\n\nhas one \"aws_eks_cluster\"\nwith one \"name\"\nwith one \"role_arn\" referencing the \"aws_iam_role.demo_eks.arn\"\nwith one \"vpc_config\" containing \"subnet_ids\"\nwith dependencies on two IAM role policy attachments\n\nhas one \"data\" block for \"aws_eks_cluster\" \nwith one \"name\" referencing the \"aws_eks_cluster.demo_eks.name\"",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\ndata \"aws_iam_policy_document\" \"assume_role_eks\" {\n  statement {\n    effect = \"Allow\"\n\n    principals {\n      type        = \"Service\"\n      identifiers = [\"eks.amazonaws.com\"]\n    }\n\n    actions = [\"sts:AssumeRole\"]\n  }\n}\n\nresource \"aws_iam_role\" \"example\" {\n  name               = \"example\"\n  assume_role_policy = data.aws_iam_policy_document.assume_role_eks.json\n}\n\nresource \"aws_iam_role_policy_attachment\" \"eks_cluster_policy\" {\n  policy_arn = \"arn:aws:iam::aws:policy/AmazonEKSClusterPolicy\"\n  role       = aws_iam_role.example.name\n}\n\nresource \"aws_iam_role_policy_attachment\" \"eks_service_policy\" {\n  policy_arn = \"arn:aws:iam::aws:policy/AmazonEKSServicePolicy\"\n  role       = aws_iam_role.example.name\n}\n\nresource \"aws_vpc\" \"main\" {\n  cidr_block = \"10.0.0.0/16\"\n}\n\nresource \"aws_subnet\" \"example1\" {\n  vpc_id     = aws_vpc.main.id\n  cidr_block = \"10.0.1.0/24\"\n}\n\nresource \"aws_subnet\" \"example2\" {\n  vpc_id     = aws_vpc.main.id\n  cidr_block = \"10.0.2.0/24\"\n}\n\nresource \"aws_eks_cluster\" \"demo_eks\" {\n  name     = \"example\"\n  role_arn = aws_iam_role.example.arn\n\n  vpc_config {\n    subnet_ids = [aws_subnet.example1.id, aws_subnet.example2.id]\n  }\n\n  # Ensure that IAM Role permissions are created before and deleted after EKS Cluster handling.\n  # Otherwise, EKS will not be able to properly delete EKS managed EC2 infrastructure such as Security Groups.\n  depends_on = [\n    aws_iam_role_policy_attachment.eks_cluster_policy,\n    aws_iam_role_policy_attachment.eks_service_policy,\n  ]\n}",
+  "bleuScore": 0.127833,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0100-llm-cb339a19920f",
+  "generatedSourceFiles": [
+    "generated-source/row-0100-llm-cb339a19920f/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_aws_eks_cluster_demo_eks\": false, \"has_aws_iam_policy_document_assume_role_eks\": true, \"has_aws_iam_role_demo_eks\": true, \"has_aws_iam_role_policy_attachment_demo_eks_AmazonEKSClusterPolicy\": false, \"has_aws_iam_role_policy_attachment_demo_eks_AmazonEKSVPCResourceController\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_eks_cluster": true,
+    "aws_iam_role": true,
+    "aws_iam_role_policy_attachment": true,
+    "aws_subnet": true,
+    "aws_vpc": true,
+    "aws_iam_policy_document": true,
+    "aws_iam_role.demo_eks.name": true,
+    "aws_iam_role.demo_eks.arn": true,
+    "aws_eks_cluster.demo_eks.name": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates the required AWS infrastructure for an Amazon EKS cluster named `demo_eks`.\n\nIt includes:\n\n- AWS provider configuration using a default region.\n- A demo VPC with public and private subnets across two Availability Zones.\n- Internet Gateway, NAT Gateway, and route tables for subnet networking.\n- An IAM role named `demo_eks` that can be assumed by the EKS service.\n- IAM policy attachments for:\n  - `AmazonEKSClusterPolicy`\n  - `AmazonEKSVPCResourceController`\n- An Amazon EKS cluster named `demo_eks`.\n- Explicit dependency handling so the EKS cluster is created only after the IAM policies are attached.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the EKS cluster will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"cluster_name\" {\n  description = \"Name of the EKS cluster and IAM role.\"\n  type        = string\n  default     = \"demo_eks\"\n}\n\nvariable \"vpc_cidr\" {\n  description = \"CIDR block for the EKS VPC.\"\n  typ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0100-llm-cb339a19920f.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a Terraform configuration to set up an AWS IAM role (demo_eks) for an Amazon EKS cluster. The role should allow assuming roles for EKS services and have policies attached for AmazonEKSClusterPolicy and AmazonEKSVPCResourceController. Also, create an AWS EKS cluster (demo_eks) with specified VPC configurations. Ensure proper dependency handling for IAM role permissions during cluster management.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates the required AWS infrastructure for an Amazon EKS cluster named `demo_eks`.\n\nIt includes:\n\n- AWS provider configuration using a default region.\n- A demo VPC with public and private subnets across two Availability Zones.\n- Internet Gateway, NAT Gateway, and route tables for subnet networking.\n- An IAM role named `demo_eks` that can be assumed by the EKS service.\n- IAM policy attachments for:\n  - `AmazonEKSClusterPolicy`\n  - `AmazonEKSVPCResourceController`\n- An Amazon EKS cluster named `demo_eks`.\n- Explicit dependency handling so the EKS cluster is created only after the IAM policies are attached.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_aws_eks_cluster_demo_eks\": false, \"has_aws_iam_policy_document_assume_role_eks\": true, \"has_aws_iam_role_demo_eks\": true, \"has_aws_iam_role_policy_attachment_demo_eks_AmazonEKSClusterPolicy\": false, \"has_aws_iam_role_policy_attachment_demo_eks_AmazonEKSVPCResourceController\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

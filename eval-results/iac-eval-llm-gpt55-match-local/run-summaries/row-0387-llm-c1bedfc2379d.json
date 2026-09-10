@@ -1,0 +1,81 @@
+{
+  "index": 387,
+  "rowId": "387",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-c1bedfc2379d",
+  "userId": "local-user",
+  "durationSeconds": 69.67,
+  "difficulty": "2",
+  "resource": "aws_glacier_vault, aws_sns_topic",
+  "prompt": "generage an S3 Glacier vault that pushes notification when archive retrieval completed",
+  "intent": "has one \"aws_glacier_vault\" resource\n     with \"name\" attribute\n     with notification attribute\n        with sns_topic attribute\n        with events attribute\n\nhas one aws_sns_topic resources\n    with name attribute",
+  "referenceOutput": "provider \"aws\" {\n  region     = \"us-east-1\"\n}\n\n# Create an SNS topic for notifications\nresource \"aws_sns_topic\" \"glacier_notifications\" {\n  name = \"glacier-archive-retrieval-notifications\"\n}\n\n# Create an S3 Glacier Vault\nresource \"aws_glacier_vault\" \"my_archive\" {\n  name = \"MyArchive\"\n\n  notification {\n    sns_topic = aws_sns_topic.glacier_notifications.arn\n    events    = [\"ArchiveRetrievalCompleted\"]\n  }\n}",
+  "bleuScore": 0.090625,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0387-llm-c1bedfc2379d",
+  "generatedSourceFiles": [
+    "generated-source/row-0387-llm-c1bedfc2379d/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_glacier_vault": true,
+    "aws_sns_topic": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS S3 Glacier Vault and configures it to send a notification to an SNS topic whenever an archive retrieval job completes. It also creates the required SNS topic policy allowing the Glacier service to publish notifications to the topic.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Glacier vault and SNS topic will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"glacier_vault_name\" {\n  description = \"Name of the S3 Glacier vault.\"\n  type        = string\n  default     = \"archive-retrieval-notification-vault\"\n}\n\nvariable \"sns_topic_name\" {\n  description = \"Name of the SNS topic for Glacier notifications.\"\n  type        = string\n  default     = \"glacier-archive-retrieval-completed-topic\"\n}\n\ndata \"aws_caller_identity\" \"current\" {}\n\nresource \"aws_sns_topic\" \"glacier_notifications\" {\n  name = var.sns_topic_name\n}\n\nresource \"aws_sns_topic_policy\" \"glacier_publish_policy\" {\n  arn = aws_sns_topic.glacier_not",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0387-llm-c1bedfc2379d.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: generage an S3 Glacier vault that pushes notification when archive retrieval completed",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS S3 Glacier Vault and configures it to send a notification to an SNS topic whenever an archive retrieval job completes. It also creates the required SNS topic policy allowing the Glacier service to publish notifications to the topic.",
+  "failure_category": "",
+  "failure_reason": ""
+}

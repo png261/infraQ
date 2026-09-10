@@ -1,0 +1,81 @@
+{
+  "index": 47,
+  "rowId": "47",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-0121a27fa6c9",
+  "userId": "local-user",
+  "durationSeconds": 136.65,
+  "difficulty": "6",
+  "resource": "aws_lex_bot, aws_lex_intent, aws_lex_intent, aws_lex_intent, aws_lex_intent, aws_lex_intent",
+  "prompt": "create an aws_lex_bot for ordering pizzas with 5 different intents",
+  "intent": "Has one resource \"aws_lex_bot\" with 5 different intent blocks and 5 different \"aws_lex_intent\" resources",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_lex_intent\" \"OrderPizza\" {\n  name = \"OrderPizza\"\n  description = \"Pizza order processing\"\n\n  sample_utterances = [\n    \"I want to order a pizza\"\n  ]\n\n  slot {\n    name                     = \"PizzaType\"\n    description              = \"Type of pizza to order\"\n    slot_constraint          = \"Required\" \n    slot_type                = \"AMAZON.AlphaNumeric\"\n    priority                 = 1\n    value_elicitation_prompt {\n      message {\n        content             = \"What type of pizza would you like?\"\n        content_type        = \"PlainText\"\n      }\n      max_attempts         = 2\n    }\n  }\n\n  fulfillment_activity {\n    type = \"ReturnIntent\"\n  }\n}\n\nresource \"aws_lex_intent\" \"CancelOrder\" {\n  name = \"CancelOrder\"\n  description = \"Cancel an order\"\n\n  sample_utterances = [\n    \"I want to cancel my order\"\n  ]\n\n  fulfillment_activity {\n    type = \"ReturnIntent\"\n  }\n}\n\nresource \"aws_lex_intent\" \"CheckOrderStatus\" {\n  name = \"CheckOrderStatus\"\n  description = \"Check status of an order\"\n\n   sample_utterances = [\n    \"What is the status of my order\"\n  ]\n\n  fulfillment_activity {\n    type = \"ReturnIntent\"\n  }\n}\n\nresource \"aws_lex_intent\" \"ModifyOrder\" {\n  name = \"ModifyOrder\"\n  description = \"Modify an existing order\"\n\n  sample_utterances = [\n    \"I want to change my order\"\n  ]\n\n  fulfillment_activity {\n    type = \"ReturnIntent\"\n  }\n}\n\nresource \"aws_lex_intent\" \"HelpOrder\" {\n  name = \"HelpOrder\"\n  description = \"Provide help for ordering\"\n\n  sample_utterances = [\n    \"I need help\",\n    \"Can you help me\"\n  ]\n\n  fulfillment_activity {\n    type = \"ReturnIntent\"\n  }\n}\n\nresource \"aws_lex_bot\" \"PizzaOrderBot\" {\n  abort_statement {\n    message {\n      content      = \"Sorry, I could not assist on this request.\"\n      content_type = \"PlainText\"\n    }\n  }\n\n  name = \"PizzaOrderBot\"\n  child_directed = false\n  create_version = false\n  idle_session_ttl_in_seconds = 600\n  process_behavior = \"BUILD\"\n  locale = \"en-US\"\n  voice_id = \"Salli\"\n\n  clarification_prompt {\n    max_attempts = 2\n\n    message {\n      content      = \"I'm sorry, I didn't understand the request. Can you reformulate?\"\n      content_type = \"PlainText\"\n    }\n  }\n\n  intent {\n    intent_name    = aws_lex_intent.OrderPizza.name\n    intent_version = aws_lex_intent.OrderPizza.version\n  }\n\n  intent {\n    intent_name    = aws_lex_intent.CancelOrder.name\n    intent_version = aws_lex_intent.CancelOrder.version\n  }\n\n  intent {\n    intent_name    = aws_lex_intent.CheckOrderStatus.name\n    intent_version = aws_lex_intent.CheckOrderStatus.version\n  }\n\n  intent {\n    intent_name    = aws_lex_intent.ModifyOrder.name\n    intent_version = aws_lex_intent.ModifyOrder.version\n  }\n\n  intent {\n    intent_name    = aws_lex_intent.HelpOrder.name\n    intent_version = aws_lex_intent.HelpOrder.version\n  }\n}",
+  "bleuScore": 0.130606,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/generated-source/row-0047-llm-0121a27fa6c9",
+  "generatedSourceFiles": [
+    "generated-source/row-0047-llm-0121a27fa6c9/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_lex_bot": true,
+    "aws_lex_intent": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "The following Terraform configuration defines an AWS Lex V1 pizza-ordering bot with five intents:\n\n1. `OrderPizzaIntent` — lets a customer order a pizza.\n2. `CancelPizzaOrderIntent` — cancels an existing pizza order.\n3. `TrackPizzaOrderIntent` — checks delivery/order status.\n4. `ModifyPizzaOrderIntent` — modifies an existing pizza order.\n5. `PizzaHelpIntent` — provides general help.\n\nIt also defines custom Lex slot types for pizza size, crust, and toppings, and configures the Lex bot to build automatically.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_lex_slot_type\" \"pizza_size\" {\n  name                     = \"PizzaSize\"\n  description              = \"Available pizza sizes\"\n  value_selection_strategy = \"ORIGINAL_VALUE\"\n  create_version           = true\n\n  enumeration_value {\n    value    = \"small\"\n    synonyms = [\"personal\", \"mini\"]\n  }\n\n  enumeration_value {\n    value    = \"medium\"\n    synonyms = [\"regular\"]\n  }\n\n  enumeration_value {\n    value    = \"large\"\n    synonyms = [\"big\"]\n  }\n\n  enumeration_value {\n    valu",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/run-summaries/row-0047-llm-0121a27fa6c9.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: create an aws_lex_bot for ordering pizzas with 5 different intents",
+  "promptStrategy": "default",
+  "answer": "The following Terraform configuration defines an AWS Lex V1 pizza-ordering bot with five intents:\n\n1. `OrderPizzaIntent` — lets a customer order a pizza.\n2. `CancelPizzaOrderIntent` — cancels an existing pizza order.\n3. `TrackPizzaOrderIntent` — checks delivery/order status.\n4. `ModifyPizzaOrderIntent` — modifies an existing pizza order.\n5. `PizzaHelpIntent` — provides general help.\n\nIt also defines custom Lex slot types for pizza size, crust, and toppings, and configures the Lex bot to build automatically.",
+  "failure_category": "",
+  "failure_reason": ""
+}

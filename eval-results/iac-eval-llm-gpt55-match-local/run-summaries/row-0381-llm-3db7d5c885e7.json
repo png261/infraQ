@@ -1,0 +1,81 @@
+{
+  "index": 381,
+  "rowId": "381",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-3db7d5c885e7",
+  "userId": "local-user",
+  "durationSeconds": 99.58,
+  "difficulty": "3",
+  "resource": "aws_dlm_lifecycle_policy, aws_glacier_vault",
+  "prompt": "generate an S3 Glacier vault and use it with AWS Data Lifecycle Manager",
+  "intent": "has one \"aws_glacier_vault\" resource\n     with \"name\" attribute\n\nhas one \"aws_dlm_lifecycle_policy\" resource\n    with \"description\" attribute\n    with \"execution_role_arn\"\n    with \"policy_details\"",
+  "referenceOutput": "resource \"aws_glacier_vault\" \"example\" {\n  name = \"my-glacier-vault\"\n}\n\nresource \"aws_dlm_lifecycle_policy\" \"example\" {\n  description = \"Automated archiving policy\"\n\n  execution_role_arn = \"arn:aws:iam::123456789012:role/DLMServiceRole\"  # Replace with your DLM execution role ARN\n\n  policy_details {\n    resource_types = [\"VOLUME\"]\n    target_tags = {\n      \"archive\" = \"true\"\n    }\n    schedule {\n      name = \"2 weeks of daily snapshots\"\n\n      create_rule {\n        interval      = 24\n        interval_unit = \"HOURS\"\n        times         = [\"23:45\"]\n      }\n\n      retain_rule {\n        count = 14\n      }\n\n      tags_to_add = {\n        SnapshotCreator = \"DLM\"\n      }\n\n      copy_tags = false\n    }\n  }\n}",
+  "bleuScore": 0.071086,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0381-llm-3db7d5c885e7",
+  "generatedSourceFiles": [
+    "generated-source/row-0381-llm-3db7d5c885e7/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: invalid value for description (see https://docs.aws.amazon.com/cli/latest/reference/dlm/create-lifecycle-policy.html)\n\n  with aws_dlm_lifecycle_policy.ebs_snapshot_policy,\n  on main.tf line 121, in resource \"aws_dlm_lifecycle_policy\" \"ebs_snapshot_policy\":\n 121:   description        = \"Creates scheduled EBS snapshots for volumes tagged Backup=dlm.\"\n\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_dlm_lifecycle_policy": true,
+    "aws_glacier_vault": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "The Terraform configuration below creates:\n\n- An **Amazon S3 Glacier vault**\n- An **EBS volume** tagged for lifecycle management\n- An **AWS Data Lifecycle Manager IAM role**\n- An **AWS Data Lifecycle Manager lifecycle policy** that creates and retains EBS snapshots for tagged volumes\n\nImportant AWS limitation: **AWS Data Lifecycle Manager does not manage or write backups into S3 Glacier vaults directly.** DLM manages EBS snapshots and AMIs. The Glacier vault is created, but it cannot be used as a DLM target. If you need long-term archival for EBS snapshots, AWS provides EBS Snapshot Archive, which is separate from S3 Glacier vaults.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region to deploy resources into.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"glacier_vault_name\" {\n  description = \"Name of the S3 Glacier vault.\"\n  type        = string\n  default     = \"example-glacier-vault\"\n}\n\nvariable \"dlm_policy_name\" {\n  description = \"Name of the AWS Data Lifecycle",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0381-llm-3db7d5c885e7.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: generate an S3 Glacier vault and use it with AWS Data Lifecycle Manager",
+  "promptStrategy": "default",
+  "answer": "The Terraform configuration below creates:\n\n- An **Amazon S3 Glacier vault**\n- An **EBS volume** tagged for lifecycle management\n- An **AWS Data Lifecycle Manager IAM role**\n- An **AWS Data Lifecycle Manager lifecycle policy** that creates and retains EBS snapshots for tagged volumes\n\nImportant AWS limitation: **AWS Data Lifecycle Manager does not manage or write backups into S3 Glacier vaults directly.** DLM manages EBS snapshots and AMIs. The Glacier vault is created, but it cannot be used as a DLM target. If you need long-term archival for EBS snapshots, AWS provides EBS Snapshot Archive, which is separate from S3 Glacier vaults.",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: invalid value for description (see https://docs.aws.amazon.com/cli/latest/reference/dlm/create-lifecycle-policy.html) with aws_dlm_lifecycle_policy.ebs_snapshot_policy, on main.tf line 121, in resource \"aws_dlm_lifecycle_policy\" \"ebs_snapshot_policy\": 121: description = \"Creates scheduled EBS snapshots for volumes tagged Backup=dlm.\""
+}

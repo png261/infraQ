@@ -1,0 +1,94 @@
+{
+  "index": 147,
+  "rowId": "147",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-8a266b696e8f",
+  "userId": "local-user",
+  "durationSeconds": 108.3,
+  "difficulty": "3",
+  "resource": "aws_redshift_cluster, aws_redshift_resource_policy",
+  "prompt": "Create a 2-node RedShift cluster and attach a resource policy to it.",
+  "intent": "Create a redshift cluster and a aws_reedshift_resource_poliicy attached to it",
+  "referenceOutput": "resource \"aws_redshift_cluster\" \"example\" {\n  cluster_identifier = \"redshift-cluster-1\"\n  node_type          = \"dc2.large\"\n  cluster_type       = \"multi-node\"\n  number_of_nodes    = 2\n\n  database_name = \"mydb\"\n  master_username = \"foo\"\n  master_password = \"Mustbe8characters\"\n\n  skip_final_snapshot = true\n}\n\nresource \"aws_redshift_resource_policy\" \"example\" {\n  resource_arn = aws_redshift_cluster.example.cluster_namespace_arn\n  policy = jsonencode({\n    Version = \"2012-10-17\"\n    Statement = [{\n      Effect = \"Allow\"\n      Principal = {\n        AWS = \"arn:aws:iam::12345678901:root\"\n      }\n      Action   = \"redshift:CreateInboundIntegration\"\n      Resource = aws_redshift_cluster.example.cluster_namespace_arn\n      Sid      = \"\"\n    }]\n  })\n}",
+  "bleuScore": 0.05993,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0147-llm-8a266b696e8f",
+  "generatedSourceFiles": [
+    "generated-source/row-0147-llm-8a266b696e8f/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "117",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "143",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_redshift_cluster": true,
+    "aws_redshift_resource_policy": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "Description: This Terraform configuration creates a private 2-node Amazon Redshift cluster in a new VPC with two subnets, a subnet group, and a security group. It also attaches an Amazon Redshift resource policy to the cluster using `aws_redshift_resource_policy`. Default variable values are provided so the configuration can be applied directly.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\ndata \"aws_caller_identity\" \"current\" {}\n\nvariable \"aws_region\" {\n  description = \"AWS region to deploy the Redshift cluster into.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"cluster_identifier\" {\n  description = \"Identifier for the Redshift cluster.\"\n  type        = string\n  default     = \"example-redshift-2-node-cluster\"\n}\n\nvariable \"database_name\" {\n  description = \"Initial Redshift database name.\"\n  type        = string\n  default     = \"devdb\"\n}\n\nvariable \"master_username\" {\n  description = \"Master username for the Redshift cluster.\"\n  type        = string\n  default     = \"adminuser\"\n}\n\nvariable \"master_password\" {\n ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0147-llm-8a266b696e8f.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a 2-node RedShift cluster and attach a resource policy to it.",
+  "promptStrategy": "default",
+  "answer": "Description: This Terraform configuration creates a private 2-node Amazon Redshift cluster in a new VPC with two subnets, a subnet group, and a security group. It also attaches an Amazon Redshift resource policy to the cluster using `aws_redshift_resource_policy`. Default variable values are provided so the configuration can be applied directly.",
+  "failure_category": "",
+  "failure_reason": ""
+}

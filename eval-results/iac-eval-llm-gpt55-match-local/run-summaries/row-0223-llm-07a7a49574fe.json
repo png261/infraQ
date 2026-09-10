@@ -1,0 +1,80 @@
+{
+  "index": 223,
+  "rowId": "223",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-07a7a49574fe",
+  "userId": "local-user",
+  "durationSeconds": 59.8,
+  "difficulty": "3",
+  "resource": "aws_dynamodb_table",
+  "prompt": "Create a DynamoDB with point-in-time recovery enabled.",
+  "intent": "Has one \"aws_dynamodb_table\" resource\nwith one \"point_in_time_recovery\"\nwith one \"enabled\" = true",
+  "referenceOutput": "terraform {\nrequired_providers {\naws = {\nsource = \"hashicorp/aws\"\nversion = \"~> 5.0\"\n}\n}\n}\n\n# Configure the AWS Provider\nprovider \"aws\" {\nregion = \"us-east-1\"\n}\n\nresource \"aws_dynamodb_table\" \"example\" {\nname = \"your-dynamodb-table-name\"\nbilling_mode = \"PAY_PER_REQUEST\" # Or \"PROVISIONED\" if you prefer provisioned capacity\nhash_key = \"id\"\nattribute {\nname = \"id\"\ntype = \"S\"\n}\n\npoint_in_time_recovery {\nenabled = true # Set to true to enable point-in-time recovery\n}\n\n}",
+  "bleuScore": 0.257602,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0223-llm-07a7a49574fe",
+  "generatedSourceFiles": [
+    "generated-source/row-0223-llm-07a7a49574fe/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_dynamodb_table": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS DynamoDB table with point-in-time recovery enabled. The table uses on-demand billing mode and defines a simple string partition key named `id`.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the DynamoDB table will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"table_name\" {\n  description = \"Name of the DynamoDB table.\"\n  type        = string\n  default     = \"example-point-in-time-recovery-table\"\n}\n\nresource \"aws_dynamodb_table\" \"pitr_table\" {\n  name         = var.table_name\n  billing_mode = \"PAY_PER_REQUEST\"\n\n  hash_key = \"id\"\n\n  attribute {\n    name = \"id\"\n    type = \"S\"\n  }\n\n  point_in_time_recovery {\n    enabled = true\n  }\n\n  tags = {\n    Name        = var.table_name\n    Environment = \"dev\"\n    ManagedBy   = \"terraform\"\n  }\n}\n\noutput \"dynamodb_table_name\" {\n  description = \"Name of the DynamoDB table.\"\n  value       = aws_dynamodb_table.pitr_table.name\n}\n\noutput \"dynamodb_table_arn\" {\n  descrip",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0223-llm-07a7a49574fe.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a DynamoDB with point-in-time recovery enabled.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS DynamoDB table with point-in-time recovery enabled. The table uses on-demand billing mode and defines a simple string partition key named `id`.",
+  "failure_category": "",
+  "failure_reason": ""
+}

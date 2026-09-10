@@ -1,0 +1,97 @@
+{
+  "index": 153,
+  "rowId": "153",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-becd9bac07f8",
+  "userId": "local-user",
+  "durationSeconds": 99.01,
+  "difficulty": "4",
+  "resource": "aws_dynamodb_table, aws_iam_role, aws_lambda_event_source_mapping, aws_lambda_function, archive_file, aws_iam_policy_document",
+  "prompt": "Create a Lambda event source mapping from a DynamoDB",
+  "intent": "Needs to have an aws_lambda_function defined (IAM role, zip). Create a DynamoDB table. Create lambda source event from an event source from DynamoDB table and function name.",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_dynamodb_table\" \"example_table\" {\n  name           = \"example_table\"\n  hash_key       = \"id\"\n  read_capacity  = 10\n  write_capacity = 10\n\n  attribute {\n    name = \"id\"\n    type = \"S\"\n  }\n\n  # Enable DynamoDB Streams\n  stream_enabled   = true\n  stream_view_type = \"NEW_AND_OLD_IMAGES\" # Choose as per your requirement\n\n  # Other configurations for your table\n}\n\ndata \"aws_iam_policy_document\" \"assume_role\" {\n  statement {\n    effect = \"Allow\"\n\n    principals {\n      type        = \"Service\"\n      identifiers = [\"lambda.amazonaws.com\"]\n    }\n\n    actions = [\"sts:AssumeRole\"]\n  }\n}\n\nresource \"aws_iam_role\" \"iam_for_lambda\" {\n  name               = \"iam_for_lambda\"\n  assume_role_policy = data.aws_iam_policy_document.assume_role.json\n}\n\nresource \"aws_iam_role_policy\" \"dynamodb_lambda_policy\" {\n  name   = \"lambda-dynamodb-policy\"\n  role   = aws_iam_role.iam_for_lambda.id\n  policy = <<EOF\n{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n        \"Sid\": \"AllowLambdaFunctionToCreateLogs\",\n        \"Action\": [ \n            \"logs:*\" \n        ],\n        \"Effect\": \"Allow\",\n        \"Resource\": [ \n            \"arn:aws:logs:*:*:*\" \n        ]\n    },\n    {\n        \"Sid\": \"AllowLambdaFunctionInvocation\",\n        \"Effect\": \"Allow\",\n        \"Action\": [\n            \"lambda:InvokeFunction\"\n        ],\n        \"Resource\": [\n            \"${aws_dynamodb_table.example_table.arn}/stream/*\"\n        ]\n    },\n    {\n        \"Sid\": \"APIAccessForDynamoDBStreams\",\n        \"Effect\": \"Allow\",\n        \"Action\": [\n            \"dynamodb:GetRecords\",\n            \"dynamodb:GetShardIterator\",\n            \"dynamodb:DescribeStream\",\n            \"dynamodb:ListStreams\"\n        ],\n        \"Resource\": \"${aws_dynamodb_table.example_table.arn}/stream/*\"\n    }\n  ]\n}\nEOF\n}\n\ndata \"archive_file\" \"lambda_zip_file\" {\n  type        = \"zip\"\n  source_file = \"./supplement/app.js\"\n  output_path = \"./supplement/app.zip\"\n}\n\nresource \"aws_lambda_function\" \"example_lambda\" {\n  filename      = data.archive_file.lambda_zip_file.output_path\n  function_name = \"lambda_app_function\"\n  source_code_hash = data.archive_file.lambda_zip_file.output_base64sha256\n  role          = aws_iam_role.iam_for_lambda.arn\n  handler       = \"app.handler\"\n  runtime       = \"nodejs18.x\"\n}\n\nresource \"aws_lambda_event_source_mapping\" \"dynamodb_lambda_mapping\" {\n  event_source_arn  = aws_dynamodb_table.example_table.stream_arn\n  function_name     = aws_lambda_function.example_lambda.arn\n  starting_position = \"LATEST\" # or \"TRIM_HORIZON\" as per your use case\n\n}\n\noutput \"dynamodb_arn\" {\n  value = aws_dynamodb_table.example_table.arn\n  description = \"The ARN of the DynamoDB table\"\n}\n\noutput \"lambda_processing_arn\" {\n  value = aws_lambda_function.example_lambda.arn\n  description = \"The ARN of the Lambda function processing the DynamoDB stream\"\n}",
+  "bleuScore": 0.14465,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0153-llm-becd9bac07f8",
+  "generatedSourceFiles": [
+    "generated-source/row-0153-llm-becd9bac07f8/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": false,
+    "missingPathModuleFiles": [
+      "lambda_function.zip"
+    ],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "lambda_function.zip",
+        "line": "",
+        "finding": "missing_path_module_file"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": [
+      "lambda_function.zip"
+    ]
+  },
+  "requiredMarkers": {
+    "aws_dynamodb_table": true,
+    "aws_iam_role": true,
+    "aws_lambda_event_source_mapping": true,
+    "aws_lambda_function": true,
+    "aws_iam_policy_document": false
+  },
+  "missingMarkers": [
+    "aws_iam_policy_document"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates a complete AWS setup for a Lambda event source mapping from a DynamoDB stream. It defines:\n\n- A DynamoDB table with DynamoDB Streams enabled\n- An AWS Lambda function\n- IAM roles and permissions for Lambda to read from DynamoDB Streams and write logs to CloudWatch\n- A Lambda event source mapping that connects the DynamoDB stream to the Lambda function\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    archive = {\n      source  = \"hashicorp/archive\"\n      version = \">= 2.4\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"lambda_function_name\" {\n  description = \"Name of the Lambda function.\"\n  type        = string\n  default     = \"dynamodb-stream-processor\"\n}\n\nvariable \"dynamodb_table_name\" {\n  description = \"Name of the DynamoDB table.\"\n  type        = string\n  default     = \"lambda-event-source-demo-table\"\n}\n\ndata \"archive_file\" \"lambda_zip\" {\n  type        = \"zip\"\n  output_path = \"${p",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0153-llm-becd9bac07f8.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a Lambda event source mapping from a DynamoDB",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a complete AWS setup for a Lambda event source mapping from a DynamoDB stream. It defines:\n\n- A DynamoDB table with DynamoDB Streams enabled\n- An AWS Lambda function\n- IAM roles and permissions for Lambda to read from DynamoDB Streams and write logs to CloudWatch\n- A Lambda event source mapping that connects the DynamoDB stream to the Lambda function",
+  "failure_category": "",
+  "failure_reason": ""
+}

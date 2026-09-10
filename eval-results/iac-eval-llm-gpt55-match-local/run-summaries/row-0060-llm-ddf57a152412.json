@@ -1,0 +1,111 @@
+{
+  "index": 60,
+  "rowId": "60",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-ddf57a152412",
+  "userId": "local-user",
+  "durationSeconds": 142.89,
+  "difficulty": "4",
+  "resource": "aws_iam_role, aws_kinesis_firehose_delivery_stream, aws_redshift_cluster, aws_s3_bucket, aws_iam_policy_document",
+  "prompt": "Generate a Kinesis Firehose Delivery Stream with a Redshift cluster destination",
+  "intent": "Has one \"aws_iam_role\" resource, one \"aws_s3_bucket\" resource, one \"aws_redshift_cluster\" resource, and one \"aws_kinesis_firehose_delivery_stream\" resource with a \"redshift_configuration\" block",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_iam_role\" \"firehose_role\" {\n  name = \"firehose_redshift_role\"\n\n  assume_role_policy = jsonencode({\n    Version = \"2012-10-17\",\n    Statement = [\n      {\n        Effect = \"Allow\",\n        Principal = {\n          Service = \"firehose.amazonaws.com\"\n        },\n        Action = \"sts:AssumeRole\"\n      }\n    ]\n  })\n}\n\nresource \"aws_iam_policy\" \"firehose_policy\" {\n  name        = \"firehose_redshift_s3_policy\"\n  description = \"Policy for Kinesis Firehose to access S3 and Redshift\"\n\n  policy = jsonencode({\n    Version = \"2012-10-17\",\n    Statement = [\n      {\n        Effect = \"Allow\",\n        Action = [\n          \"s3:PutObject\",\n          \"s3:PutObjectAcl\",\n          \"s3:GetBucketLocation\",\n          \"s3:ListBucket\",\n          \"s3:GetObject\"\n        ],\n        Resource = [\n          aws_s3_bucket.januarysecond.arn,\n          \"${aws_s3_bucket.januarysecond.arn}/*\"\n        ]\n      },\n      {\n        Effect = \"Allow\",\n        Action = [\n          \"redshift:DescribeClusters\",\n          \"redshift:GetClusterCredentials\",\n          \"redshift:CopyFromS3\",\n          \"redshift:CreateClusterUser\"\n        ],\n        Resource = aws_redshift_cluster.test_cluster.arn\n      },\n      {\n        Effect = \"Allow\",\n        Action = [\n          \"kms:Decrypt\",\n          \"kms:GenerateDataKey\"\n        ],\n        Resource = \"*\"\n      }\n    ]\n  })\n}\n\nresource \"aws_iam_role_policy_attachment\" \"firehose_policy_attach\" {\n  role       = aws_iam_role.firehose_role.name\n  policy_arn = aws_iam_policy.firehose_policy.arn\n}\n\nresource \"aws_s3_bucket\" \"januarysecond\" {\n  bucket = \"januarysecond\"\n}\n\nresource \"aws_redshift_cluster\" \"test_cluster\" {\n  cluster_identifier = \"tf-redshift-cluster\"\n  database_name      = \"test\"\n  master_username    = \"testuser\"\n  master_password    = \"T3stPass\"\n  node_type          = \"ra3.xlplus\"\n  cluster_type       = \"single-node\"\n}\n\nresource \"aws_kinesis_firehose_delivery_stream\" \"test_stream\" {\n  name        = \"terraform-kinesis-firehose-test-stream\"\n  destination = \"redshift\"\n\n  redshift_configuration {\n    role_arn           = aws_iam_role.firehose_role.arn\n    cluster_jdbcurl    = \"jdbc:redshift://${aws_redshift_cluster.test_cluster.endpoint}/${aws_redshift_cluster.test_cluster.database_name}\"\n    username           = \"testuser\"\n    password           = \"T3stPass\"\n    data_table_name    = \"test-table\"\n    copy_options       = \"delimiter '|'\" # the default delimiter\n    data_table_columns = \"test-col\"\n    s3_backup_mode     = \"Disabled\"\n\n    s3_configuration {\n      role_arn           = aws_iam_role.firehose_role.arn\n      bucket_arn         = aws_s3_bucket.januarysecond.arn\n      buffering_size     = 10\n      buffering_interval = 400\n      compression_format = \"GZIP\"\n    }\n  }\n}",
+  "bleuScore": 0.087012,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-1/generated-source/row-0060-llm-ddf57a152412",
+  "generatedSourceFiles": [
+    "generated-source/row-0060-llm-ddf57a152412/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "155",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "163",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "187",
+        "finding": "public_rds_instance"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "188",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_valid_bucket\": true, \"has_valid_firehose_delivery_stream\": true, \"has_valid_resources\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_iam_role": true,
+    "aws_kinesis_firehose_delivery_stream": true,
+    "aws_redshift_cluster": true,
+    "aws_s3_bucket": true,
+    "aws_iam_policy_document": false
+  },
+  "missingMarkers": [
+    "aws_iam_policy_document"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "The following Terraform program provisions a complete AWS Kinesis Data Firehose delivery pipeline that writes records into an Amazon Redshift cluster.\n\nIt creates:\n\n- A VPC with public subnets\n- A Redshift subnet group and security group\n- A single-node Amazon Redshift cluster\n- An S3 bucket for Firehose intermediate storage and backup\n- IAM role and policy for Firehose access to S3, CloudWatch Logs, and Redshift\n- CloudWatch log group and streams\n- A Kinesis Firehose Delivery Stream configured with a Redshift destination\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  type        = string\n  description = \"AWS region to deploy resources into.\"\n  default     = \"us-east-1\"\n}\n\nvariable \"redshift_database_name\" {\n  type        = string\n  description = \"Name of the initial Redshift database.\"\n  default     = \"analyticsdb\"\n}\n\nvariable \"redshift_master_username\" {\n  type        = string\n  description = \"Master username for the Red",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-1/run-summaries/row-0060-llm-ddf57a152412.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Generate a Kinesis Firehose Delivery Stream with a Redshift cluster destination",
+  "promptStrategy": "default",
+  "answer": "The following Terraform program provisions a complete AWS Kinesis Data Firehose delivery pipeline that writes records into an Amazon Redshift cluster.\n\nIt creates:\n\n- A VPC with public subnets\n- A Redshift subnet group and security group\n- A single-node Amazon Redshift cluster\n- An S3 bucket for Firehose intermediate storage and backup\n- IAM role and policy for Firehose access to S3, CloudWatch Logs, and Redshift\n- CloudWatch log group and streams\n- A Kinesis Firehose Delivery Stream configured with a Redshift destination",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_valid_bucket\": true, \"has_valid_firehose_delivery_stream\": true, \"has_valid_resources\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

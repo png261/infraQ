@@ -1,0 +1,83 @@
+{
+  "index": 75,
+  "rowId": "75",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-cf9fffe6b437",
+  "userId": "local-user",
+  "durationSeconds": 70.56,
+  "difficulty": "5",
+  "resource": "aws_iam_role, aws_iam_role_policy, aws_kendra_data_source, aws_kendra_index",
+  "prompt": "Generate a Kendra data source resource With URL Exclusion and Inclusion Patterns",
+  "intent": "Has one \"aws_iam_role\" resource, one \"aws_kendra_index\" resource, and one \"aws_kendra_data_source\" resource with \"url_exclusion_patterns\" and \"url_inclusion_patterns\"",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_iam_role\" \"role\" {\n  name = \"Kendra-Role\"\n  assume_role_policy = <<EOF\n{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Action\": \"sts:AssumeRole\",\n      \"Principal\": {\n        \"Service\": \"kendra.amazonaws.com\"\n      },\n      \"Effect\": \"Allow\",\n      \"Sid\": \"\"\n    }\n  ]\n}\nEOF\n}\n\nresource \"aws_iam_role_policy\" \"policy\" {\n  name = \"Kendra-Policy\"\n  role = aws_iam_role.role.id\n\n  policy = <<EOF\n{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Action\": [\n        \"s3:GetObject\",\n        \"s3:ListBucket\"\n      ],\n      \"Resource\": \"*\"\n    }\n  ]\n}\nEOF\n}\n\nresource \"aws_kendra_index\" \"example\" {\n  name        = \"example\"\n  description = \"example\"\n  edition     = \"DEVELOPER_EDITION\"\n  role_arn    = aws_iam_role.role.arn\n}\n\nresource \"aws_kendra_data_source\" \"example\" {\n  index_id = aws_kendra_index.example.id\n  name     = \"example\"\n  type     = \"WEBCRAWLER\"\n  role_arn = aws_iam_role.role.arn\n\n  configuration {\n    web_crawler_configuration {\n      url_exclusion_patterns = [\"example\"]\n      url_inclusion_patterns = [\"hello\"]\n\n      urls {\n        seed_url_configuration {\n          seed_urls = [\n            \"https://docs.aws.amazon.com/codedeploy/latest/userguide/getting-started-create-service-role.html\"\n          ]\n        }\n      }\n    }\n  }\n}",
+  "bleuScore": 0.072682,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-0/generated-source/row-0075-llm-cf9fffe6b437",
+  "generatedSourceFiles": [
+    "generated-source/row-0075-llm-cf9fffe6b437/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: Unsupported argument\n\n  on main.tf line 221, in resource \"aws_kendra_data_source\" \"webcrawler\":\n 221:   configuration = jsonencode({\n\nAn argument named \"configuration\" is not expected here. Did you mean to\ndefine a block of type \"configuration\"?\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_iam_role": true,
+    "aws_iam_role_policy": true,
+    "aws_kendra_data_source": true,
+    "aws_kendra_index": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an Amazon Kendra index and a Kendra `WEBCRAWLER` data source. The data source crawls a seed URL and applies both URL inclusion and exclusion regex patterns to control which pages are indexed. IAM roles and policies are included for Kendra index operation and data source ingestion.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nvariable \"kendra_index_name\" {\n  description = \"Name of the Amazon Kendra index.\"\n  type        = string\n  default     = \"example-kendra-index\"\n}\n\nvariable \"kendra_data_source_name\" {\n  description = \"Name of the Amazon Kendra web crawler data source.\"\n  type        = string\n  default     = \"example-webcrawler-data-source\"\n}\n\nvariable \"seed_urls\" {\n  description = \"Seed URLs for the Kendra web crawler.\"\n  type        = list(string)\n  default = [\n    \"https://docs.aws.amazon.com/kendra/latest/dg/\"\n  ]\n}\n\nvariable \"url_inclusion_patterns\" {\n  description = \"Regex patterns for URLs that should be included by the crawler.\"\n  type        = list(string)\n  default = [\n    \"https",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-0/run-summaries/row-0075-llm-cf9fffe6b437.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Generate a Kendra data source resource With URL Exclusion and Inclusion Patterns",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an Amazon Kendra index and a Kendra `WEBCRAWLER` data source. The data source crawls a seed URL and applies both URL inclusion and exclusion regex patterns to control which pages are indexed. IAM roles and policies are included for Kendra index operation and data source ingestion.",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: Unsupported argument on main.tf line 221, in resource \"aws_kendra_data_source\" \"webcrawler\": 221: configuration = jsonencode({ An argument named \"configuration\" is not expected here. Did you mean to define a block of type \"configuration\"?"
+}

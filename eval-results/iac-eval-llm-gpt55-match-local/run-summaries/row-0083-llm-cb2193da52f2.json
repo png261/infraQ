@@ -1,0 +1,81 @@
+{
+  "index": 83,
+  "rowId": "83",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-cb2193da52f2",
+  "userId": "local-user",
+  "durationSeconds": 53.39,
+  "difficulty": "3",
+  "resource": "aws_cloudwatch_metric_alarm, aws_route53_health_check",
+  "prompt": "Configure a health check with route 53 that uses a cloudwatch metric alarm called \"foobar\". Set the metric_name to \"CPUUtilization\", namespace to \"AWS/EC2\", statistic to \"Average\", period to \"120\", and comparison_operator to \"GreaterThanOrEqualToThreshold\". If the health check doesn't have enough info about the alarm, the status should be \"Healthy\". All resources should be provisioned in \"us-east-1\"",
+  "intent": "Has one \"aws_cloudwatch_metric_alarm\"\" resources\n    with \"alarm_name\"\n    with \"comparison_operator\" set to \"GreaterThanOrEqualToThreshold\"\n    with \"evaluation_periods\"\n    with \"namespace\" set to \"AWS/EC2\"\n    with \"period\" set to \"120\"\n    with \"statistic\" set to \"Average\"\n    with \"metric_name\" set to \"CPUUtilization\"\n    with \"threshold\"\n\nHas one \"aws_route53_health_check\" resources\n    with \"cloudwatch_alarm_name\" referencing the \"aws_cloudwatch_metric_alarm\" resource\n    with \"cloudwatch_alarm_region\" \n    with \"insufficient_data_health_status\" set to \"Healthy\"\n    with \"type\" equal to \"CLOUDWATCH\"",
+  "referenceOutput": "provider \"aws\" {\n  region = \"us-east-1\" \n}\n\nresource \"aws_cloudwatch_metric_alarm\" \"foobar\" {\n  alarm_name          = \"terraform-test-foobar5\"\n  comparison_operator = \"GreaterThanOrEqualToThreshold\"\n  evaluation_periods  = \"2\"\n  metric_name         = \"CPUUtilization\"\n  namespace           = \"AWS/EC2\"\n  period              = \"120\"\n  statistic           = \"Average\"\n  threshold           = \"80\"\n  alarm_description   = \"This metric monitors ec2 cpu utilization\"\n}\n\nresource \"aws_route53_health_check\" \"foo\" {\n  type                            = \"CLOUDWATCH_METRIC\"\n  cloudwatch_alarm_name           = aws_cloudwatch_metric_alarm.foobar.alarm_name\n  cloudwatch_alarm_region         = \"us-east-1\"\n  insufficient_data_health_status = \"Healthy\"\n}",
+  "bleuScore": 0.39598,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0083-llm-cb2193da52f2",
+  "generatedSourceFiles": [
+    "generated-source/row-0083-llm-cb2193da52f2/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_configuration_valid\": false, \"is_valid_cloud_watch_alarm\": false, \"is_valid_r53_health_check\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_cloudwatch_metric_alarm": true,
+    "aws_route53_health_check": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration provisions an AWS CloudWatch metric alarm named `foobar` in `us-east-1` and creates an Amazon Route 53 health check that monitors that CloudWatch alarm. The alarm tracks the EC2 `CPUUtilization` metric in the `AWS/EC2` namespace using the `Average` statistic over a `120` second period. The Route 53 health check is configured so that if there is insufficient alarm data, the health check status is treated as `Healthy`.\n\n```hcl\nterraform {\n  required_version = \">= 1.0.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_cloudwatch_metric_alarm\" \"foobar\" {\n  alarm_name          = \"foobar\"\n  alarm_description   = \"CloudWatch alarm for EC2 CPU utilization used by Route 53 health check.\"\n  comparison_operator = \"GreaterThanOrEqualToThreshold\"\n  evaluation_periods  = 1\n  metric_name         = \"CPUUtilization\"\n  namespace           = \"AWS/EC2\"\n  period              = 120\n  statistic           = \"Average\"\n  threshold           = 80\n\n  treat_missing_data = \"missing\"\n}\n\nresource \"aws_route53_health_check\" \"foobar_alarm_health_check\" {\n  type = \"CLOUDWATC",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0083-llm-cb2193da52f2.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Configure a health check with route 53 that uses a cloudwatch metric alarm called \"foobar\". Set the metric_name to \"CPUUtilization\", namespace to \"AWS/EC2\", statistic to \"Average\", period to \"120\", and comparison_operator to \"GreaterThanOrEqualToThreshold\". If the health check doesn't have enough info about the alarm, the status should be \"Healthy\". All resources should be provisioned in \"us-east-1\"",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration provisions an AWS CloudWatch metric alarm named `foobar` in `us-east-1` and creates an Amazon Route 53 health check that monitors that CloudWatch alarm. The alarm tracks the EC2 `CPUUtilization` metric in the `AWS/EC2` namespace using the `Average` statistic over a `120` second period. The Route 53 health check is configured so that if there is insufficient alarm data, the health check status is treated as `Healthy`.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_configuration_valid\": false, \"is_valid_cloud_watch_alarm\": false, \"is_valid_r53_health_check\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

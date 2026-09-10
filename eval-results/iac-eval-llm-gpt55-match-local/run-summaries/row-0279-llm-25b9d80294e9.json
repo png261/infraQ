@@ -1,0 +1,81 @@
+{
+  "index": 279,
+  "rowId": "279",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-25b9d80294e9",
+  "userId": "local-user",
+  "durationSeconds": 88.53,
+  "difficulty": "2",
+  "resource": "aws_s3_bucket, aws_s3_bucket_object_lock_configuration",
+  "prompt": "Create a S3 bucket with bucket name = \"mybucket\" and object lock enabled. Then, add an object lock configuration resource for the new bucket.",
+  "intent": "Has an aws_s3_bucket resource\nwith object_lock_enabled = true\n\nHas an aws_s3_object_lock resource\nwith bucket = bucket id OR name\nand a correct rule",
+  "referenceOutput": "resource \"aws_s3_bucket\" \"example\" {\n  bucket = \"mybucket\"\n\n  object_lock_enabled = true\n}\n\nresource \"aws_s3_bucket_object_lock_configuration\" \"example\" {\n  bucket = aws_s3_bucket.example.id\n\n  rule {\n    default_retention {\n      mode = \"COMPLIANCE\"\n      days = 5\n    }\n  }\n}",
+  "bleuScore": 0.201265,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0279-llm-25b9d80294e9",
+  "generatedSourceFiles": [
+    "generated-source/row-0279-llm-25b9d80294e9/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_s3_bucket": true,
+    "aws_s3_bucket_object_lock_configuration": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS S3 bucket named `mybucket` with Object Lock enabled at bucket creation time. It also enables bucket versioning, which is required for S3 Object Lock, and attaches an Object Lock configuration with a default retention rule.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_s3_bucket\" \"locked_bucket\" {\n  bucket              = \"mybucket\"\n  object_lock_enabled = true\n}\n\nresource \"aws_s3_bucket_versioning\" \"locked_bucket_versioning\" {\n  bucket = aws_s3_bucket.locked_bucket.id\n\n  versioning_configuration {\n    status = \"Enabled\"\n  }\n}\n\nresource \"aws_s3_bucket_object_lock_configuration\" \"locked_bucket_object_lock\" {\n  bucket = aws_s3_bucket.locked_bucket.id\n\n  object_lock_enabled = \"Enabled\"\n\n  rule {\n    default_retention {\n      mode = \"GOVERNANCE\"\n      days = 30\n    }\n  }\n\n  depends_on = [\n    aws_s3_bucket_versioning.locked_bucket_versioning\n  ]\n}\n```",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0279-llm-25b9d80294e9.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a S3 bucket with bucket name = \"mybucket\" and object lock enabled. Then, add an object lock configuration resource for the new bucket.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS S3 bucket named `mybucket` with Object Lock enabled at bucket creation time. It also enables bucket versioning, which is required for S3 Object Lock, and attaches an Object Lock configuration with a default retention rule.",
+  "failure_category": "",
+  "failure_reason": ""
+}

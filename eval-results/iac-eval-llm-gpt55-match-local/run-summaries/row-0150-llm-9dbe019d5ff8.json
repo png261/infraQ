@@ -1,0 +1,104 @@
+{
+  "index": 150,
+  "rowId": "150",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-9dbe019d5ff8",
+  "userId": "local-user",
+  "durationSeconds": 63.05,
+  "difficulty": "3",
+  "resource": "aws_iam_role, aws_lambda_function, aws_lambda_function_url, archive_file, aws_iam_policy_document",
+  "prompt": "Create a Lambda function URL resource for an aws_lambda_function called \"example_lambda",
+  "intent": "Needs an aws_lambda_function defined(IAM role, zip). aws_lambda_function_url must have an authorization and the lambda function",
+  "referenceOutput": "data \"aws_iam_policy_document\" \"assume_role\" {\n  statement {\n    effect = \"Allow\"\n\n    principals {\n      type        = \"Service\"\n      identifiers = [\"lambda.amazonaws.com\"]\n    }\n\n    actions = [\"sts:AssumeRole\"]\n  }\n}\n\nresource \"aws_iam_role\" \"iam_for_lambda\" {\n  name               = \"iam_for_lambda\"\n  assume_role_policy = data.aws_iam_policy_document.assume_role.json\n}\n\ndata \"archive_file\" \"lambda\" {\n  type        = \"zip\"\n  source_file = \"lambda.js\"\n  output_path = \"lambda_function_payload.zip\"\n}\n\nresource \"aws_lambda_function\" \"example_lambda\" {\n  filename      = \"lambda_function_payload.zip\"\n  function_name = \"lambda_function_name\"\n  role          = aws_iam_role.iam_for_lambda.arn\n  handler       = \"index.test\"\n\n  runtime = \"nodejs18.x\"\n}\n\nresource \"aws_lambda_function_url\" \"test_latest\" {\n  function_name      = aws_lambda_function.example_lambda.function_name\n  authorization_type = \"NONE\"\n}",
+  "bleuScore": 0.10055,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0150-llm-9dbe019d5ff8",
+  "generatedSourceFiles": [
+    "generated-source/row-0150-llm-9dbe019d5ff8/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": false,
+    "missingPathModuleFiles": [
+      "example_lambda.zip",
+      "lambda_function.py"
+    ],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "example_lambda.zip",
+        "line": "",
+        "finding": "missing_path_module_file"
+      },
+      {
+        "severity": "high",
+        "file": "lambda_function.py",
+        "line": "",
+        "finding": "missing_path_module_file"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"main\": {\"allow\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": [
+      "example_lambda.zip",
+      "lambda_function.py"
+    ]
+  },
+  "requiredMarkers": {
+    "aws_iam_role": true,
+    "aws_lambda_function": true,
+    "aws_lambda_function_url": true,
+    "aws_iam_policy_document": false
+  },
+  "missingMarkers": [
+    "aws_iam_policy_document"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "Description: This Terraform configuration creates a deployable AWS Lambda function named `example_lambda`, its required IAM execution role, a ZIP deployment package generated from inline Python code, a Lambda Function URL with public unauthenticated access, and the required Lambda permission allowing invocation through the Function URL.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    archive = {\n      source  = \"hashicorp/archive\"\n      version = \">= 2.4\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nlocals {\n  lambda_source = <<-PY\n    import json\n\n    def handler(event, context):\n        return {\n            \"statusCode\": 200,\n            \"headers\": {\n                \"Content-Type\": \"application/json\"\n            },\n            \"body\": json.dumps({\n                \"message\": \"Hello from example_lambda!\"\n            })\n        }\n  PY\n}\n\nresource \"local_file\" \"lambda_python_file\" {\n  filename = \"${path.module}/lambda_function.py\"\n  content  = local.lambda_source\n}\n\ndata \"archive_file\" \"lambda_zip\" {\n  type        = \"zip\"\n  source_file = local_file.lambda_python_file",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0150-llm-9dbe019d5ff8.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a Lambda function URL resource for an aws_lambda_function called \"example_lambda",
+  "promptStrategy": "default",
+  "answer": "Description: This Terraform configuration creates a deployable AWS Lambda function named `example_lambda`, its required IAM execution role, a ZIP deployment package generated from inline Python code, a Lambda Function URL with public unauthenticated access, and the required Lambda permission allowing invocation through the Function URL.",
+  "failure_category": "artifact_incomplete",
+  "failure_reason": "Missing local files: example_lambda.zip, lambda_function.py"
+}

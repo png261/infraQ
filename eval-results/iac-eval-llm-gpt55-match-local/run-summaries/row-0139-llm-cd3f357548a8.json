@@ -1,0 +1,87 @@
+{
+  "index": 139,
+  "rowId": "139",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-cd3f357548a8",
+  "userId": "local-user",
+  "durationSeconds": 41.36,
+  "difficulty": "1",
+  "resource": "aws_redshift_cluster",
+  "prompt": "Create a RedShift cluster resource with a single node",
+  "intent": "Has an aws_redshift_cluster resource and check cluster_type is \"single_node\" or number of nodes is 1",
+  "referenceOutput": "resource \"aws_redshift_cluster\" \"example\" {\n  cluster_identifier = \"tf-redshift-cluster\"\n  database_name      = \"mydb\"\n  master_username    = \"exampleuser\"\n  master_password    = \"Mustbe8characters\"\n  node_type          = \"dc2.large\"\n  cluster_type       = \"single-node\"\n}",
+  "bleuScore": 0.016919,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0139-llm-cd3f357548a8",
+  "generatedSourceFiles": [
+    "generated-source/row-0139-llm-cd3f357548a8/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "65",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_redshift_cluster": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "Creates a single-node Amazon Redshift cluster in AWS using Terraform. The configuration includes the AWS provider, default variables for region and credentials, and a deployable `aws_redshift_cluster` resource.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Redshift cluster will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"redshift_cluster_identifier\" {\n  description = \"Identifier for the Redshift cluster.\"\n  type        = string\n  default     = \"single-node-redshift-cluster\"\n}\n\nvariable \"redshift_database_name\" {\n  description = \"Initial database name for the Redshift cluster.\"\n  type        = string\n  default     = \"dev\"\n}\n\nvariable \"redshift_master_username\" {\n  description = \"Master username for the Redshift cluster.\"\n  type        = string\n  default     = \"adminuser\"\n}\n\nvariable \"redshift_master_password\" {\n  description = \"Master password for the Redshift cluster.\"\n  type        = string\n  sensitive   = true\n  default     = \"Chan",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0139-llm-cd3f357548a8.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a RedShift cluster resource with a single node",
+  "promptStrategy": "default",
+  "answer": "Creates a single-node Amazon Redshift cluster in AWS using Terraform. The configuration includes the AWS provider, default variables for region and credentials, and a deployable `aws_redshift_cluster` resource.",
+  "failure_category": "",
+  "failure_reason": ""
+}

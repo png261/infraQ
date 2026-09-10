@@ -1,0 +1,83 @@
+{
+  "index": 74,
+  "rowId": "74",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-bddca786e5f1",
+  "userId": "local-user",
+  "durationSeconds": 101.78,
+  "difficulty": "5",
+  "resource": "aws_iam_role, aws_iam_role_policy, aws_kendra_data_source, aws_kendra_index",
+  "prompt": "Generate a Kendra data source resource with a proxy configuration",
+  "intent": "Has one \"aws_iam_role\" resource, one \"aws_kendra_index\" resource, and one \"aws_kendra_data_source\" resource with a \"proxy_configuration\" block",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_iam_role\" \"role\" {\n  name = \"Kendra-Role\"\n  assume_role_policy = <<EOF\n{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Action\": \"sts:AssumeRole\",\n      \"Principal\": {\n        \"Service\": \"kendra.amazonaws.com\"\n      },\n      \"Effect\": \"Allow\",\n      \"Sid\": \"\"\n    }\n  ]\n}\nEOF\n}\n\nresource \"aws_iam_role_policy\" \"policy\" {\n  name = \"Kendra-Policy\"\n  role = aws_iam_role.role.id\n\n  policy = <<EOF\n{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Action\": [\n        \"s3:GetObject\",\n        \"s3:ListBucket\"\n      ],\n      \"Resource\": \"*\"\n    }\n  ]\n}\nEOF\n}\n\nresource \"aws_kendra_index\" \"example\" {\n  name        = \"example\"\n  description = \"example\"\n  edition     = \"DEVELOPER_EDITION\"\n  role_arn    = aws_iam_role.role.arn\n}\n\nresource \"aws_kendra_data_source\" \"example\" {\n  index_id = aws_kendra_index.example.id\n  name     = \"example\"\n  type     = \"WEBCRAWLER\"\n  role_arn = aws_iam_role.role.arn\n\n  configuration {\n    web_crawler_configuration {\n      proxy_configuration {\n        host        = \"a.example.com\"\n        port        = \"443\"\n      }\n\n      urls {\n        seed_url_configuration {\n          seed_urls = [\n            \"https://docs.aws.amazon.com/codedeploy/latest/userguide/getting-started-create-service-role.html\"\n          ]\n        }\n      }\n    }\n  }\n}",
+  "bleuScore": 0.082771,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-3/generated-source/row-0074-llm-bddca786e5f1",
+  "generatedSourceFiles": [
+    "generated-source/row-0074-llm-bddca786e5f1/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_iam_role": true,
+    "aws_iam_role_policy": true,
+    "aws_kendra_data_source": true,
+    "aws_kendra_index": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "The Terraform configuration below creates an AWS Kendra index and a Kendra `WEBCRAWLER` data source that uses a proxy configuration. It also creates the required IAM roles and policies, plus a Secrets Manager secret containing proxy credentials.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"kendra_index_name\" {\n  description = \"Name of the Amazon Kendra index.\"\n  type        = string\n  default     = \"example-kendra-index\"\n}\n\nvariable \"kendra_data_source_name\" {\n  description = \"Name of the Amazon Kendra data source.\"\n  type        = string\n  default     = \"example-kendra-webcrawler-data-source\"\n}\n\nvariable \"seed_url\" {\n  description = \"Seed URL for the Kendra web crawler data source.\"\n  type        = string\n  default     = \"https://example.com\"\n}\n\nvariable \"proxy_host\" {\n  description = \"Proxy host used by the Kendra web crawler.\"\n  type        = string\n  default     = \"proxy.exa",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-3/run-summaries/row-0074-llm-bddca786e5f1.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Generate a Kendra data source resource with a proxy configuration",
+  "promptStrategy": "default",
+  "answer": "The Terraform configuration below creates an AWS Kendra index and a Kendra `WEBCRAWLER` data source that uses a proxy configuration. It also creates the required IAM roles and policies, plus a Secrets Manager secret containing proxy credentials.",
+  "failure_category": "",
+  "failure_reason": ""
+}

@@ -1,0 +1,80 @@
+{
+  "index": 266,
+  "rowId": "266",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-bbf35c0b69e0",
+  "userId": "local-user",
+  "durationSeconds": 52.09,
+  "difficulty": "1",
+  "resource": "aws_iam_virtual_mfa_device",
+  "prompt": "Create a basic AWS IAM Virtual MFA Device resource",
+  "intent": "Has one \"aws_iam_virtual_mfa_device\" resource\nwith one \"virtual_mfa_device_name\" with any string",
+  "referenceOutput": "resource \"aws_iam_virtual_mfa_device\" \"example\" {\n  virtual_mfa_device_name = \"example\"\n}",
+  "bleuScore": 0.014374,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0266-llm-bbf35c0b69e0",
+  "generatedSourceFiles": [
+    "generated-source/row-0266-llm-bbf35c0b69e0/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_iam_virtual_mfa_device": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a basic AWS IAM Virtual MFA Device using the AWS provider. It defines a default AWS region and provisions a named virtual MFA device that can later be associated with an IAM user.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region used for the provider configuration.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"virtual_mfa_device_name\" {\n  description = \"The name of the IAM virtual MFA device.\"\n  type        = string\n  default     = \"basic-virtual-mfa-device\"\n}\n\nresource \"aws_iam_virtual_mfa_device\" \"basic\" {\n  virtual_mfa_device_name = var.virtual_mfa_device_name\n\n  tags = {\n    Name        = var.virtual_mfa_device_name\n    Environment = \"basic\"\n    ManagedBy   = \"Terraform\"\n  }\n}\n\noutput \"virtual_mfa_device_arn\" {\n  description = \"The ARN of the IAM virtual MFA device.\"\n  value       = aws_iam_virtual_mfa_device.basic.arn\n}\n\noutput \"virtual_mfa_device_name\" {\n  description = \"The name of the IAM virtual MFA device.\"\n  valu",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0266-llm-bbf35c0b69e0.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a basic AWS IAM Virtual MFA Device resource",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a basic AWS IAM Virtual MFA Device using the AWS provider. It defines a default AWS region and provisions a named virtual MFA device that can later be associated with an IAM user.",
+  "failure_category": "",
+  "failure_reason": ""
+}

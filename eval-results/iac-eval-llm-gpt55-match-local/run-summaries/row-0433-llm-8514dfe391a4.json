@@ -1,0 +1,81 @@
+{
+  "index": 433,
+  "rowId": "433",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-8514dfe391a4",
+  "userId": "local-user",
+  "durationSeconds": 123.07,
+  "difficulty": "3",
+  "resource": "aws_internet_gateway, aws_vpc",
+  "prompt": "creates a VPC with a CIDR block of 10.0.0.0/16 and an internet gateway in the AWS us-east-2 region, both tagged with names \"vpc\" and \"ig\" respectively.",
+  "intent": "Has one \"aws_vpc\" resource:\nwith a specified \"cidr_block\" of \"10.0.0.0/16\"\nwith \"enable_dns_hostnames\" set to true\nwith a \"tags\" map that is not null, including at least a \"Name\" key with a value\n\nHas one \"aws_internet_gateway\" resource:\nwith \"vpc_id\" referencing the \"aws_vpc\" resource by its ID\nwith a \"tags\" map that is not null, including at least a \"Name\" key with a value",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 4.16\"\n    }\n  }\n\n  required_version = \">= 1.2.0\"\n}\n# Define the provider block for AWS\nprovider \"aws\" {\n  region = \"us-east-2\" # Set your desired AWS region\n}\n\nresource \"aws_vpc\" \"_\" {\n  cidr_block           = \"10.0.0.0/16\"\n  enable_dns_hostnames = true\n  tags = merge({\n    \"Name\" = \"vpc\"\n  })\n}\n\nresource \"aws_internet_gateway\" \"_\" {\n  vpc_id = aws_vpc._.id\n  tags = merge({\n    \"Name\" = \"ig\"\n  })\n}",
+  "bleuScore": 0.30969,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0433-llm-8514dfe391a4",
+  "generatedSourceFiles": [
+    "generated-source/row-0433-llm-8514dfe391a4/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: Failed to load plugin schemas\n\nError while loading schemas for plugin components: Failed to obtain provider\nschema: Could not load the schema for provider\nregistry.terraform.io/hashicorp/aws: failed to instantiate provider\n\"registry.terraform.io/hashicorp/aws\" to obtain schema: timeout while waiting\nfor plugin to start..\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_internet_gateway": true,
+    "aws_vpc": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS VPC in the `us-east-2` region with CIDR block `10.0.0.0/16`. It also creates and attaches an Internet Gateway to the VPC. The VPC is tagged with the name `vpc`, and the Internet Gateway is tagged with the name `ig`.\n\n```hcl\nterraform {\n  required_version = \">= 1.0.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-2\"\n}\n\nresource \"aws_vpc\" \"vpc\" {\n  cidr_block = \"10.0.0.0/16\"\n\n  tags = {\n    Name = \"vpc\"\n  }\n}\n\nresource \"aws_internet_gateway\" \"ig\" {\n  vpc_id = aws_vpc.vpc.id\n\n  tags = {\n    Name = \"ig\"\n  }\n}\n```",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0433-llm-8514dfe391a4.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: creates a VPC with a CIDR block of 10.0.0.0/16 and an internet gateway in the AWS us-east-2 region, both tagged with names \"vpc\" and \"ig\" respectively.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS VPC in the `us-east-2` region with CIDR block `10.0.0.0/16`. It also creates and attaches an Internet Gateway to the VPC. The VPC is tagged with the name `vpc`, and the Internet Gateway is tagged with the name `ig`.",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: Failed to load plugin schemas Error while loading schemas for plugin components: Failed to obtain provider schema: Could not load the schema for provider registry.terraform.io/hashicorp/aws: failed to instantiate provider \"registry.terraform.io/hashicorp/aws\" to obtain schema: timeout while waiting for plugin to start.."
+}

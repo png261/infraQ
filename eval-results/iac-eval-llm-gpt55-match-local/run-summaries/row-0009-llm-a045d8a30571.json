@@ -1,0 +1,98 @@
+{
+  "index": 9,
+  "rowId": "9",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-a045d8a30571",
+  "userId": "local-user",
+  "durationSeconds": 96.62,
+  "difficulty": "6",
+  "resource": "aws_elastic_beanstalk_application, aws_elastic_beanstalk_application_version, aws_elastic_beanstalk_environment, aws_iam_instance_profile, aws_iam_role, aws_iam_role_policy_attachment, aws_s3_bucket, aws_s3_object, aws_sqs_queue",
+  "prompt": "Create an elastic beanstalk worker environment for running batch processing jobs. Name the iam_role \"eb_ec2_role\", the instance profile \"eb_ec2_profile\", the elastic beanstalk application \"batch_job_app\", the bucket \"sampleapril26426\", the object \"examplebucket_object\", the sqs queue \"batch_job_queue\", and the application version \"version\".",
+  "intent": "Has one \"aws_iam_role\" resource\n    with \"name\"\n    with \"assume_role_policy\" and \"Service\" set to \"ec2.amazonaws.com\"\n\nHas one \"aws_iam_role_policy_attachment\" resource\n    with \"role\" referencing the \"aws_iam_role\"\n    with \"policy_arn\" set to \"arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier\"\n\nHas one \"aws_iam_instance_profile\" resource\n    with \"name\"\n    with \"role\" referencing the \"aws_iam_role\" resource\n\nHas one \"aws_elastic_beanstalk_application\" resource\n    with \"name\" \n\nHas one \"aws_s3_bucket\" resource\n    with \"bucket\"\n\nHas one \"aws_s3_object\" resource\n    with \"key\"\n    with \"source\"\n    with \"bucket\" referencing the \"aws_s3_bucket\" resource\n\nHas one \"aws_elastic_beanstalk_application_version\" resource\n    with \"name\n    with \"application\" referencing the \"aws_elastic_beanstalk_application\" resource\n    with \"bucket\" referencing the \"bucket\" from the \"aws_s3_object\" resource\n    with \"key\" referencing the \"key\" from the \"aws_s3_object\" resource\n\nHas one \"aws_sqs_queue\" resource\n    with \"name\"\n\nHas one \"aws_elastic_beanstalk_environment\" resource\n    with \"name\"\n    with \"application\" referencing the \"aws_elastic_beanstalk_application\" resource\n    with \"solution_stack_name\"\n    with \"tier\" set to \"Worker\"\n    with \"version_label\" referencing the \"aws_elastic_beanstalk_application_version\" resource\n    with several \"setting\" blocks that have \"namespaces\" set to either \"aws:elasticbeanstalk:environment\" or \"aws:elasticbeanstalk:sqsd\", \n    with one \"setting\" block which has a \"value\" that references the \"aws_iam_instance_profile\" resource",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\n\nprovider \"aws\" {\n  region = \"us-east-1\" \n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\n\nresource \"aws_iam_role\" \"eb_ec2_role\" {\n  name = \"elastic_beanstalk_ec2_role\"\n\n  assume_role_policy = jsonencode({\n    Version = \"2012-10-17\",\n    Statement = [\n      {\n        Action = \"sts:AssumeRole\",\n        Effect = \"Allow\",\n        Principal = {\n          Service = \"ec2.amazonaws.com\"\n        },\n      },\n    ]\n  })\n}\n\n# Attach the AWS managed policy for Elastic Beanstalk to the role\nresource \"aws_iam_role_policy_attachment\" \"eb_managed_policy\" {\n  role       = aws_iam_role.eb_ec2_role.name\n  policy_arn = \"arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier\"\n}\n\n\n# Create an instance profile tied to the role\nresource \"aws_iam_instance_profile\" \"eb_ec2_profile\" {\n  name = \"elastic_beanstalk_ec2_profile\"\n  role = aws_iam_role.eb_ec2_role.name\n}\n\n\nresource \"aws_s3_bucket\" \"sample_bucket\" {\n  bucket_prefix = \"sample-\"\n}\n\nresource \"aws_s3_object\" \"examplebucket_object\" {\n  key    = \"randofile\"\n  bucket = aws_s3_bucket.sample_bucket.id\n  source = \"./supplement/app.zip\"\n}\n\n# Define the Elastic Beanstalk application\nresource \"aws_elastic_beanstalk_application\" \"batch_job_app\" {\n  name        = \"batch-job-application\"\n}\n\n# Define the Elastic Beanstalk application version\nresource \"aws_elastic_beanstalk_application_version\" \"version\" {\n  name        = \"batch-job-app-version\"\n  application = aws_elastic_beanstalk_application.batch_job_app.name\n  bucket = aws_s3_object.examplebucket_object.bucket\n  key    = aws_s3_object.examplebucket_object.key\n}\n\n# Create an Elastic Beanstalk environment in the worker tier\nresource \"aws_elastic_beanstalk_environment\" \"batch_job_env\" {\n  name                = \"batch-job-environment\"\n  application         = aws_elastic_beanstalk_application.batch_job_app.name\n  solution_stack_name = \"64bit Amazon Linux 2023 v4.3.0 running Python 3.9\"\n  tier                = \"Worker\"\n  version_label       = aws_elastic_beanstalk_application_version.version.name\n\n  setting {\n    namespace = \"aws:elasticbeanstalk:environment\"\n    name      = \"EnvironmentType\"\n    value     = \"SingleInstance\" \n  }\n\n  setting {\n    namespace = \"aws:elasticbeanstalk:sqsd\"\n    name      = \"WorkerQueueURL\"\n    value     = aws_sqs_queue.batch_job_queue.id \n  }\n\n  setting {\n    namespace = \"aws:elasticbeanstalk:sqsd\"\n    name      = \"HttpPath\"\n    value     = \"/\"\n  }\n\n  setting {\n    namespace = \"aws:elasticbeanstalk:sqsd\"\n    name      = \"MimeType\"\n    value     = \"application/json\" \n  }\n\n  setting {\n    namespace = \"aws:autoscaling:launchconfiguration\"\n    name      = \"IamInstanceProfile\"\n    value     = aws_iam_instance_profile.eb_ec2_profile.name\n  }\n}\n\n# Define the SQS queue\nresource \"aws_sqs_queue\" \"batch_job_queue\" {\n  name = \"batch-job-queue\"\n}",
+  "bleuScore": 0.188324,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/generated-source/row-0009-llm-a045d8a30571",
+  "generatedSourceFiles": [
+    "generated-source/row-0009-llm-a045d8a30571/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": false,
+    "missingPathModuleFiles": [
+      "beanstalk-worker-source.zip"
+    ],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "beanstalk-worker-source.zip",
+        "line": "",
+        "finding": "missing_path_module_file"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_configuration_valid\": false, \"is_valid_eb_app\": true, \"is_valid_eb_env\": true, \"is_valid_iam_instance_profile\": true, \"is_valid_iam_role\": true, \"is_valid_iam_role_policy_attachment\": true, \"is_valid_s3_bucket\": true, \"is_valid_s3_object\": true, \"is_valid_sqs_queue\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": [
+      "beanstalk-worker-source.zip"
+    ]
+  },
+  "requiredMarkers": {
+    "aws_elastic_beanstalk_application": true,
+    "aws_elastic_beanstalk_application_version": true,
+    "aws_elastic_beanstalk_environment": true,
+    "aws_iam_instance_profile": true,
+    "aws_iam_role": true,
+    "aws_iam_role_policy_attachment": true,
+    "aws_s3_bucket": true,
+    "aws_s3_object": true,
+    "aws_sqs_queue": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS Elastic Beanstalk worker environment for batch processing jobs. It provisions:\n\n- An Elastic Beanstalk application named `batch_job_app`\n- An Elastic Beanstalk application version named `version`\n- A worker environment connected to an SQS queue named `batch_job_queue`\n- An S3 bucket named `sampleapril26426`\n- An S3 object resource named `examplebucket_object` containing the application source bundle\n- An EC2 IAM role named `eb_ec2_role`\n- An EC2 instance profile named `eb_ec2_profile`\n- A required Elastic Beanstalk service role\n- IAM permissions for Elastic Beanstalk EC2 instances to read from and delete messages in the SQS queue\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    archive = {\n      source  = \"hashicorp/archive\"\n      version = \">= 2.4\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\ndata \"aws_caller_identity\" \"current\" {}\n\ndata \"aws_region\" \"current\" {}\n\n# ------------------------------------------------------------------------------\n# SQS Queue for Elastic Beanstalk Worker Environment\n# ------------------------",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/run-summaries/row-0009-llm-a045d8a30571.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an elastic beanstalk worker environment for running batch processing jobs. Name the iam_role \"eb_ec2_role\", the instance profile \"eb_ec2_profile\", the elastic beanstalk application \"batch_job_app\", the bucket \"sampleapril26426\", the object \"examplebucket_object\", the sqs queue \"batch_job_queue\", and the application version \"version\".",
+  "answer": "This Terraform configuration creates an AWS Elastic Beanstalk worker environment for batch processing jobs. It provisions:\n\n- An Elastic Beanstalk application named `batch_job_app`\n- An Elastic Beanstalk application version named `version`\n- A worker environment connected to an SQS queue named `batch_job_queue`\n- An S3 bucket named `sampleapril26426`\n- An S3 object resource named `examplebucket_object` containing the application source bundle\n- An EC2 IAM role named `eb_ec2_role`\n- An EC2 instance profile named `eb_ec2_profile`\n- A required Elastic Beanstalk service role\n- IAM permissions for Elastic Beanstalk EC2 instances to read from and delete messages in the SQS queue",
+  "failure_category": "artifact_incomplete",
+  "failure_reason": "Missing local files: beanstalk-worker-source.zip"
+}

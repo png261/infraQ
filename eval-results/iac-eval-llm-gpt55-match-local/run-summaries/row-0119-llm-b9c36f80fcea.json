@@ -1,0 +1,82 @@
+{
+  "index": 119,
+  "rowId": "119",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-b9c36f80fcea",
+  "userId": "local-user",
+  "durationSeconds": 52.06,
+  "difficulty": "2",
+  "resource": "aws_kms_key, aws_s3_bucket, aws_s3_bucket_server_side_encryption_configuration",
+  "prompt": "Create a Terraform configuration for an AWS environment. Start by defining a KMS key with a specific description and a set deletion window in days. Next, define an S3 bucket with a specified name. Finally, configure server-side encryption for the S3 bucket using the previously defined KMS key. The encryption should use the KMS algorithm specified in AWS. Include resource blocks for each component and ensure the bucket encryption references the KMS key's ARN and uses the KMS algorithm for encryption.",
+  "intent": "Resource \"aws_kms_key\"\nhas one \"description\"\nhas one \"deletion_window_in_days\"\n\nResource \"aws_s3_bucket\"\nhas one \"bucket\"\n\nResource \"aws_s3_bucket_server_side_encryption_configuration\"\nhas one \"bucket\"\nwithin \"rule\", it specifies:\n\"kms_master_key_id\"\n\"sse_algorithm\"",
+  "referenceOutput": "provider \"aws\" {\n    region = \"us-west-1\"\n}\n\nresource \"aws_kms_key\" \"mykey\" {\n  description             = \"This key is used to encrypt bucket objects\"\n  deletion_window_in_days = 10\n}\n\nresource \"aws_s3_bucket\" \"mybucket\" {\n  bucket = \"mybucket\"\n}\n\nresource \"aws_s3_bucket_server_side_encryption_configuration\" \"example\" {\n  bucket = aws_s3_bucket.mybucket.id\n\n  rule {\n    apply_server_side_encryption_by_default {\n      kms_master_key_id = aws_kms_key.mykey.arn\n      sse_algorithm     = \"aws:kms\"\n    }\n  }\n}",
+  "bleuScore": 0.100629,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0119-llm-b9c36f80fcea",
+  "generatedSourceFiles": [
+    "generated-source/row-0119-llm-b9c36f80fcea/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_aws_kms_key\": false, \"has_aws_s3_bucket\": false, \"has_aws_s3_bucket_server_side_encryption_configuration\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_kms_key": true,
+    "aws_s3_bucket": true,
+    "aws_s3_bucket_server_side_encryption_configuration": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS environment with:\n\n- A customer-managed AWS KMS key with a configurable description and deletion window.\n- An S3 bucket with a configurable name prefix and randomized suffix for deployability.\n- Server-side encryption enabled on the S3 bucket using the KMS key ARN.\n- The S3 encryption algorithm is set to `aws:kms`.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"kms_key_description\" {\n  description = \"Description for the KMS key used to encrypt the S3 bucket.\"\n  type        = string\n  default     = \"Customer managed KMS key for S3 bucket server-side encryption\"\n}\n\nvariable \"kms_deletion_window_in_days\" {\n  description = \"Number of days before the KMS key is deleted after destruction.\"\n  type        = number\n  default     = 7\n}\n\nvariable \"bucket_name_prefix\" ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0119-llm-b9c36f80fcea.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a Terraform configuration for an AWS environment. Start by defining a KMS key with a specific description and a set deletion window in days. Next, define an S3 bucket with a specified name. Finally, configure server-side encryption for the S3 bucket using the previously defined KMS key. The encryption should use the KMS algorithm specified in AWS. Include resource blocks for each component and ensure the bucket encryption references the KMS key's ARN and uses the KMS algorithm for encryption.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS environment with:\n\n- A customer-managed AWS KMS key with a configurable description and deletion window.\n- An S3 bucket with a configurable name prefix and randomized suffix for deployability.\n- Server-side encryption enabled on the S3 bucket using the KMS key ARN.\n- The S3 encryption algorithm is set to `aws:kms`.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_aws_kms_key\": false, \"has_aws_s3_bucket\": false, \"has_aws_s3_bucket_server_side_encryption_configuration\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

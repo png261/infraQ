@@ -1,0 +1,80 @@
+{
+  "index": 135,
+  "rowId": "135",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-cf3726b32c15",
+  "userId": "local-user",
+  "durationSeconds": 59.08,
+  "difficulty": "1",
+  "resource": "aws_elasticache_user",
+  "prompt": "Provide an ElastiCache user resource with iam",
+  "intent": "requires access string, engine = REDIS, user id and user name, authentication_mode {type = \"iam\"}",
+  "referenceOutput": "resource \"aws_elasticache_user\" \"test\" {\n  user_id       = \"testUserId\"\n  user_name     = \"testUserName\"\n  access_string = \"on ~* +@all\"\n  engine        = \"REDIS\"\n\n  authentication_mode {\n    type = \"iam\"\n  }\n}",
+  "bleuScore": 0.028577,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0135-llm-cf3726b32c15",
+  "generatedSourceFiles": [
+    "generated-source/row-0135-llm-cf3726b32c15/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_elasticache_user": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "The Terraform configuration below creates an AWS ElastiCache Redis user configured for IAM authentication. It also creates an IAM role and policy that can be assumed by EC2 instances and grants `elasticache:Connect` access for the created ElastiCache IAM user against ElastiCache replication groups and serverless caches in the account.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.40.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"elasticache_user_id\" {\n  description = \"The ElastiCache Redis IAM user ID. For IAM authentication, user_id and user_name must match.\"\n  type        = string\n  default     = \"iam-redis-user\"\n}\n\nvariable \"elasticache_access_string\" {\n  description = \"Redis ACL access string for the ElastiCache user.\"\n  type        = string\n  default     = \"on ~* +@all\"\n}\n\ndata \"aws_caller_identity\" \"current\" {}\n\ndata \"aws_region\" \"current\" {}\n\nresource \"aws_elasticache_user\" \"iam_user\" {\n  user_id       = var.elasticach",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0135-llm-cf3726b32c15.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Provide an ElastiCache user resource with iam",
+  "promptStrategy": "default",
+  "answer": "The Terraform configuration below creates an AWS ElastiCache Redis user configured for IAM authentication. It also creates an IAM role and policy that can be assumed by EC2 instances and grants `elasticache:Connect` access for the created ElastiCache IAM user against ElastiCache replication groups and serverless caches in the account.",
+  "failure_category": "",
+  "failure_reason": ""
+}

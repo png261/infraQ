@@ -1,0 +1,98 @@
+{
+  "index": 50,
+  "rowId": "50",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-71ada949847e",
+  "userId": "local-user",
+  "durationSeconds": 448.62,
+  "difficulty": "5",
+  "resource": "aws_iam_role, aws_lambda_function, aws_lambda_permission, aws_lex_bot, aws_lex_intent",
+  "prompt": "create an aws_lex_bot for ordering pizzas and include a lambda function",
+  "intent": "Has one resource \"aws_lex_bot\" with at least one \"aws_lex_intent\" resource and a \"aws_lambda_function\" resource with a \"aws_lambda_permissions\" resource",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_lambda_permission\" \"allow_lex_to_start_execution\" {\n  statement_id  = \"AllowExecutionFromLex\"\n  action        = \"lambda:InvokeFunction\"\n  function_name = aws_lambda_function.hello_pizza.function_name\n  principal     = \"lex.amazonaws.com\"\n  # source_arn    = \"${aws_lex_bot.order_pizza.arn}:$LATEST\"\n}\n\ndata \"archive_file\" \"hello_pizza\" {\n  type        = \"zip\"\n  source_file = \"./supplement/hello_pizza.py\"\n  output_path = \"./supplement/hello_pizza.zip\"\n}\n\nresource \"aws_lambda_function\" \"hello_pizza\" {\n  function_name = \"hello_pizza\"\n  role          = aws_iam_role.iam_exec_role.arn\n  filename      = data.archive_file.hello_pizza.output_path\n  source_code_hash = data.archive_file.hello_pizza.output_base64sha256\n  handler       = \"hello_pizza.handler\"\n  runtime       = \"python3.12\"\n}\n\nresource \"aws_iam_role\" \"iam_exec_role\" {\n  name = \"iam-exec-role\"\n  assume_role_policy = jsonencode({\n    Version = \"2012-10-17\"\n    Statement = [\n      {\n        Action = \"sts:AssumeRole\"\n        Effect = \"Allow\"\n        Sid    = \"\"\n        Principal = {\n          Service = \"lambda.amazonaws.com\"\n        }\n      },\n    ]\n  })\n}\n\nresource \"aws_lex_intent\" \"OrderPizza\" {\n  name = \"OrderPizza\"\n\n  sample_utterances = [\n    \"I would like to pick up a pizza\",\n    \"I would like to order some pizzas\",\n  ]\n\n  slot {\n    name                     = \"PizzaType\"\n    description              = \"Type of pizza to order\"\n    slot_constraint          = \"Required\" \n    slot_type                = \"AMAZON.AlphaNumeric\"\n    priority                 = 1\n    value_elicitation_prompt {\n      message {\n        content             = \"What type of pizza would you like?\"\n        content_type        = \"PlainText\"\n      }\n      max_attempts         = 2\n    }\n  }\n\n  fulfillment_activity {\n    type = \"CodeHook\"\n    code_hook {\n      uri            = aws_lambda_function.hello_pizza.arn\n      message_version = \"1.0\"\n    }\n  }\n}\n\nresource \"aws_lex_bot\" \"order_pizza\" {\n  name     = \"OrderPizza\"\n  description  = \"Orders a pizza from a local pizzeria\"\n  \n  idle_session_ttl_in_seconds = 600\n  locale = \"en-US\"\n\n  child_directed = false\n\n  voice_id = \"Salli\"\n  process_behavior = \"BUILD\"\n\n  clarification_prompt {\n    max_attempts = 2\n    message {\n      content      = \"I didn't understand that, can you please repeat?\"\n      content_type = \"PlainText\"\n    }\n  }\n  \n  abort_statement {\n    message {\n      content      = \"Sorry, I could not understand. Goodbye.\"\n      content_type = \"PlainText\"\n    }\n  }\n  \n  intent {\n    intent_name    = aws_lex_intent.OrderPizza.name\n    intent_version = aws_lex_intent.OrderPizza.version\n  }\n\n  # depends_on = [aws_lambda_permission.allow_lex_to_start_execution]\n}",
+  "bleuScore": 0.148999,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-3/generated-source/row-0050-llm-71ada949847e",
+  "generatedSourceFiles": [
+    "generated-source/row-0050-llm-71ada949847e/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": false,
+    "missingPathModuleFiles": [
+      "pizza_order_fulfillment.zip"
+    ],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "pizza_order_fulfillment.zip",
+        "line": "",
+        "finding": "missing_path_module_file"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: Failed to load plugin schemas\n\nError while loading schemas for plugin components: 2 problems:\n\n- Failed to obtain provider schema: Could not load the schema for provider\nregistry.terraform.io/hashicorp/archive: failed to instantiate provider\n\"registry.terraform.io/hashicorp/archive\" to obtain schema: timeout while\nwaiting for plugin to start.\n- Failed to obtain provider schema: Could not load the schema for provider\nregistry.terraform.io/hashicorp/aws: failed to instantiate provider\n\"registry.terraform.io/hashicorp/aws\" to obtain schema: timeout while waiting\nfor plugin to start..\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": [
+      "pizza_order_fulfillment.zip"
+    ]
+  },
+  "requiredMarkers": {
+    "aws_iam_role": true,
+    "aws_lambda_function": true,
+    "aws_lambda_permission": true,
+    "aws_lex_bot": true,
+    "aws_lex_intent": true,
+    "aws_lambda_permissions": false
+  },
+  "missingMarkers": [
+    "aws_lambda_permissions"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "Creates an AWS Lex bot for ordering pizzas using Amazon Lex V1, including:\n- A custom pizza ordering intent\n- Custom slot types for pizza size and crust\n- Slots for pizza size, crust, quantity, and delivery address\n- A Lambda fulfillment function\n- IAM role and policy for Lambda execution\n- Permission allowing Lex to invoke the Lambda function\n- A buildable Lex bot configuration in `us-east-1`\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    archive = {\n      source  = \"hashicorp/archive\"\n      version = \">= 2.4\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nvariable \"project_name\" {\n  type        = string\n  description = \"Name prefix for all resources.\"\n  default     = \"pizza-ordering-lex\"\n}\n\ndata \"aws_caller_identity\" \"current\" {}\n\ndata \"aws_region\" \"current\" {}\n\ndata \"archive_file\" \"pizza_lambda_zip\" {\n  type        = \"zip\"\n  output_path = \"${path.module}/pizza_order_fulfillment.zip\"\n\n  source {\n    filename = \"lambda_function.py\"\n\n    content = <<PYTHON\nimport json\n\ndef lambda_handler(event, context):\n    print(\"Received event:\", json.dumps(event))\n\n    slots = e",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-3/run-summaries/row-0050-llm-71ada949847e.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: create an aws_lex_bot for ordering pizzas and include a lambda function",
+  "promptStrategy": "default",
+  "answer": "Creates an AWS Lex bot for ordering pizzas using Amazon Lex V1, including:\n- A custom pizza ordering intent\n- Custom slot types for pizza size and crust\n- Slots for pizza size, crust, quantity, and delivery address\n- A Lambda fulfillment function\n- IAM role and policy for Lambda execution\n- Permission allowing Lex to invoke the Lambda function\n- A buildable Lex bot configuration in `us-east-1`",
+  "failure_category": "artifact_incomplete",
+  "failure_reason": "Missing local files: pizza_order_fulfillment.zip"
+}

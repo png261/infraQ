@@ -1,0 +1,83 @@
+{
+  "index": 117,
+  "rowId": "117",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-47a30cec3c30",
+  "userId": "local-user",
+  "durationSeconds": 79.14,
+  "difficulty": "3",
+  "resource": "aws_s3_bucket, aws_s3_bucket_notification, aws_sns_topic, aws_iam_policy_document",
+  "prompt": "Create an IAM policy document that allows the 's3.amazonaws.com' service to publish to an SNS topic for S3 event notifications. Specify the actions as 'SNS:Publish' and set the resource to the ARN of the SNS topic 's3-event-notification-topic'. Apply a condition to allow this action only if the source ARN is similar to the ARN of the specified S3 bucket. Create an SNS topic named 's3-event-notification-topic' with the generated IAM policy. Set up an S3 bucket named 'your-bucket-name' and configure it to send notifications to the SNS topic for 's3:ObjectCreated:*' events with a filter for '.log' suffix.",
+  "intent": "Data \"aws_iam_policy_document\"\nhas one \"effect\"\nhas one \"principals\" \nhas one \"actions\"\nhas one \"resources\"\n\nResource \"aws_sns_topic\" \nhas one \"name\"\nuses the JSON output\n\nResource \"aws_s3_bucket\" \nhas one \"bucket\"\n\nResource \"aws_s3_bucket_notification\" \nhas one \"bucket\"\nconfigures a \"topic\" notification with:\n\"topic_arn\"\n\"events\"\n\"filter_suffix\"",
+  "referenceOutput": "provider \"aws\" {\n    region = \"us-west-1\"\n}\n\ndata \"aws_iam_policy_document\" \"topic\" {\n  statement {\n    effect = \"Allow\"\n\n    principals {\n      type        = \"Service\"\n      identifiers = [\"s3.amazonaws.com\"]\n    }\n\n    actions   = [\"SNS:Publish\"]\n    resources = [\"arn:aws:sns:*:*:s3-event-notification-topic\"]\n\n    condition {\n      test     = \"ArnLike\"\n      variable = \"aws:SourceArn\"\n      values   = [aws_s3_bucket.bucket.arn]\n    }\n  }\n}\nresource \"aws_sns_topic\" \"topic\" {\n  name   = \"s3-event-notification-topic\"\n  policy = data.aws_iam_policy_document.topic.json\n}\n\nresource \"aws_s3_bucket\" \"bucket\" {\n  bucket = \"your-bucket-name\"\n}\n\nresource \"aws_s3_bucket_notification\" \"bucket_notification\" {\n  bucket = aws_s3_bucket.bucket.id\n\n  topic {\n    topic_arn     = aws_sns_topic.topic.arn\n    events        = [\"s3:ObjectCreated:*\"]\n    filter_suffix = \".log\"\n  }\n}",
+  "bleuScore": 0.383605,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0117-llm-47a30cec3c30",
+  "generatedSourceFiles": [
+    "generated-source/row-0117-llm-47a30cec3c30/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_aws_iam_policy_document_topic\": true, \"has_aws_s3_bucket\": false, \"has_aws_s3_bucket_notification\": false, \"has_aws_sns_topic\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_s3_bucket": true,
+    "aws_s3_bucket_notification": true,
+    "aws_sns_topic": true,
+    "aws_iam_policy_document": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates:\n\n- An AWS provider configuration in `us-east-1`\n- An SNS topic named `s3-event-notification-topic`\n- An S3 bucket named `your-bucket-name`\n- An IAM policy document allowing the `s3.amazonaws.com` service to publish messages to the SNS topic\n- A condition restricting publishing to events originating from the specified S3 bucket ARN\n- An SNS topic policy attaching the generated IAM policy to the SNS topic\n- An S3 bucket notification configuration that sends `s3:ObjectCreated:*` events for objects ending in `.log` to the SNS topic\n\n```hcl\nterraform {\n  required_version = \">= 1.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_sns_topic\" \"s3_event_notification_topic\" {\n  name = \"s3-event-notification-topic\"\n}\n\nresource \"aws_s3_bucket\" \"log_bucket\" {\n  bucket = \"your-bucket-name\"\n}\n\ndata \"aws_iam_policy_document\" \"sns_topic_policy\" {\n  statement {\n    sid    = \"AllowS3ToPublishObjectCreatedEvents\"\n    effect = \"Allow\"\n\n    principals {\n      type        = \"Service\"\n      identifiers = [\"s3.amazonaws.com\"]\n    }\n\n    actions = [\n      \"",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0117-llm-47a30cec3c30.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an IAM policy document that allows the 's3.amazonaws.com' service to publish to an SNS topic for S3 event notifications. Specify the actions as 'SNS:Publish' and set the resource to the ARN of the SNS topic 's3-event-notification-topic'. Apply a condition to allow this action only if the source ARN is similar to the ARN of the specified S3 bucket. Create an SNS topic named 's3-event-notification-topic' with the generated IAM policy. Set up an S3 bucket named 'your-bucket-name' and configure it to send notifications to the SNS topic for 's3:ObjectCreated:*' events with a filter for '.log' suffix.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates:\n\n- An AWS provider configuration in `us-east-1`\n- An SNS topic named `s3-event-notification-topic`\n- An S3 bucket named `your-bucket-name`\n- An IAM policy document allowing the `s3.amazonaws.com` service to publish messages to the SNS topic\n- A condition restricting publishing to events originating from the specified S3 bucket ARN\n- An SNS topic policy attaching the generated IAM policy to the SNS topic\n- An S3 bucket notification configuration that sends `s3:ObjectCreated:*` events for objects ending in `.log` to the SNS topic",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_aws_iam_policy_document_topic\": true, \"has_aws_s3_bucket\": false, \"has_aws_s3_bucket_notification\": false, \"has_aws_sns_topic\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

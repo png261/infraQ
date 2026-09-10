@@ -1,0 +1,82 @@
+{
+  "index": 143,
+  "rowId": "143",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-3e7d1219d80e",
+  "userId": "local-user",
+  "durationSeconds": 87.76,
+  "difficulty": "3",
+  "resource": "aws_redshift_subnet_group, aws_subnet, aws_subnet, aws_vpc",
+  "prompt": "Create a VPC in us-east-1 and create subnets in east-1a and east-1b. Create a RedShift subnet group with a subnet in east-1a and east-1b",
+  "intent": "Create a VPC, create 2 subnets (1 in east1a and 1 in east1b) then create a redshift_subnet_group",
+  "referenceOutput": "provider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_vpc\" \"main\" {\n  cidr_block = \"10.0.0.0/16\"\n  enable_dns_support   = true\n  enable_dns_hostnames = true\n\n  tags = {\n    Name = \"main-vpc\"\n  }\n}\n\nresource \"aws_subnet\" \"subnet_east_1a\" {\n  vpc_id     = aws_vpc.main.id\n  cidr_block = \"10.0.1.0/24\"\n  availability_zone = \"us-east-1a\"\n\n  tags = {\n    Name = \"subnet-east-1a\"\n  }\n}\n\nresource \"aws_subnet\" \"subnet_east_1b\" {\n  vpc_id     = aws_vpc.main.id\n  cidr_block = \"10.0.2.0/24\"\n  availability_zone = \"us-east-1b\"\n\n  tags = {\n    Name = \"subnet-east-1b\"\n  }\n}\n\nresource \"aws_redshift_subnet_group\" \"redshift_subnet_group\" {\n  name       = \"my-redshift-subnet-group\"\n  subnet_ids = [aws_subnet.subnet_east_1a.id, aws_subnet.subnet_east_1b.id]\n\n  tags = {\n    Name = \"my-redshift-subnet-group\"\n  }\n}",
+  "bleuScore": 0.314164,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0143-llm-3e7d1219d80e",
+  "generatedSourceFiles": [
+    "generated-source/row-0143-llm-3e7d1219d80e/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_redshift_subnet_group": true,
+    "aws_subnet": true,
+    "aws_vpc": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS VPC in `us-east-1`, with two subnets distributed across Availability Zones `us-east-1a` and `us-east-1b`. It then creates an Amazon Redshift subnet group that includes both subnets, allowing a Redshift cluster to be deployed across those Availability Zones.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nvariable \"vpc_cidr_block\" {\n  description = \"CIDR block for the VPC\"\n  type        = string\n  default     = \"10.0.0.0/16\"\n}\n\nvariable \"subnet_a_cidr_block\" {\n  description = \"CIDR block for the subnet in us-east-1a\"\n  type        = string\n  default     = \"10.0.1.0/24\"\n}\n\nvariable \"subnet_b_cidr_block\" {\n  description = \"CIDR block for the subnet in us-east-1b\"\n  type        = string\n  default     = \"10.0.2.0/24\"\n}\n\nresource \"aws_vpc\" \"main\" {\n  cidr_block           = var.vpc_cidr_block\n  enable_dns_support   = true\n  enable_dns_hostnames = true\n\n  tags = {\n    Name = \"redshift-vpc\"\n  }\n}\n\nresource \"aws_subnet\" \"east_1a\" {\n  vpc_id            = aws_vpc.main.id\n  cidr_block        = var.sub",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0143-llm-3e7d1219d80e.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a VPC in us-east-1 and create subnets in east-1a and east-1b. Create a RedShift subnet group with a subnet in east-1a and east-1b",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS VPC in `us-east-1`, with two subnets distributed across Availability Zones `us-east-1a` and `us-east-1b`. It then creates an Amazon Redshift subnet group that includes both subnets, allowing a Redshift cluster to be deployed across those Availability Zones.",
+  "failure_category": "",
+  "failure_reason": ""
+}

@@ -1,0 +1,80 @@
+{
+  "index": 161,
+  "rowId": "161",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-a305d7cc2704",
+  "userId": "local-user",
+  "durationSeconds": 53.28,
+  "difficulty": "2",
+  "resource": "aws_cloudwatch_metric_alarm",
+  "prompt": "Generate a Terraform HCL code snippet to define an AWS CloudWatch metric alarm named 'foobar' that monitors the 'CPUUtilization' metric of AWS EC2 instances. The alarm should trigger when the average CPU utilization is greater than or equal to 80% for two consecutive 2-minute periods. Ensure that no actions are taken when there's insufficient data.",
+  "intent": "",
+  "referenceOutput": "resource \"aws_cloudwatch_metric_alarm\" \"foobar\" {\n  alarm_name                = \"terraform-test-foobar5\"\n  comparison_operator       = \"GreaterThanOrEqualToThreshold\"\n  evaluation_periods        = 2\n  metric_name               = \"CPUUtilization\"\n  namespace                 = \"AWS/EC2\"\n  period                    = 120\n  statistic                 = \"Average\"\n  threshold                 = 80\n  alarm_description         = \"This metric monitors ec2 cpu utilization\"\n  insufficient_data_actions = []\n}",
+  "bleuScore": 0.150484,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0161-llm-a305d7cc2704",
+  "generatedSourceFiles": [
+    "generated-source/row-0161-llm-a305d7cc2704/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_cloudwatch_metric_alarm": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration defines an AWS CloudWatch metric alarm named `foobar` that monitors the `CPUUtilization` metric in the `AWS/EC2` namespace. The alarm evaluates the average CPU utilization over two consecutive 2-minute periods and enters the alarm state when CPU usage is greater than or equal to 80%. No actions are configured for insufficient data.\n\n```hcl\nterraform {\n  required_version = \">= 1.0.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_cloudwatch_metric_alarm\" \"foobar\" {\n  alarm_name          = \"foobar\"\n  alarm_description   = \"Alarm when average EC2 CPU utilization is greater than or equal to 80% for two consecutive 2-minute periods.\"\n\n  namespace           = \"AWS/EC2\"\n  metric_name         = \"CPUUtilization\"\n  statistic           = \"Average\"\n\n  period              = 120\n  evaluation_periods  = 2\n  threshold           = 80\n  comparison_operator = \"GreaterThanOrEqualToThreshold\"\n\n  treat_missing_data  = \"missing\"\n\n  insufficient_data_actions = []\n\n  actions_enabled = true\n}\n```",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0161-llm-a305d7cc2704.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Generate a Terraform HCL code snippet to define an AWS CloudWatch metric alarm named 'foobar' that monitors the 'CPUUtilization' metric of AWS EC2 instances. The alarm should trigger when the average CPU utilization is greater than or equal to 80% for two consecutive 2-minute periods. Ensure that no actions are taken when there's insufficient data.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration defines an AWS CloudWatch metric alarm named `foobar` that monitors the `CPUUtilization` metric in the `AWS/EC2` namespace. The alarm evaluates the average CPU utilization over two consecutive 2-minute periods and enters the alarm state when CPU usage is greater than or equal to 80%. No actions are configured for insufficient data.",
+  "failure_category": "",
+  "failure_reason": ""
+}

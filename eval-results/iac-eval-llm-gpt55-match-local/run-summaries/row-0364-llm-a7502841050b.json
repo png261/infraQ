@@ -1,0 +1,80 @@
+{
+  "index": 364,
+  "rowId": "364",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-a7502841050b",
+  "userId": "local-user",
+  "durationSeconds": 72.21,
+  "difficulty": "1",
+  "resource": "aws_lightsail_instance",
+  "prompt": "create Amazon Lightsail with dualstack IP",
+  "intent": "have one \"aws_lightsail_instance\" resource\n    with \"name\" argument\n    with \"availability_zone\" argument\n    with \"blueprint_id\" argument\n    with \"bundle_id\" argument\n    with \"ip_address_type\" = \"dualstack\"",
+  "referenceOutput": "resource \"aws_lightsail_instance\" \"custom\" {\n  name              = \"custom\"\n  availability_zone = \"us-east-1b\"\n  blueprint_id      = \"wordpress\"\n  bundle_id         = \"nano_2_0\"\n  ip_address_type = \"dualstack\"\n }",
+  "bleuScore": 0.012954,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0364-llm-a7502841050b",
+  "generatedSourceFiles": [
+    "generated-source/row-0364-llm-a7502841050b/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_lightsail_instance": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an Amazon Lightsail instance with dual-stack networking enabled, meaning it can use both IPv4 and IPv6. It provisions a small Ubuntu Lightsail instance in a valid AWS region and outputs its instance name, public IPv4 address, and public IPv6 addresses.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Lightsail instance will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"lightsail_instance_name\" {\n  description = \"Name of the Lightsail instance.\"\n  type        = string\n  default     = \"dualstack-lightsail-instance\"\n}\n\nvariable \"availability_zone\" {\n  description = \"Availability zone for the Lightsail instance.\"\n  type        = string\n  default     = \"us-east-1a\"\n}\n\nvariable \"blueprint_id\" {\n  description = \"Lightsail blueprint ID.\"\n  type        = string\n  default     = \"ubuntu_22_04\"\n}\n\nvariable \"bundle_id\" {\n  description = \"Lightsail bundle ID.\"\n  type        = string\n  default     = \"nano_3_0\"\n}\n\nres",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0364-llm-a7502841050b.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: create Amazon Lightsail with dualstack IP",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an Amazon Lightsail instance with dual-stack networking enabled, meaning it can use both IPv4 and IPv6. It provisions a small Ubuntu Lightsail instance in a valid AWS region and outputs its instance name, public IPv4 address, and public IPv6 addresses.",
+  "failure_category": "",
+  "failure_reason": ""
+}

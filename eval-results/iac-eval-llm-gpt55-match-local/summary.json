@@ -1,0 +1,11 @@
+{
+  "rows": 458,
+  "passed": 202,
+  "failed": 256,
+  "officialPassed": 202,
+  "planPassed": 400,
+  "opaPassed": 202,
+  "avgBleuScore": 0.12244975327510917,
+  "jsonl": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/iac_eval_llm_results.jsonl",
+  "csv": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/iac_eval_llm_results.csv"
+}

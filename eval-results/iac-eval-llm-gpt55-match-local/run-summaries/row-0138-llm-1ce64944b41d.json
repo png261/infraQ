@@ -1,0 +1,82 @@
+{
+  "index": 138,
+  "rowId": "138",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-1ce64944b41d",
+  "userId": "local-user",
+  "durationSeconds": 76.93,
+  "difficulty": "3",
+  "resource": "aws_elasticache_user, aws_elasticache_user, aws_elasticache_user_group, aws_elasticache_user_group_association",
+  "prompt": "Associate an existing ElastiCache user and an existing user group.",
+  "intent": "creates elasticache user group and a user resource then associates the 2 using ids",
+  "referenceOutput": "resource \"aws_elasticache_user\" \"default\" { \n  user_id = \"defaultUserID\" \n  user_name = \"default\" \n  access_string = \"on ~app::* -@all +@read +@hash +@bitmap +@geo -setbit -bitfield -hset -hsetnx -hmset -hincrby -hincrbyfloat -hdel -bitop -geoadd -georadius -georadiusbymember\" \n  engine = \"REDIS\" \n  passwords = [\"password123456789\"] \n} \n\nresource \"aws_elasticache_user_group\" \"example\"{ \n  engine = \"REDIS\" \n  user_group_id = \"userGroupId\" \n  user_ids = [aws_elasticache_user.default.user_id] \n  lifecycle { ignore_changes = [user_ids] } \n} \n\nresource \"aws_elasticache_user\" \"example\" { \n  user_id = \"exampleUserID\" \n  user_name = \"exampleuser\" \n  access_string = \"on ~app::* -@all +@read +@hash +@bitmap +@geo -setbit -bitfield -hset -hsetnx -hmset -hincrby -hincrbyfloat -hdel -bitop -geoadd -georadius -georadiusbymember\" \n  engine = \"REDIS\" \n  passwords = [\"password123456789\"] \n} \n\nresource \"aws_elasticache_user_group_association\" \"example\" { \n  user_group_id = aws_elasticache_user_group.example.user_group_id \n  user_id = aws_elasticache_user.example.user_id \n}",
+  "bleuScore": 0.027004,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-3/generated-source/row-0138-llm-1ce64944b41d",
+  "generatedSourceFiles": [
+    "generated-source/row-0138-llm-1ce64944b41d/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"main\": {\"allow\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_elasticache_user": true,
+    "aws_elasticache_user_group": true,
+    "aws_elasticache_user_group_association": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration associates an existing AWS ElastiCache user with an existing ElastiCache user group. It uses the AWS provider in a valid region and accepts the existing ElastiCache user ID and user group ID as variables with default values that should be replaced with real IDs from your AWS account.\n\n```hcl\nterraform {\n  required_version = \">= 1.3.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the existing ElastiCache user and user group are located.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"elasticache_user_id\" {\n  description = \"The ID of the existing ElastiCache user to associate with the user group.\"\n  type        = string\n  default     = \"existing-elasticache-user\"\n}\n\nvariable \"elasticache_user_group_id\" {\n  description = \"The ID of the existing ElastiCache user group.\"\n  type        = string\n  default     = \"existing-elasticache-user-group\"\n}\n\nresource \"aws_elasticache_user_group_association\" \"existing_user_association\" {\n  user_group_id = var.elasticache_user_group_id\n  user_i",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-3/run-summaries/row-0138-llm-1ce64944b41d.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Associate an existing ElastiCache user and an existing user group.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration associates an existing AWS ElastiCache user with an existing ElastiCache user group. It uses the AWS provider in a valid region and accepts the existing ElastiCache user ID and user group ID as variables with default values that should be replaced with real IDs from your AWS account.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"main\": {\"allow\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

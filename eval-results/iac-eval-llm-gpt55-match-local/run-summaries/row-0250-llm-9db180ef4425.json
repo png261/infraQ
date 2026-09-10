@@ -1,0 +1,81 @@
+{
+  "index": 250,
+  "rowId": "250",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-9db180ef4425",
+  "userId": "local-user",
+  "durationSeconds": 76.23,
+  "difficulty": "2",
+  "resource": "aws_chime_voice_connector, aws_chime_voice_connector_logging",
+  "prompt": "Create an AWS Chime Voice Connector. Then create an AWS Chime Voice Connector Logging resource with enable_sip_logs disabled and enable_media_metric_logs enabled",
+  "intent": "Has one resource \"aws_chime_voice_connector\"\n\nHas one resource \"aws_chime_voice_connector_logging\"\nwith voice_connector_id equal to the id of the voice connector\nwith enable_sip_logs false\nwith enable_media_metric_logs true",
+  "referenceOutput": "resource \"aws_chime_voice_connector\" \"default\" {\n  name               = \"vc-name-test\"\n  require_encryption = true\n}\n\nresource \"aws_chime_voice_connector_logging\" \"default\" {\n  enable_sip_logs          = false\n  enable_media_metric_logs = true\n  voice_connector_id       = aws_chime_voice_connector.default.id\n}",
+  "bleuScore": 0.168203,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0250-llm-9db180ef4425",
+  "generatedSourceFiles": [
+    "generated-source/row-0250-llm-9db180ef4425/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_chime_voice_connector": true,
+    "aws_chime_voice_connector_logging": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS Chime Voice Connector and attaches a Chime Voice Connector Logging configuration to it. SIP logs are disabled, while media metric logs are enabled.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_chime_voice_connector\" \"this\" {\n  name               = \"example-chime-voice-connector\"\n  require_encryption = true\n  aws_region         = \"us-east-1\"\n}\n\nresource \"aws_chime_voice_connector_logging\" \"this\" {\n  voice_connector_id        = aws_chime_voice_connector.this.id\n  enable_sip_logs           = false\n  enable_media_metric_logs  = true\n}\n```",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0250-llm-9db180ef4425.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an AWS Chime Voice Connector. Then create an AWS Chime Voice Connector Logging resource with enable_sip_logs disabled and enable_media_metric_logs enabled",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS Chime Voice Connector and attaches a Chime Voice Connector Logging configuration to it. SIP logs are disabled, while media metric logs are enabled.",
+  "failure_category": "",
+  "failure_reason": ""
+}

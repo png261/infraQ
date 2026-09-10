@@ -1,0 +1,100 @@
+{
+  "index": 189,
+  "rowId": "189",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-5688e1ff66f9",
+  "userId": "local-user",
+  "durationSeconds": 81.16,
+  "difficulty": "5",
+  "resource": "aws_autoscaling_group, aws_ec2_fleet, aws_launch_template, aws_subnet, aws_subnet, aws_vpc, aws_ami",
+  "prompt": "Create a public and private subnet. Define an EC2 Fleet of the newest AWS Linux 2 with 5 On-Demand and 4 Spot Instances using launch tempaltes.",
+  "intent": "Create VPC, public subnet in the VPC, private subnet in the VPC, aws_ec2_fleet with 5 spot and 4 on demand, and aws_autoscaling",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\n# Create a Virtual Private Cloud (VPC)\nresource \"aws_vpc\" \"my_vpc\" {\n  cidr_block = \"10.0.0.0/16\"\n}\n\ndata \"aws_availability_zones\" \"available\" {\n  state = \"available\"\n}\n\n# Create Public Subnet\nresource \"aws_subnet\" \"public_subnet\" {\n  vpc_id                  = aws_vpc.my_vpc.id\n  cidr_block              = \"10.0.1.0/24\"\n  availability_zone       = data.aws_availability_zones.available.names[0]\n  map_public_ip_on_launch = true\n}\n\n# Create Private Subnet\nresource \"aws_subnet\" \"private_subnet\" {\n  vpc_id            = aws_vpc.my_vpc.id\n  cidr_block        = \"10.0.2.0/24\"\n  availability_zone = data.aws_availability_zones.available.names[1]\n}\n\n\ndata \"aws_ami\" \"latest_amazon_linux_2\" {\n  most_recent = true\n  owners      = [\"amazon\"]\n\n  filter {\n    name   = \"name\"\n    values = [\"*ubuntu-noble-24.04-amd64-server-*\"]\n  }\n}\n\n# Create Launch Template for EC2 instances\nresource \"aws_launch_template\" \"ec2_launch_template\" {\n  name = \"my-launch-template\"\n\n  instance_type = \"t2.micro\"\n  image_id = data.aws_ami.latest_amazon_linux_2.id\n}\n\n# Create EC2 Fleet\nresource \"aws_ec2_fleet\" \"ec2_fleet\" {\n  launch_template_config {\n    launch_template_specification {\n      launch_template_id = aws_launch_template.ec2_launch_template.id\n      version            = aws_launch_template.ec2_launch_template.latest_version\n    }\n  }\n\n  target_capacity_specification {\n    default_target_capacity_type = \"on-demand\"\n    total_target_capacity        = 9\n    on_demand_target_capacity    = 5\n    spot_target_capacity         = 4\n  }\n\n  excess_capacity_termination_policy = \"termination\"\n  replace_unhealthy_instances = true\n  terminate_instances = true\n\n  # Additional configurations can be added as needed\n}",
+  "bleuScore": 0.110951,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0189-llm-5688e1ff66f9",
+  "generatedSourceFiles": [
+    "generated-source/row-0189-llm-5688e1ff66f9/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "157",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "173",
+        "finding": "broad_ingress_or_egress_cidr"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: expected spot_options.0.allocation_strategy to be one of [\"diversified\" \"capacity-optimized\" \"capacity-optimized-prioritized\" \"price-capacity-optimized\" \"lowestPrice\"], got priceCapacityOptimized\n\n  with aws_ec2_fleet.main,\n  on main.tf line 232, in resource \"aws_ec2_fleet\" \"main\":\n 232:     allocation_strategy           = \"priceCapacityOptimized\"\n\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_autoscaling_group": false,
+    "aws_ec2_fleet": true,
+    "aws_launch_template": true,
+    "aws_subnet": true,
+    "aws_vpc": true,
+    "aws_ami": true
+  },
+  "missingMarkers": [
+    "aws_autoscaling_group"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates a complete AWS networking and compute setup:\n\n- A new VPC\n- One public subnet and one private subnet\n- Internet Gateway and routing for the public subnet\n- Security group for EC2 instances\n- Launch template using the newest Amazon Linux 2 AMI\n- EC2 Fleet configured to maintain:\n  - 5 On-Demand instances\n  - 4 Spot instances\n- Fleet instances may launch into either the public or private subnet using launch template overrides\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region to deploy resources into.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"vpc_cidr\" {\n  description = \"CIDR block for the VPC.\"\n  type        = string\n  default     = \"10.0.0.0/16\"\n}\n\nvariable \"public_subnet_cidr\" {\n  description = \"CIDR block for the public subnet.\"\n  type        = string\n  default     = \"10.0.1.0/24\"\n}\n\nvariable \"private_subnet_cidr\" {\n  description = \"CIDR block for the private subnet.\"\n  type        = string\n  default     = \"10.0.2.0/24\"",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0189-llm-5688e1ff66f9.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a public and private subnet. Define an EC2 Fleet of the newest AWS Linux 2 with 5 On-Demand and 4 Spot Instances using launch tempaltes.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a complete AWS networking and compute setup:\n\n- A new VPC\n- One public subnet and one private subnet\n- Internet Gateway and routing for the public subnet\n- Security group for EC2 instances\n- Launch template using the newest Amazon Linux 2 AMI\n- EC2 Fleet configured to maintain:\n  - 5 On-Demand instances\n  - 4 Spot instances\n- Fleet instances may launch into either the public or private subnet using launch template overrides",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: expected spot_options.0.allocation_strategy to be one of [\"diversified\" \"capacity-optimized\" \"capacity-optimized-prioritized\" \"price-capacity-optimized\" \"lowestPrice\"], got priceCapacityOptimized with aws_ec2_fleet.main, on main.tf line 232, in resource \"aws_ec2_fleet\" \"main\": 232: allocation_strategy = \"priceCapacityOptimized\""
+}

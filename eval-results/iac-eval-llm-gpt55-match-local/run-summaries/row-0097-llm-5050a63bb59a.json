@@ -1,0 +1,88 @@
+{
+  "index": 97,
+  "rowId": "97",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-5050a63bb59a",
+  "userId": "local-user",
+  "durationSeconds": 56.81,
+  "difficulty": "4",
+  "resource": "aws_eks_cluster, aws_eks_identity_provider_config, aws_iam_role, aws_subnet, aws_subnet, aws_vpc",
+  "prompt": "Generate a Terraform script to configure an OIDC identity provider for an AWS EKS cluster (where the cluster has it's name attribute set to \"example\"). Define a resource that links to the cluster by name and sets up OIDC with specific parameters including client ID, identity provider config name, and issuer URL.",
+  "intent": "has one \"aws_eks_identity_provider_config\" resource\nwith one \"cluster_name\"\nwith one \"oidc\" block containing:\none \"client_id\"\none \"identity_provider_config_name\"\none \"issuer_url\"",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_vpc\" \"main\" {\n  cidr_block = \"10.0.0.0/16\"\n}\n\nresource \"aws_subnet\" \"example1\" {\n  vpc_id     = aws_vpc.main.id\n  cidr_block = \"10.0.1.0/24\"\n}\n\nresource \"aws_subnet\" \"example2\" {\n  vpc_id     = aws_vpc.main.id\n  cidr_block = \"10.0.2.0/24\"\n}\n\nresource \"aws_iam_role\" \"example\" {\n  name = \"eks-cluster-1\"\n\n  assume_role_policy = <<POLICY\n{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Principal\": {\n        \"Service\": \"eks.amazonaws.com\"\n      },\n      \"Action\": \"sts:AssumeRole\"\n    }\n  ]\n}\nPOLICY\n}\n\nresource \"aws_iam_role_policy_attachment\" \"eks_cluster_policy\" {\n  policy_arn = \"arn:aws:iam::aws:policy/AmazonEKSClusterPolicy\"\n  role       = aws_iam_role.example.name\n}\n\nresource \"aws_iam_role_policy_attachment\" \"eks_service_policy\" {\n  policy_arn = \"arn:aws:iam::aws:policy/AmazonEKSServicePolicy\"\n  role       = aws_iam_role.example.name\n}\n\nresource \"aws_eks_cluster\" \"example\" {\n  name     = \"example\"\n  role_arn = aws_iam_role.example.arn\n\n  vpc_config {\n    subnet_ids = [aws_subnet.example1.id, aws_subnet.example2.id]\n  }\n}\n\nresource \"aws_eks_identity_provider_config\" \"example\" {\n  cluster_name = aws_eks_cluster.example.name\n\n  oidc {\n    client_id                     = \"your client_id\"\n    identity_provider_config_name = \"example\"\n    issuer_url                    = \"https://www.sampleurl.com\"\n  }\n}",
+  "bleuScore": 0.130195,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0097-llm-5050a63bb59a",
+  "generatedSourceFiles": [
+    "generated-source/row-0097-llm-5050a63bb59a/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: reading EKS Cluster (example): couldn't find resource\n\n  with data.aws_eks_cluster.example,\n  on main.tf line 46, in data \"aws_eks_cluster\" \"example\":\n  46: data \"aws_eks_cluster\" \"example\" {\n\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_eks_cluster": true,
+    "aws_eks_identity_provider_config": true,
+    "aws_iam_role": false,
+    "aws_subnet": false,
+    "aws_vpc": false
+  },
+  "missingMarkers": [
+    "aws_iam_role",
+    "aws_subnet",
+    "aws_vpc"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration looks up an existing AWS EKS cluster named `example` and configures an OIDC identity provider for it using `aws_eks_identity_provider_config`. The OIDC configuration includes a client ID, identity provider config name, and issuer URL, all provided with default variable values.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the EKS cluster exists.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"eks_cluster_name\" {\n  description = \"Name of the existing EKS cluster.\"\n  type        = string\n  default     = \"example\"\n}\n\nvariable \"oidc_client_id\" {\n  description = \"OIDC client ID to use for the EKS identity provider configuration.\"\n  type        = string\n  default     = \"example-client-id\"\n}\n\nvariable \"oidc_identity_provider_config_name\" {\n  description = \"Name of the OIDC identity provider configuration for EKS.\"\n  type        = string\n  default     = \"example-oidc-provider\"\n}\n\nvariable \"oidc_issuer_url\" {\n  description = \"Issuer ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0097-llm-5050a63bb59a.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Generate a Terraform script to configure an OIDC identity provider for an AWS EKS cluster (where the cluster has it's name attribute set to \"example\"). Define a resource that links to the cluster by name and sets up OIDC with specific parameters including client ID, identity provider config name, and issuer URL.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration looks up an existing AWS EKS cluster named `example` and configures an OIDC identity provider for it using `aws_eks_identity_provider_config`. The OIDC configuration includes a client ID, identity provider config name, and issuer URL, all provided with default variable values.",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: reading EKS Cluster (example): couldn't find resource with data.aws_eks_cluster.example, on main.tf line 46, in data \"aws_eks_cluster\" \"example\": 46: data \"aws_eks_cluster\" \"example\" {"
+}

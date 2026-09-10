@@ -1,0 +1,81 @@
+{
+  "index": 137,
+  "rowId": "137",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-56b7fbcd6b27",
+  "userId": "local-user",
+  "durationSeconds": 78.31,
+  "difficulty": "2",
+  "resource": "aws_elasticache_user, aws_elasticache_user_group",
+  "prompt": "Provide an ElastiCache user group resource.",
+  "intent": "creates elasticache user resources(requires access string, engine = REDIS, user id and user name) and sets engine , creates group resource using the user ids",
+  "referenceOutput": "resource \"aws_elasticache_user\" \"test\" {\n  user_id       = \"testUserId\"\n  user_name     = \"default\"\n  access_string = \"on ~app::* -@all +@read +@hash +@bitmap +@geo -setbit -bitfield -hset -hsetnx -hmset -hincrby -hincrbyfloat -hdel -bitop -geoadd -georadius -georadiusbymember\"\n  engine        = \"REDIS\"\n  passwords     = [\"password123456789\"]\n}\n\nresource \"aws_elasticache_user_group\" \"test\" {\n  engine        = \"REDIS\"\n  user_group_id = \"userGroupId\"\n  user_ids      = [aws_elasticache_user.test.user_id]\n}",
+  "bleuScore": 0.023885,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0137-llm-56b7fbcd6b27",
+  "generatedSourceFiles": [
+    "generated-source/row-0137-llm-56b7fbcd6b27/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_elasticache_user": true,
+    "aws_elasticache_user_group": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS ElastiCache Redis user group with two users:\n\n- A required `default` user with access disabled.\n- An application user with full Redis command access and password authentication.\n\nIt includes valid AWS and Random provider configurations, default variable values, and all required resources.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the ElastiCache user group will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"elasticache_user_group_id\" {\n  description = \"ID of the ElastiCache Redis user group.\"\n  type        = string\n  default     = \"example-redis-user-group\"\n}\n\nvariable \"app_user_id\" {\n  description = \"ID of the application ElastiCache Redis user.\"\n  type        = string\n  default     = \"app-user\"\n}\n\nvariable \"app_user_name\" {\n  description = \"User name of the application ElastiCache Redis user.\"\n  type        = s",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0137-llm-56b7fbcd6b27.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Provide an ElastiCache user group resource.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS ElastiCache Redis user group with two users:\n\n- A required `default` user with access disabled.\n- An application user with full Redis command access and password authentication.\n\nIt includes valid AWS and Random provider configurations, default variable values, and all required resources.",
+  "failure_category": "",
+  "failure_reason": ""
+}

@@ -1,0 +1,87 @@
+{
+  "index": 64,
+  "rowId": "64",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-fae1fd3f31a3",
+  "userId": "local-user",
+  "durationSeconds": 101.46,
+  "difficulty": "4",
+  "resource": "aws_iam_role, aws_kinesis_firehose_delivery_stream, aws_opensearchserverless_collection, aws_opensearchserverless_security_policy, aws_s3_bucket, aws_iam_policy_document",
+  "prompt": "Generate a Kinesis Firehose Delivery Stream with a OpenSearch Serverless Destination",
+  "intent": "Has one \"aws_iam_role\" resource, one \"aws_s3_bucket\" resource, one \"aws_opensearchserverless_security_policy\" resource, and one \"aws_kinesis_firehose_delivery_stream\" resource with an \"opensearchserverless_configuration\" block",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\ndata \"aws_region\" \"current\" {}\n\ndata \"aws_caller_identity\" \"current\" {}\n\nresource \"aws_iam_role\" \"firehose_role\" {\n  name = \"firehose_opensearch_role\"\n\n  assume_role_policy = jsonencode({\n    Version = \"2012-10-17\",\n    Statement = [\n      {\n        Effect = \"Allow\",\n        Principal = {\n          Service = \"firehose.amazonaws.com\"\n        },\n        Action = \"sts:AssumeRole\"\n      }\n    ]\n  })\n}\n\nresource \"aws_iam_policy\" \"firehose_policy\" {\n  name        = \"firehose_opensearch_s3_policy\"\n  description = \"Policy for Kinesis Firehose to access S3 and OpenSearch Serverless\"\n\n  policy = jsonencode({\n    Version = \"2012-10-17\",\n    Statement = [\n      {\n        Effect = \"Allow\",\n        Action = [\n          \"s3:PutObject\",\n          \"s3:PutObjectAcl\",\n          \"s3:GetBucketLocation\",\n          \"s3:ListBucket\",\n          \"s3:GetObject\"\n        ],\n        Resource = [\n          aws_s3_bucket.januarysixth.arn,\n          \"${aws_s3_bucket.januarysixth.arn}/*\"\n        ]\n      },\n      {\n        Effect = \"Allow\",\n        Action = [\n          \"es:ESHttpPut\",\n          \"es:ESHttpPost\",\n          \"es:ESHttpGet\"\n        ],\n        Resource = [\n          \"arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:collection/${aws_opensearchserverless_collection.test_collection.name}/*\",\n        ]\n      }\n    ]\n  })\n}\n\nresource \"aws_iam_role_policy_attachment\" \"firehose_policy_attach\" {\n  role       = aws_iam_role.firehose_role.name\n  policy_arn = aws_iam_policy.firehose_policy.arn\n}\n\nresource \"aws_s3_bucket\" \"januarysixth\" {\n  bucket = \"januarysixth\"\n}\nresource \"aws_opensearchserverless_security_policy\" \"example\" {\n  name = \"example\"\n  type = \"encryption\"\n  policy = jsonencode({\n    \"Rules\" = [\n      {\n        \"Resource\" = [\n          \"collection/example\"\n        ],\n        \"ResourceType\" = \"collection\"\n      }\n    ],\n    \"AWSOwnedKey\" = true\n  })\n}\n\nresource \"aws_opensearchserverless_collection\" \"test_collection\" {\n  name = \"example\"\n  depends_on = [aws_opensearchserverless_security_policy.example]\n}\n\nresource \"aws_kinesis_firehose_delivery_stream\" \"test_stream\" {\n  name        = \"terraform-kinesis-firehose-test-stream\"\n  destination = \"opensearchserverless\"\n\n  opensearchserverless_configuration {\n    collection_endpoint = aws_opensearchserverless_collection.test_collection.collection_endpoint\n    role_arn            = aws_iam_role.firehose_role.arn\n    index_name          = \"test\"\n\n    s3_configuration {\n      role_arn           = aws_iam_role.firehose_role.arn\n      bucket_arn         = aws_s3_bucket.januarysixth.arn\n      buffering_size     = 10\n      buffering_interval = 400\n      compression_format = \"GZIP\"\n    }\n  }\n}",
+  "bleuScore": 0.160985,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-1/generated-source/row-0064-llm-fae1fd3f31a3",
+  "generatedSourceFiles": [
+    "generated-source/row-0064-llm-fae1fd3f31a3/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_valid_bucket\": true, \"has_valid_resources\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_iam_role": true,
+    "aws_kinesis_firehose_delivery_stream": true,
+    "aws_opensearchserverless_collection": true,
+    "aws_opensearchserverless_security_policy": true,
+    "aws_s3_bucket": true,
+    "aws_iam_policy_document": false
+  },
+  "missingMarkers": [
+    "aws_iam_policy_document"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "The following Terraform configuration creates an AWS Kinesis Data Firehose delivery stream that delivers records into an Amazon OpenSearch Serverless collection. It also creates the required OpenSearch Serverless security policies, IAM role and permissions for Firehose, and an S3 bucket for failed-document backup.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.40.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"project_name\" {\n  description = \"Name prefix for created resources.\"\n  type        = string\n  default     = \"firehose-aoss-demo\"\n}\n\nvariable \"opensearch_index_name\" {\n  description = \"OpenSearch Serverless index name used by Firehose.\"\n  type        = string\n  default     = \"firehose-index\"\n}\n\nresource \"random_id\" \"suffix\" {\n  byte_length = 4\n}\n\ndata \"aws_caller_identity\" \"current\" {}\n\ndata \"aws_region\" \"current\" {}\n\nresource \"aws_s3_bucke",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-1/run-summaries/row-0064-llm-fae1fd3f31a3.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Generate a Kinesis Firehose Delivery Stream with a OpenSearch Serverless Destination",
+  "promptStrategy": "default",
+  "answer": "The following Terraform configuration creates an AWS Kinesis Data Firehose delivery stream that delivers records into an Amazon OpenSearch Serverless collection. It also creates the required OpenSearch Serverless security policies, IAM role and permissions for Firehose, and an S3 bucket for failed-document backup.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_valid_bucket\": true, \"has_valid_resources\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

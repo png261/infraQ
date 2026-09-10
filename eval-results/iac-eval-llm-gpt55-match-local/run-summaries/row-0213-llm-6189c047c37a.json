@@ -1,0 +1,112 @@
+{
+  "index": 213,
+  "rowId": "213",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-6189c047c37a",
+  "userId": "local-user",
+  "durationSeconds": 166.85,
+  "difficulty": "6",
+  "resource": "aws_iam_role, aws_msk_cluster, aws_mskconnect_connector, aws_mskconnect_custom_plugin, aws_s3_bucket, aws_s3_object, aws_security_group, aws_subnet, aws_subnet, aws_subnet, aws_vpc, aws_availability_zones",
+  "prompt": "Create a managed MSK with 3 broker nodes in us-east-1. Creates an MSK Connect custom plugin using a \"debezium.zip\" and finally create an MSK Connect connector that uses the custom plugin and connects to the MSK cluster",
+  "intent": "Has one \"aws_mskconnect_custom_plugin\" resource\nwith one \"content_type\" = \"ZIP\"\nwith one \"location\"\nwith one \"s3\"\nwith one \"file_key\" = \"debezium.zip\"\nHas one \"aws_mskconnect_connector\" resource",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_vpc\" \"vpc\" {\n    cidr_block = \"192.168.0.0/22\"\n}\n\ndata \"aws_availability_zones\" \"azs\" {\n    state = \"available\"\n}\n\nresource \"aws_subnet\" \"subnet_az1\" {\n    availability_zone = data.aws_availability_zones.azs.names[0]\n    cidr_block = \"192.168.0.0/24\"\n    vpc_id = aws_vpc.vpc.id\n    map_public_ip_on_launch = true\n}\n\nresource \"aws_subnet\" \"subnet_az2\" {\n    availability_zone = data.aws_availability_zones.azs.names[1]\n    cidr_block = \"192.168.1.0/24\"\n    vpc_id = aws_vpc.vpc.id\n    map_public_ip_on_launch = true\n}\n\nresource \"aws_subnet\" \"subnet_az3\" {\n    availability_zone = data.aws_availability_zones.azs.names[2]\n    cidr_block = \"192.168.2.0/24\"\n    vpc_id = aws_vpc.vpc.id\n    map_public_ip_on_launch = true\n}\n\nresource \"aws_internet_gateway\" \"main\" {\n  vpc_id = aws_vpc.vpc.id\n}\n\nresource \"aws_route_table\" \"main\" {\n  vpc_id = aws_vpc.vpc.id\n\n  route {\n    cidr_block = \"0.0.0.0/0\"\n    gateway_id = aws_internet_gateway.main.id\n  }\n}\n\nresource \"aws_route_table_association\" \"first\" {\n  subnet_id      = aws_subnet.subnet_az1.id\n  route_table_id = aws_route_table.main.id\n}\n\nresource \"aws_route_table_association\" \"second\" {\n  subnet_id      = aws_subnet.subnet_az2.id\n  route_table_id = aws_route_table.main.id\n}\n\nresource \"aws_route_table_association\" \"third\" {\n  subnet_id      = aws_subnet.subnet_az3.id\n  route_table_id = aws_route_table.main.id\n}\n\nresource \"aws_security_group\" \"sg\" {\n    vpc_id = aws_vpc.vpc.id\n}\n\nresource \"aws_vpc_security_group_ingress_rule\" \"ingress1\" {\n  security_group_id = aws_security_group.sg.id\n  cidr_ipv4 = \"0.0.0.0/0\"\n  ip_protocol = \"-1\"\n}\n\nresource \"aws_vpc_security_group_egress_rule\" \"egress1\" {\n  security_group_id = aws_security_group.sg.id\n  cidr_ipv4         = \"0.0.0.0/0\"\n  ip_protocol       = \"-1\"\n}\n\nresource \"aws_msk_cluster\" \"example\" {\n    cluster_name = \"example\"\n    kafka_version = \"3.2.0\"\n    number_of_broker_nodes = 3\n\n    broker_node_group_info {\n        instance_type = \"kafka.t3.small\"\n        client_subnets = [\n            aws_subnet.subnet_az1.id,\n            aws_subnet.subnet_az2.id,\n            aws_subnet.subnet_az3.id,\n        ]\n        storage_info {\n            ebs_storage_info {\n                volume_size = 100\n            }\n        }\n        security_groups = [aws_security_group.sg.id]\n    }\n\n    open_monitoring {\n        prometheus {\n            jmx_exporter {\n                enabled_in_broker = true\n            }\n            node_exporter {\n                enabled_in_broker = true\n            }\n        }\n    }\n\n    logging_info {\n        broker_logs {\n            cloudwatch_logs {\n                enabled = false\n            }\n            firehose {\n                enabled = false\n            }\n            s3 {\n                enabled = false\n            }\n        }\n    }\n}\n\nresource \"aws_s3_bucket\" \"example\" {\n    bucket_prefix = \"my-bucket-\"\n}\n\nresource \"aws_s3_object\" \"example\" {\n    bucket = aws_s3_bucket.example.id\n    key = \"my-connector.zip\"\n    source = \"./supplement/my-connector.zip\"\n}\n\nresource \"aws_mskconnect_custom_plugin\" \"example\" {\n    name = \"my-connector\"\n    content_type = \"ZIP\"\n    location {\n        s3 {\n            bucket_arn = aws_s3_bucket.example.arn\n            file_key = aws_s3_object.example.key\n        }\n    }\n}\n\nresource \"aws_iam_role\" \"aws_msk_connector_role\" {\n    name = \"test_role\"\n\n    assume_role_policy = jsonencode({\n        Version = \"2012-10-17\"\n        Statement = [\n            {\n                Effect = \"Allow\",\n                Principal = {\n                    Service = \"kafkaconnect.amazonaws.com\"\n                },\n                Action = \"sts:AssumeRole\",\n            }\n        ]\n    })\n}\n\nresource \"aws_iam_policy\" \"msk_connector_policy\" {\n  name        = \"msk-connector-policy\"\n  description = \"IAM policy for MSK Connector\"\n\n  policy = jsonencode({\n    Version = \"2012-10-17\"\n    Statement = [\n      {\n        Effect = \"Allow\"\n        Action = [\n          \"kafka:DescribeCluster\",\n          \"kafka:DescribeClusterV2\",\n          \"kafka:DescribeTopic\",\n          \"kafka:CreateTopic\",\n          \"kafka:DeleteTopic\",\n          \"kafka:WriteData\",\n          \"kafka:ReadData\"\n        ]\n        Resource = \"${aws_msk_cluster.example.arn}/*\"\n      },\n      {\n        Effect = \"Allow\"\n        Action = [\n          \"s3:GetObject\",\n          \"s3:PutObject\",\n          \"s3:ListBucket\"\n        ]\n        Resource = [\n          \"${aws_s3_bucket.example.arn}\",\n          \"${aws_s3_bucket.example.arn}/*\"\n        ]\n      }\n    ]\n  })\n}\n\nresource \"aws_iam_role_policy_attachment\" \"msk_connector_attach_policy\" {\n  role       = aws_iam_role.aws_msk_connector_role.name\n  policy_arn = aws_iam_policy.msk_connector_policy.arn\n}\n\n\nresource \"aws_mskconnect_connector\" \"example_connector\" {\n    name = \"example\"\n\n    kafkaconnect_version = \"2.7.1\"\n\n    capacity {\n        autoscaling {\n            mcu_count = 1\n            min_worker_count = 1\n            max_worker_count = 2\n\n            scale_in_policy {\n                cpu_utilization_percentage = 20\n            }\n\n            scale_out_policy {\n                cpu_utilization_percentage = 80\n            }\n        }\n    }\n\n    connector_configuration = {\n        # modify the following connector class according to your code\n        # the connector code depends on your msk setting\n        # we will not provide an example connector code here\n        \"connector.class\" = \"com.github.xxx.kafka.connect.simulator.SimulatorSinkConnector\"\n        \"tasks.max\" = \"1\"\n        \"topics\" = \"example\"\n    }\n\n    kafka_cluster {\n        apache_kafka_cluster {\n            bootstrap_servers = aws_msk_cluster.example.bootstrap_brokers_tls\n\n            vpc {\n                security_groups = [aws_security_group.sg.id]\n                subnets = [aws_subnet.subnet_az1.id, \n                           aws_subnet.subnet_az2.id, \n                           aws_subnet.subnet_az3.id]\n            }\n        }\n    }\n\n    kafka_cluster_client_authentication {\n        authentication_type = \"NONE\"\n    }\n\n    kafka_cluster_encryption_in_transit {\n        encryption_type = \"PLAINTEXT\"\n    }\n\n    plugin {\n        custom_plugin {\n            arn = aws_mskconnect_custom_plugin.example.arn\n            revision = aws_mskconnect_custom_plugin.example.latest_revision\n        }\n    }\n\n    service_execution_role_arn = aws_iam_role.aws_msk_connector_role.arn\n}",
+  "bleuScore": 0.175366,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0213-llm-6189c047c37a",
+  "generatedSourceFiles": [
+    "generated-source/row-0213-llm-6189c047c37a/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": false,
+    "missingPathModuleFiles": [
+      "debezium.zip"
+    ],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "166",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "184",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "debezium.zip",
+        "line": "",
+        "finding": "missing_path_module_file"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"main\": {\"allow\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": [
+      "debezium.zip"
+    ]
+  },
+  "requiredMarkers": {
+    "aws_iam_role": true,
+    "aws_msk_cluster": true,
+    "aws_mskconnect_connector": true,
+    "aws_mskconnect_custom_plugin": true,
+    "aws_s3_bucket": true,
+    "aws_s3_object": true,
+    "aws_security_group": true,
+    "aws_subnet": true,
+    "aws_vpc": true,
+    "aws_availability_zones": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "The following Terraform configuration creates a complete AWS MSK + MSK Connect setup in `us-east-1`:\n\n- A new VPC with 3 private subnets across 3 Availability Zones\n- A managed Amazon MSK cluster with 3 broker nodes\n- Security groups allowing MSK Connect to reach the MSK brokers\n- An S3 bucket and upload of a local `debezium.zip` file\n- An MSK Connect custom plugin based on `debezium.zip`\n- IAM role and permissions for MSK Connect\n- An MSK Connect connector that uses the custom Debezium plugin and connects to the MSK cluster\n\n> Place `debezium.zip` in the same directory as this Terraform file before running `terraform apply`.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nvariable \"project_name\" {\n  description = \"Name prefix for all resources.\"\n  type        = string\n  default     = \"msk-debezium-demo\"\n}\n\nvariable \"kafka_version\" {\n  description = \"Kafka version for the MSK cluster.\"\n  type        = string\n  default     = \"3.5.1\"\n}\n\nvariable \"broker",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0213-llm-6189c047c37a.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a managed MSK with 3 broker nodes in us-east-1. Creates an MSK Connect custom plugin using a \"debezium.zip\" and finally create an MSK Connect connector that uses the custom plugin and connects to the MSK cluster",
+  "promptStrategy": "default",
+  "answer": "The following Terraform configuration creates a complete AWS MSK + MSK Connect setup in `us-east-1`:\n\n- A new VPC with 3 private subnets across 3 Availability Zones\n- A managed Amazon MSK cluster with 3 broker nodes\n- Security groups allowing MSK Connect to reach the MSK brokers\n- An S3 bucket and upload of a local `debezium.zip` file\n- An MSK Connect custom plugin based on `debezium.zip`\n- IAM role and permissions for MSK Connect\n- An MSK Connect connector that uses the custom Debezium plugin and connects to the MSK cluster\n\n> Place `debezium.zip` in the same directory as this Terraform file before running `terraform apply`.",
+  "failure_category": "artifact_incomplete",
+  "failure_reason": "Missing local files: debezium.zip"
+}

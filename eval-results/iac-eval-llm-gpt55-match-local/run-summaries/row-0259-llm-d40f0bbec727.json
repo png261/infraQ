@@ -1,0 +1,96 @@
+{
+  "index": 259,
+  "rowId": "259",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-d40f0bbec727",
+  "userId": "local-user",
+  "durationSeconds": 182.24,
+  "difficulty": "4",
+  "resource": "aws_redshift_cluster, aws_redshift_event_subscription, aws_redshift_parameter_group, aws_sns_topic",
+  "prompt": "Create an AWS Redshift cluster with example cluster parameters and notifications on events associated with the parameter group",
+  "intent": "Has one resource \"aws_sns_topic\"\n\nHas one resource \"aws_redshift_parameter_group\"\n\nHas one resource \"aws_redshift_cluster\"\nwith cluster_parameter_group_name = parameter group id\n\nHas one resource \"aws_redshift_event_subscription\"\nwith source_type = \"cluster-parameter-group\"\nand sns topic referenced in sns_topic_arn\nand parameter group referenced in source_ids",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_redshift_cluster\" \"example\" {\n  cluster_identifier  = \"tf-redshift-cluster\"\n  database_name       = \"mydb\"\n  master_username     = \"exampleuser\"\n  master_password     = \"Mustbe8characters\"\n  node_type           = \"ra3.xlplus\"\n  cluster_type        = \"single-node\"\n  skip_final_snapshot = true\n  cluster_parameter_group_name = aws_redshift_parameter_group.bar.id\n}\n\nresource \"aws_redshift_parameter_group\" \"bar\" {\n  name   = \"parameter-group-test-terraform\"\n  family = \"redshift-1.0\"\n\n  parameter {\n    name  = \"require_ssl\"\n    value = \"true\"\n  }\n\n  parameter {\n    name  = \"query_group\"\n    value = \"example\"\n  }\n\n  parameter {\n    name  = \"enable_user_activity_logging\"\n    value = \"true\"\n  }\n}\n\nresource \"aws_sns_topic\" \"default\" {\n  name = \"redshift-events\"\n}\n\nresource \"aws_redshift_event_subscription\" \"default\" {\n  name          = \"redshift-event-sub\"\n  sns_topic_arn = aws_sns_topic.default.arn\n\n  source_type = \"cluster-parameter-group\"\n  source_ids  = [aws_redshift_parameter_group.bar.id]\n\n  severity = \"INFO\"\n\n  event_categories = [\n    \"configuration\",\n    \"management\",\n    \"monitoring\",\n    \"security\",\n  ]\n}",
+  "bleuScore": 0.092505,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0259-llm-d40f0bbec727",
+  "generatedSourceFiles": [
+    "generated-source/row-0259-llm-d40f0bbec727/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "125",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "267",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_redshift_cluster": true,
+    "aws_redshift_event_subscription": true,
+    "aws_redshift_parameter_group": true,
+    "aws_sns_topic": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a deployable AWS Redshift provisioned cluster with:\n\n- A dedicated VPC, subnets, route table, and security group\n- A Redshift subnet group\n- A Redshift parameter group with example parameters\n- An IAM role for Redshift with Amazon S3 read-only access\n- An encrypted single-node Redshift cluster using the custom parameter group\n- An SNS topic for notifications\n- A Redshift event subscription for events associated with the Redshift parameter group\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Redshift cluster will be deployed.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"redshift_cluster_identifier\" {\n  description = \"Identifier for the Redshift cluster.\"\n  type        = string\n  default     = \"example-redshift-cluster\"\n}\n\nvariable \"redshift_database_name\" {\n  description = \"Initial database name for the Redshift cluster.\"\n  type        = string\n  default     = \"exampledb\"\n}\n\nvariable \"redshift_master_username\" {",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0259-llm-d40f0bbec727.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an AWS Redshift cluster with example cluster parameters and notifications on events associated with the parameter group",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a deployable AWS Redshift provisioned cluster with:\n\n- A dedicated VPC, subnets, route table, and security group\n- A Redshift subnet group\n- A Redshift parameter group with example parameters\n- An IAM role for Redshift with Amazon S3 read-only access\n- An encrypted single-node Redshift cluster using the custom parameter group\n- An SNS topic for notifications\n- A Redshift event subscription for events associated with the Redshift parameter group",
+  "failure_category": "",
+  "failure_reason": ""
+}

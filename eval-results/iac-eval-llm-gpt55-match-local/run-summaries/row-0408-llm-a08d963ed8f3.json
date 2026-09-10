@@ -1,0 +1,99 @@
+{
+  "index": 408,
+  "rowId": "408",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-a08d963ed8f3",
+  "userId": "local-user",
+  "durationSeconds": 93.52,
+  "difficulty": "1",
+  "resource": "aws_db_instance",
+  "prompt": "Create a db.t4g.large AWS PostgresSQL",
+  "intent": "Has one \"aws_db_instance\" resource\nwith one \"allocated_storage\" minimun value is 20\nwith one \"engine\" with value \"postgres\"\nwith one \"instance_class\" with value \"db.t4g.large\"\nwith one \"password\"\nwith one \"username\"",
+  "referenceOutput": "resource \"aws_db_instance\" \"default\" {\n  allocated_storage    = 20\n  engine               = \"postgres\"\n  instance_class       = \"db.t4g.large\"\n  username             = \"foo\"\n  password             = \"foobarbaz\"\n}",
+  "bleuScore": 0.015154,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0408-llm-a08d963ed8f3",
+  "generatedSourceFiles": [
+    "generated-source/row-0408-llm-a08d963ed8f3/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "98",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "134",
+        "finding": "public_rds_instance"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "142",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_db_instance\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_db_instance": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration provisions an AWS RDS PostgreSQL database using the `db.t4g.large` instance class. It uses the default VPC and its subnets, creates a DB subnet group, provisions a security group allowing PostgreSQL access on port `5432`, generates a secure master password, and creates an encrypted PostgreSQL RDS instance.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the PostgreSQL RDS instance will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"db_identifier\" {\n  description = \"The identifier for the RDS PostgreSQL instance.\"\n  type        = string\n  default     = \"postgres-t4g-large-db\"\n}\n\nvariable \"db_name\" {\n  description = \"The initial PostgreSQL database name.\"\n  type        = string\n  default     = \"appdb\"\n}\n\nvariable \"db_username\" {\n  description = \"The master username for the PostgreSQL database.\"\n  type        = string\n  default     = \"d",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0408-llm-a08d963ed8f3.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a db.t4g.large AWS PostgresSQL",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration provisions an AWS RDS PostgreSQL database using the `db.t4g.large` instance class. It uses the default VPC and its subnets, creates a DB subnet group, provisions a security group allowing PostgreSQL access on port `5432`, generates a secure master password, and creates an encrypted PostgreSQL RDS instance.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_db_instance\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

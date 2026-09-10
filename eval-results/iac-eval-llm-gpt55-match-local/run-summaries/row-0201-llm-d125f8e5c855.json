@@ -1,0 +1,91 @@
+{
+  "index": 201,
+  "rowId": "201",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-d125f8e5c855",
+  "userId": "local-user",
+  "durationSeconds": 68.91,
+  "difficulty": "6",
+  "resource": "aws_msk_cluster, aws_security_group, aws_subnet, aws_subnet, aws_subnet, aws_vpc, aws_availability_zones",
+  "prompt": "Create a managed MSK cluster with 3 broker nodes in us-east1.",
+  "intent": "Has one \"aws_msk_cluster\" resource\nwith one \"number_of_broker_nodes\" = 3\nRequires aws provider with alias of \"aws\" with a region of us-east-1",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_vpc\" \"vpc\" {\n    cidr_block = \"192.168.0.0/22\"\n}\n\ndata \"aws_availability_zones\" \"azs\" {\n    state = \"available\"\n}\n\nresource \"aws_subnet\" \"subnet_az1\" {\n    availability_zone = data.aws_availability_zones.azs.names[0]\n    cidr_block = \"192.168.0.0/24\"\n    vpc_id = aws_vpc.vpc.id\n    map_public_ip_on_launch = true\n}\n\nresource \"aws_subnet\" \"subnet_az2\" {\n    availability_zone = data.aws_availability_zones.azs.names[1]\n    cidr_block = \"192.168.1.0/24\"\n    vpc_id = aws_vpc.vpc.id\n    map_public_ip_on_launch = true\n}\n\nresource \"aws_subnet\" \"subnet_az3\" {\n    availability_zone = data.aws_availability_zones.azs.names[2]\n    cidr_block = \"192.168.2.0/24\"\n    vpc_id = aws_vpc.vpc.id\n    map_public_ip_on_launch = true\n}\n\nresource \"aws_internet_gateway\" \"main\" {\n  vpc_id = aws_vpc.vpc.id\n}\n\nresource \"aws_route_table\" \"main\" {\n  vpc_id = aws_vpc.vpc.id\n\n  route {\n    cidr_block = \"0.0.0.0/0\"\n    gateway_id = aws_internet_gateway.main.id\n  }\n}\n\nresource \"aws_route_table_association\" \"first\" {\n  subnet_id      = aws_subnet.subnet_az1.id\n  route_table_id = aws_route_table.main.id\n}\n\nresource \"aws_route_table_association\" \"second\" {\n  subnet_id      = aws_subnet.subnet_az2.id\n  route_table_id = aws_route_table.main.id\n}\n\nresource \"aws_route_table_association\" \"third\" {\n  subnet_id      = aws_subnet.subnet_az3.id\n  route_table_id = aws_route_table.main.id\n}\n\nresource \"aws_security_group\" \"sg\" {\n    vpc_id = aws_vpc.vpc.id\n}\n\nresource \"aws_vpc_security_group_ingress_rule\" \"ingress1\" {\n  security_group_id = aws_security_group.sg.id\n  cidr_ipv4 = \"0.0.0.0/0\"\n  ip_protocol = \"-1\"\n}\n\nresource \"aws_vpc_security_group_egress_rule\" \"egress1\" {\n  security_group_id = aws_security_group.sg.id\n  cidr_ipv4         = \"0.0.0.0/0\"\n  ip_protocol       = \"-1\"\n}\n\nresource \"aws_msk_cluster\" \"example\" {\n    cluster_name = \"example\"\n    kafka_version = \"3.2.0\"\n    number_of_broker_nodes = 3\n\n    broker_node_group_info {\n        instance_type = \"kafka.t3.small\"\n        client_subnets = [\n            aws_subnet.subnet_az1.id,\n            aws_subnet.subnet_az2.id,\n            aws_subnet.subnet_az3.id,\n        ]\n\n        storage_info {\n            ebs_storage_info {\n                volume_size = 1000\n            }\n        }\n\n        security_groups = [aws_security_group.sg.id]\n    }\n\n    open_monitoring {\n        prometheus {\n            jmx_exporter {\n                enabled_in_broker = true\n            }\n            node_exporter {\n                enabled_in_broker = true\n            }\n        }\n    }\n\n    logging_info {\n        broker_logs {\n            cloudwatch_logs {\n                enabled = false\n            }\n            firehose {\n                enabled = false\n            }\n            s3 {\n                enabled = false\n            }\n        }\n    }\n}\n\noutput \"zookeeper_connect_string\" {\n    value = aws_msk_cluster.example.zookeeper_connect_string\n}\n\noutput \"bootstrap_brokers_tls\" {\n    description = \"TLS connection host:port pairs\"\n    value = aws_msk_cluster.example.bootstrap_brokers_tls\n}",
+  "bleuScore": 0.143318,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0201-llm-d125f8e5c855",
+  "generatedSourceFiles": [
+    "generated-source/row-0201-llm-d125f8e5c855/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "167",
+        "finding": "broad_ingress_or_egress_cidr"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_msk_cluster": true,
+    "aws_security_group": true,
+    "aws_subnet": true,
+    "aws_vpc": true,
+    "aws_availability_zones": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a fully managed Amazon MSK Kafka cluster in AWS `us-east-1` with:\n\n- A new VPC\n- Three public subnets across three Availability Zones\n- Security group rules allowing Kafka broker access within the VPC\n- A managed MSK cluster with 3 broker nodes\n- EBS storage for each broker\n- CloudWatch logging enabled for broker logs\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nvariable \"cluster_name\" {\n  description = \"Name of the MSK cluster.\"\n  type        = string\n  default     = \"example-managed-msk-cluster\"\n}\n\nvariable \"vpc_cidr\" {\n  description = \"CIDR block for the MSK VPC.\"\n  type        = string\n  default     = \"10.0.0.0/16\"\n}\n\nvariable \"broker_instance_type\" {\n  description = \"Instance type for MSK broker nodes.\"\n  type        = string\n  default     = \"kafka.m5.large\"\n}\n\nvariable \"kafka_version\" {\n  description = \"Kafka version for the MSK cluster.\"\n  type        = string\n  default     = \"3.5.1\"\n}\n\nvariable \"broker_ebs_volume_size\" {\n  description = \"EBS volume size in GiB for each broker.\"\n  type",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0201-llm-d125f8e5c855.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a managed MSK cluster with 3 broker nodes in us-east1.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a fully managed Amazon MSK Kafka cluster in AWS `us-east-1` with:\n\n- A new VPC\n- Three public subnets across three Availability Zones\n- Security group rules allowing Kafka broker access within the VPC\n- A managed MSK cluster with 3 broker nodes\n- EBS storage for each broker\n- CloudWatch logging enabled for broker logs",
+  "failure_category": "",
+  "failure_reason": ""
+}

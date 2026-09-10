@@ -1,0 +1,105 @@
+{
+  "index": 437,
+  "rowId": "437",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-05c3f93dec3f",
+  "userId": "local-user",
+  "durationSeconds": 117.92,
+  "difficulty": "6",
+  "resource": "aws_db_subnet_group, aws_internet_gateway, aws_route_table, aws_route_table_association, aws_route_table_association, aws_security_group, aws_subnet, aws_subnet, aws_vpc",
+  "prompt": "Set up a VPC in the AWS region with two subnets in different availability zones, an internet gateway, and a route table for internet access. It also defines a security group to allow access to MySQL and PostgreSQL databases on their default ports from any IP address and creates a database subnet group including both subnets.",
+  "intent": "Has one \"aws_vpc\" resource:\nIncludes a \"cidr_block\" for network configuration\n\nHas two \"aws_subnet\" resources:\nBoth subnets are part of the \"aws_vpc\" resource\nEach subnet is located in a different availability zone: \"us-west-1a\" and \"us-west-1b\"\n\nHas one \"aws_internet_gateway\" resource:\nAttached to the \"aws_vpc\" resource\n\nHas one \"aws_route_table\" resource:\nAssociated with the \"aws_vpc\"\nContains a default route that directs traffic to the \"aws_internet_gateway\"\nApplied to both subnets to enable internet access\n\nHas one \"aws_security_group\" resource:\nAssociated with the \"aws_vpc\"\nConfigured to allow inbound traffic on the default ports for MySQL (TCP 3306) and PostgreSQL (TCP 5432) from any IP address\n\nHas one \"aws_db_subnet_group\" resource:\nIncludes both \"aws_subnet\" resources\nFacilitates the placement of databases in the specified subnets",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_vpc\" \"main\" {\n  cidr_block           = \"10.0.0.0/16\"\n  enable_dns_hostnames = true\n}\n\ndata \"aws_availability_zones\" \"azs\" {\n    state = \"available\"\n}\n\nresource \"aws_subnet\" \"zonea\" {\n  vpc_id            = aws_vpc.main.id\n  cidr_block        = \"10.0.1.0/24\"\n  availability_zone = data.aws_availability_zones.azs.names[0]\n}\n\nresource \"aws_subnet\" \"zoneb\" {\n  vpc_id            = aws_vpc.main.id\n  cidr_block        = \"10.0.2.0/24\"\n  availability_zone = data.aws_availability_zones.azs.names[1]\n}\n\nresource \"aws_internet_gateway\" \"gateway\" {\n  vpc_id = aws_vpc.main.id\n}\n\nresource \"aws_route_table\" \"public\" {\n  vpc_id = aws_vpc.main.id\n\n  route {\n    cidr_block = \"0.0.0.0/0\"\n    gateway_id = aws_internet_gateway.gateway.id\n  }\n}\n\nresource \"aws_route_table_association\" \"publica\" {\n  subnet_id      = aws_subnet.zonea.id\n  route_table_id = aws_route_table.public.id\n}\n\nresource \"aws_route_table_association\" \"publicb\" {\n  subnet_id      = aws_subnet.zoneb.id\n  route_table_id = aws_route_table.public.id\n}\n\nresource \"aws_security_group\" \"allow-db-access\" {\n  name   = \"allow-all\"\n  vpc_id = aws_vpc.main.id\n\n  ingress {\n    from_port   = \"3306\"\n    to_port     = \"3306\"\n    protocol    = \"tcp\"\n    cidr_blocks = [\"0.0.0.0/0\"]\n  }\n\n  ingress {\n    from_port   = \"5432\"\n    to_port     = \"5432\"\n    protocol    = \"tcp\"\n    cidr_blocks = [\"0.0.0.0/0\"]\n  }\n}\n\nresource \"aws_db_subnet_group\" \"default\" {\n  subnet_ids = [aws_subnet.zonea.id, aws_subnet.zoneb.id]\n}",
+  "bleuScore": 0.165994,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0437-llm-05c3f93dec3f",
+  "generatedSourceFiles": [
+    "generated-source/row-0437-llm-05c3f93dec3f/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "117",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "125",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "133",
+        "finding": "broad_ingress_or_egress_cidr"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: Failed to load plugin schemas\n\nError while loading schemas for plugin components: Failed to obtain provider\nschema: Could not load the schema for provider\nregistry.terraform.io/hashicorp/aws: failed to instantiate provider\n\"registry.terraform.io/hashicorp/aws\" to obtain schema: timeout while waiting\nfor plugin to start..\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_db_subnet_group": true,
+    "aws_internet_gateway": true,
+    "aws_route_table": true,
+    "aws_route_table_association": true,
+    "aws_security_group": true,
+    "aws_subnet": true,
+    "aws_vpc": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS VPC with two subnets in different Availability Zones, attaches an Internet Gateway, and configures a public route table for internet access. It also creates a security group allowing inbound MySQL and PostgreSQL traffic from any IPv4 address, and defines an RDS database subnet group containing both subnets.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"vpc_cidr\" {\n  description = \"CIDR block for the VPC.\"\n  type        = string\n  default     = \"10.0.0.0/16\"\n}\n\nvariable \"subnet_1_cidr\" {\n  description = \"CIDR block for the first subnet.\"\n  type        = string\n  default     = \"10.0.1.0/24\"\n}\n\nvariable \"subnet_2_cidr\" {\n  description = \"CIDR block for the second subnet.\"\n  type        = string\n  default     = \"10.0.2.0/24\"\n}\n\ndata \"aws_availability_zones\" \"available\" {\n  state = \"available\"\n}\n\nresource \"aws_vpc\" \"database_vpc\" {\n  cidr_bl",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0437-llm-05c3f93dec3f.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Set up a VPC in the AWS region with two subnets in different availability zones, an internet gateway, and a route table for internet access. It also defines a security group to allow access to MySQL and PostgreSQL databases on their default ports from any IP address and creates a database subnet group including both subnets.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS VPC with two subnets in different Availability Zones, attaches an Internet Gateway, and configures a public route table for internet access. It also creates a security group allowing inbound MySQL and PostgreSQL traffic from any IPv4 address, and defines an RDS database subnet group containing both subnets.",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: Failed to load plugin schemas Error while loading schemas for plugin components: Failed to obtain provider schema: Could not load the schema for provider registry.terraform.io/hashicorp/aws: failed to instantiate provider \"registry.terraform.io/hashicorp/aws\" to obtain schema: timeout while waiting for plugin to start.."
+}

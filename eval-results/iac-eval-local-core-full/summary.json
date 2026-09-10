@@ -1,0 +1,12 @@
+{
+  "allAgentsCalled": 458,
+  "avgBleuScore": 0.257867172489083,
+  "csv": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-local-core-full/iac_eval_local_results.csv",
+  "failed": 140,
+  "jsonl": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-local-core-full/iac_eval_local_results.jsonl",
+  "officialPassed": 318,
+  "opaPassed": 318,
+  "passed": 318,
+  "planPassed": 446,
+  "rows": 458
+}

@@ -1,0 +1,80 @@
+{
+  "index": 165,
+  "rowId": "165",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-b7e436521b8e",
+  "userId": "local-user",
+  "durationSeconds": 53.49,
+  "difficulty": "3",
+  "resource": "aws_dynamodb_table",
+  "prompt": "Create a DynamoDB table with custom read capacity = 20 and write capacity = 20.",
+  "intent": "dynamodb table -> hash_key, name, attribute (name, type), read_capacity = 20, write_capacity = 20",
+  "referenceOutput": "resource \"aws_dynamodb_table\" \"basic-dynamodb-table\" {\n  name           = \"GameScores\"\n  billing_mode   = \"PROVISIONED\"\n  read_capacity  = 20\n  write_capacity = 20\n  hash_key       = \"UserId\"\n  range_key      = \"GameTitle\"\n\n  attribute {\n    name = \"UserId\"\n    type = \"S\"\n  }\n\n  attribute {\n    name = \"GameTitle\"\n    type = \"S\"\n  }\n\n  attribute {\n    name = \"TopScore\"\n    type = \"N\"\n  }\n\n  ttl {\n    attribute_name = \"TimeToExist\"\n    enabled        = false\n  }\n\n  global_secondary_index {\n    name               = \"GameTitleIndex\"\n    hash_key           = \"GameTitle\"\n    range_key          = \"TopScore\"\n    write_capacity     = 10\n    read_capacity      = 10\n    projection_type    = \"INCLUDE\"\n    non_key_attributes = [\"UserId\"]\n  }\n\n  tags = {\n    Name        = \"dynamodb-table-1\"\n    Environment = \"production\"\n  }\n}",
+  "bleuScore": 0.243076,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0165-llm-b7e436521b8e",
+  "generatedSourceFiles": [
+    "generated-source/row-0165-llm-b7e436521b8e/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_dynamodb_table": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS DynamoDB table using provisioned capacity mode with:\n\n- Read capacity units: `20`\n- Write capacity units: `20`\n- A simple primary key named `id`\n- AWS provider configured for region `us-east-1`\n\n```hcl\nterraform {\n  required_version = \">= 1.0.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_dynamodb_table\" \"custom_capacity_table\" {\n  name           = \"custom-capacity-dynamodb-table\"\n  billing_mode   = \"PROVISIONED\"\n  read_capacity  = 20\n  write_capacity = 20\n\n  hash_key = \"id\"\n\n  attribute {\n    name = \"id\"\n    type = \"S\"\n  }\n\n  tags = {\n    Name        = \"custom-capacity-dynamodb-table\"\n    Environment = \"dev\"\n    ManagedBy   = \"Terraform\"\n  }\n}\n```",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0165-llm-b7e436521b8e.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a DynamoDB table with custom read capacity = 20 and write capacity = 20.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS DynamoDB table using provisioned capacity mode with:\n\n- Read capacity units: `20`\n- Write capacity units: `20`\n- A simple primary key named `id`\n- AWS provider configured for region `us-east-1`",
+  "failure_category": "",
+  "failure_reason": ""
+}

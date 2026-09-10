@@ -1,0 +1,80 @@
+{
+  "index": 421,
+  "rowId": "421",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-406a6c611db6",
+  "userId": "local-user",
+  "durationSeconds": 56.99,
+  "difficulty": "1",
+  "resource": "aws_efs_file_system",
+  "prompt": "create a AWS EFS File System with tags",
+  "intent": "Have one \"aws_efs_file_system\" resource\n    with one tags",
+  "referenceOutput": "resource \"aws_efs_file_system\" \"foo\" {\n  creation_token = \"my-product\"\n\n  tags = {\n    Name = \"MyProduct\"\n  }\n}",
+  "bleuScore": 0.031809,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0421-llm-406a6c611db6",
+  "generatedSourceFiles": [
+    "generated-source/row-0421-llm-406a6c611db6/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_efs_file_system": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS EFS (Elastic File System) in the `us-east-1` region with standard settings and user-defined tags. It includes a provider configuration, default variables, and a tagged EFS file system resource.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the EFS file system will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"efs_name\" {\n  description = \"Name tag for the EFS file system.\"\n  type        = string\n  default     = \"example-efs-file-system\"\n}\n\nvariable \"environment\" {\n  description = \"Environment tag for the EFS file system.\"\n  type        = string\n  default     = \"dev\"\n}\n\nresource \"aws_efs_file_system\" \"this\" {\n  creation_token = var.efs_name\n\n  encrypted        = true\n  performance_mode = \"generalPurpose\"\n  throughput_mode  = \"bursting\"\n\n  tags = {\n    Name        = var.efs_name\n    Environment = var.environment\n    ManagedBy   = \"Terraform\"\n  }\n}\n\noutput \"efs_file_system_id\" {\n  description = \"The ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0421-llm-406a6c611db6.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: create a AWS EFS File System with tags",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS EFS (Elastic File System) in the `us-east-1` region with standard settings and user-defined tags. It includes a provider configuration, default variables, and a tagged EFS file system resource.",
+  "failure_category": "",
+  "failure_reason": ""
+}

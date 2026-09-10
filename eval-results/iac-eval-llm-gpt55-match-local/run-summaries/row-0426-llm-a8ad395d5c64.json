@@ -1,0 +1,84 @@
+{
+  "index": 426,
+  "rowId": "426",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-a8ad395d5c64",
+  "userId": "local-user",
+  "durationSeconds": 113.82,
+  "difficulty": "5",
+  "resource": "aws_internet_gateway, aws_route_table, aws_route_table_association, aws_subnet, aws_vpc",
+  "prompt": "create a VPC in AWS with multiple public subnets and associates them with a route table configured for internet access via an internet gateway.",
+  "intent": "Has one \"aws_vpc\" resource\nwith a specified \"cidr_block\"\nwith \"enable_dns_hostnames\" set to true\nwith a \"tags\" map including a \"Name\" key\n\nHas one \"aws_subnet\" resources\nwith \"vpc_id\" referencing the \"aws_vpc\" resource\nwith specified \"cidr_block\" for each subnet\nin an indexed sequence with each subnet having a unique \"availability_zone\"\nwith a \"tags\" map including a \"Name\" key that uniquely identifies each subnet\n\nHas one \"aws_internet_gateway\" resource\nwith \"vpc_id\" referencing the \"aws_vpc\" resource\nwith a \"tags\" map including a \"Name\" key\n\nHas one \"aws_route_table\" resource\nwith \"vpc_id\" referencing the \"aws_vpc\" resource\ncontaining a default route for internet access through the \"aws_internet_gateway\"\nwith a \"tags\" map including a \"Name\" key\n\nHas multiple \"aws_route_table_association\" resources\nlinking each \"aws_subnet\" resource to the \"aws_route_table\" public\nwith \"subnet_id\" and \"route_table_id\" set appropriately for each subnet",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\ndata \"aws_availability_zones\" \"available\" {\n  state = \"available\"\n}\n\nlocals {\n  subnet_count = 2\n}\n\nresource \"aws_vpc\" \"_\" {\n  cidr_block           = \"10.0.0.0/16\"\n  enable_dns_hostnames = true\n}\n\nresource \"aws_subnet\" \"public\" {\n  count             = local.subnet_count\n  vpc_id            = aws_vpc._.id\n  cidr_block        = [\"10.0.1.0/24\",\n                      \"10.0.2.0/24\",\n                      \"10.0.3.0/24\",\n                      \"10.0.4.0/24\"][count.index]\n  availability_zone = data.aws_availability_zones.available.names[count.index]\n}\n\nresource \"aws_internet_gateway\" \"_\" {\n  vpc_id = aws_vpc._.id\n}\n\nresource \"aws_route_table\" \"public\" {\n  vpc_id = aws_vpc._.id\n  route {\n    cidr_block = \"0.0.0.0/0\"\n    gateway_id = aws_internet_gateway._.id\n  }\n}\n\nresource \"aws_route_table_association\" \"public\" {\n  count          = local.subnet_count\n  subnet_id      = aws_subnet.public[count.index].id\n  route_table_id = aws_route_table.public.id\n}",
+  "bleuScore": 0.218997,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0426-llm-a8ad395d5c64",
+  "generatedSourceFiles": [
+    "generated-source/row-0426-llm-a8ad395d5c64/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_internet_gateway\": true, \"is_valid_route_table\": false, \"is_valid_route_table_association\": true, \"is_valid_subnet\": true, \"is_valid_vpc\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_internet_gateway": true,
+    "aws_route_table": true,
+    "aws_route_table_association": true,
+    "aws_subnet": true,
+    "aws_vpc": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS VPC with three public subnets across multiple Availability Zones. It attaches an Internet Gateway to the VPC, creates a public route table with a default route to the Internet Gateway, and associates each public subnet with that route table so resources launched in those subnets can access the internet.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the VPC will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"vpc_cidr_block\" {\n  description = \"CIDR block for the VPC.\"\n  type        = string\n  default     = \"10.0.0.0/16\"\n}\n\nvariable \"public_subnet_cidr_blocks\" {\n  description = \"CIDR blocks for the public subnets.\"\n  type        = list(string)\n  default = [\n    \"10.0.1.0/24\",\n    \"10.0.2.0/24\",\n    \"10.0.3.0/24\"\n  ]\n}\n\ndata \"aws_availability_zones\" \"available\" {\n  state = \"available\"\n}\n\nresource \"aws_vpc\" \"main\" {\n  cidr_block           = var.vpc_cidr_block\n  enable_dns_support   = true\n  enable_dns_",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0426-llm-a8ad395d5c64.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: create a VPC in AWS with multiple public subnets and associates them with a route table configured for internet access via an internet gateway.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS VPC with three public subnets across multiple Availability Zones. It attaches an Internet Gateway to the VPC, creates a public route table with a default route to the Internet Gateway, and associates each public subnet with that route table so resources launched in those subnets can access the internet.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_internet_gateway\": true, \"is_valid_route_table\": false, \"is_valid_route_table_association\": true, \"is_valid_subnet\": true, \"is_valid_vpc\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

@@ -1,0 +1,81 @@
+{
+  "index": 42,
+  "rowId": "42",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-5ddd8e4d3394",
+  "userId": "local-user",
+  "durationSeconds": 70.68,
+  "difficulty": "5",
+  "resource": "aws_lex_bot, aws_lex_intent",
+  "prompt": "create an aws_lex_bot",
+  "intent": "Has one resource \"aws_lex_bot\" and one resource \"aws_lex_intent\"",
+  "referenceOutput": "terraform {  required_providers {    aws = {      source  = \"hashicorp/aws\"      version = \"~> 5.75\"    }  }  required_version = \"~> 1.9.8\"}provider \"aws\" {  region  = \"us-east-1\"  profile = \"admin-1\"  assume_role {    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"  }}resource \"aws_lex_intent\" \"order_flowers\" {  name = \"OrderFlowers\"  description = \"Intent to order a bouquet of flowers for pick up\"  sample_utterances = [    \"I would like to pick up flowers\",    \"I would like to order some flowers\",  ]  slot {    name                     = \"FlowerType\"    description              = \"Type of flower to order\"    slot_constraint          = \"Required\"     slot_type                = \"AMAZON.AlphaNumeric\"    priority                 = 1    sample_utterances = [\"I would like to get {FlowerType} flower.\"]    value_elicitation_prompt {      message {        content             = \"What type of flower would you like?\"        content_type        = \"PlainText\"      }      max_attempts         = 2    }  }  slot {    name                     = \"PickupDate\"    description              = \"Date of flower pickup\"    slot_constraint          = \"Required\"     slot_type                = \"AMAZON.DATE\"    priority                 = 2    value_elicitation_prompt {      message {        content             = \"When would you like to pickup your flower?\"        content_type        = \"PlainText\"      }      max_attempts         = 2    }  }  confirmation_prompt {    max_attempts = 2    message {      content      = \"Okay, your {FlowerType} will be ready for pickup on {PickupDate}.  Does this sound okay?\"      content_type = \"PlainText\"    }  }  fulfillment_activity {    type = \"ReturnIntent\"  }  rejection_statement {    message {      content      = \"Okay, I will not place your order.\"      content_type = \"PlainText\"    }  }}resource \"aws_lex_bot\" \"order_flowers\" {  name     = \"OrderFlowers\"  description = \"Bot to order flowers on the behalf of a user\"  locale   = \"en-US\"  process_behavior = \"BUILD\"  voice_id = \"Salli\"  child_directed = false  create_version = false  detect_sentiment            = false  idle_session_ttl_in_seconds = 600  abort_statement {    message {      content_type = \"PlainText\"      content      = \"Sorry, I am not able to assist at this time\"    }  }  clarification_prompt {    max_attempts = 2    message {      content_type = \"PlainText\"      content      = \"I didn't understand you, what would you like to do?\"    }  }    intent {    intent_name    = aws_lex_intent.order_flowers.name    intent_version = aws_lex_intent.order_flowers.version  }}",
+  "bleuScore": 0.219263,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/generated-source/row-0042-llm-5ddd8e4d3394",
+  "generatedSourceFiles": [
+    "generated-source/row-0042-llm-5ddd8e4d3394/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validationimport\": {\"future\": {\"keywords\": {\"indefault\": true}}, \"has_valid_resources\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_lex_bot": true,
+    "aws_lex_intent": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a basic AWS Lex V1 bot using `aws_lex_bot`. It also defines a simple Lex intent that the bot can recognize. The bot uses a clarification prompt, an abort statement, and returns the matched intent to the client for fulfillment.\n\n```hcl\nterraform {\n  required_version = \">= 1.3.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Lex bot will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"lex_bot_name\" {\n  description = \"Name of the AWS Lex bot.\"\n  type        = string\n  default     = \"SampleTerraformLexBot\"\n}\n\nvariable \"lex_intent_name\" {\n  description = \"Name of the AWS Lex intent.\"\n  type        = string\n  default     = \"SampleGreetingIntent\"\n}\n\nresource \"aws_lex_intent\" \"greeting_intent\" {\n  name        = var.lex_intent_name\n  description = \"A simple greeting intent created by Terraform.\"\n\n  sample_utterances = [\n    \"hello\",\n    \"hi\",\n    \"hey\",\n    \"good morning\",\n    \"good afternoon\",\n    \"good evening\"\n  ]\n\n  fulfillment_activity {\n    type = \"Return",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/run-summaries/row-0042-llm-5ddd8e4d3394.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: create an aws_lex_bot",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a basic AWS Lex V1 bot using `aws_lex_bot`. It also defines a simple Lex intent that the bot can recognize. The bot uses a clarification prompt, an abort statement, and returns the matched intent to the client for fulfillment.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validationimport\": {\"future\": {\"keywords\": {\"indefault\": true}}, \"has_valid_resources\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

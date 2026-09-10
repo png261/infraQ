@@ -1,0 +1,90 @@
+{
+  "index": 425,
+  "rowId": "425",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-a979798bc976",
+  "userId": "local-user",
+  "durationSeconds": 124.2,
+  "difficulty": "3",
+  "resource": "aws_efs_file_system, aws_efs_mount_target, aws_subnet, aws_vpc",
+  "prompt": "create a AWS EFS with mount target",
+  "intent": "Have one \"aws_efs_file_system\" resource\n\nHave one \"aws_efs_mount_target\" resource\nwith one \"file_system_id\"\nwith one \"subnet_id\"\n\nHave one \"aws_subnet\" resource\n(FOR SUBNET_ID IN MOUNT_TARGET)\n\nHave one \"aws_vpc\" resource\n(FOR VPC_ID IN \"AWS_SUBNET\")",
+  "referenceOutput": "# Define the provider block for AWS\nprovider \"aws\" {\n  region = \"us-east-2\" # Set your desired AWS region\n}\n\nresource \"aws_efs_file_system\" \"foo\" {\n  creation_token = \"my-product\"\n\n  tags = {\n    Name = \"MyProduct\"\n  }\n}\n\nresource \"aws_efs_mount_target\" \"alpha\" {\n  file_system_id = aws_efs_file_system.foo.id\n  subnet_id      = aws_subnet.alpha.id\n}\n\nresource \"aws_vpc\" \"foo\" {\n  cidr_block = \"10.0.0.0/16\"\n}\n\nresource \"aws_subnet\" \"alpha\" {\n  vpc_id            = aws_vpc.foo.id\n  availability_zone = \"us-west-2a\"\n  cidr_block        = \"10.0.1.0/24\"\n}",
+  "bleuScore": 0.057959,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0425-llm-a979798bc976",
+  "generatedSourceFiles": [
+    "generated-source/row-0425-llm-a979798bc976/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "99",
+        "finding": "broad_ingress_or_egress_cidr"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_valid_aws_efs_mount_target\": true, \"has_valid_efs_file_system\": true, \"has_valid_vpc\": true, \"have_required_subnet_argument\": true, \"is_valid_efs_setup\": false, \"is_valid_subnet\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_efs_file_system": true,
+    "aws_efs_mount_target": true,
+    "aws_subnet": true,
+    "aws_vpc": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a minimal AWS environment containing:\n\n- A VPC\n- A public subnet\n- An Internet Gateway and route table\n- A security group allowing NFS traffic on port `2049`\n- An AWS EFS file system\n- An EFS mount target inside the subnet\n- Outputs for the EFS file system ID, DNS name, and mount target ID\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"vpc_cidr\" {\n  description = \"CIDR block for the VPC.\"\n  type        = string\n  default     = \"10.0.0.0/16\"\n}\n\nvariable \"subnet_cidr\" {\n  description = \"CIDR block for the subnet.\"\n  type        = string\n  default     = \"10.0.1.0/24\"\n}\n\nresource \"aws_vpc\" \"efs_vpc\" {\n  cidr_block           = var.vpc_cidr\n  enable_dns_support   = true\n  enable_dns_hostnames = true\n\n  tags = {\n    Name = \"efs-vpc\"\n  }\n}\n\nresource \"aws_internet_gateway\" \"efs_igw\" {\n  vpc_id = aws_vpc.efs_vpc.id\n\n  tags = {\n    Name = \"efs-internet-ga",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0425-llm-a979798bc976.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: create a AWS EFS with mount target",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a minimal AWS environment containing:\n\n- A VPC\n- A public subnet\n- An Internet Gateway and route table\n- A security group allowing NFS traffic on port `2049`\n- An AWS EFS file system\n- An EFS mount target inside the subnet\n- Outputs for the EFS file system ID, DNS name, and mount target ID",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_valid_aws_efs_mount_target\": true, \"has_valid_efs_file_system\": true, \"has_valid_vpc\": true, \"have_required_subnet_argument\": true, \"is_valid_efs_setup\": false, \"is_valid_subnet\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

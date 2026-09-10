@@ -1,0 +1,84 @@
+{
+  "index": 1,
+  "rowId": "1",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-a2e122f0932f",
+  "userId": "local-user",
+  "durationSeconds": 42.22,
+  "difficulty": "3",
+  "resource": "aws_route53_vpc_association_authorization, aws_route53_zone, aws_route53_zone_association, aws_vpc, aws_vpc",
+  "prompt": "Configure a valid Route 53 zone association resource",
+  "intent": "Has multiple \"aws_vpc\" resource\n    with a specified \"cidr_block\"\n    with \"enable_dns_hostnames\" equal to \"true\"\n    with \"enable_dns_support\" equal to \"true\"\n\nHas one \"aws_route53_zone\" resource\n    with \"name\"\n    with a \"vpc\" block that contains \"vpc_id\" that references the \"aws_vpc\" resource\n\nHas one \"aws_route53_vpc_association_authorization\" resource\n    with \"vpc_id\" referencing the \"aws_vpc\" resource \n    with \"zone_id\" referencing the \"aws_route53_zone\" resource\n\nHas one \"aws_route53_zone_association\" resource\n    with \"vpc_id\" referencing the \"aws_route53_vpc_association_authorization\" resource \n    with \"zone_id\" referencing the \"aws_route53_vpc_association_authorization\" resource",
+  "referenceOutput": "provider \"aws\" {\n    region = \"us-east-1\"\n}\n\nresource \"aws_vpc\" \"example\" {\n  cidr_block           = \"10.6.0.0/16\"\n  enable_dns_hostnames = true\n  enable_dns_support   = true\n}\n\nresource \"aws_route53_zone\" \"example\" {\n  name = \"example.com\"\n\n  vpc {\n    vpc_id = aws_vpc.example.id\n  }\n}\n\nresource \"aws_vpc\" \"alternate\" {\n  cidr_block           = \"10.7.0.0/16\"\n  enable_dns_hostnames = true\n  enable_dns_support   = true\n}\n\nresource \"aws_route53_vpc_association_authorization\" \"example\" {\n  vpc_id  = aws_vpc.alternate.id\n  zone_id = aws_route53_zone.example.id\n}\n\nresource \"aws_route53_zone_association\" \"example\" {\n  vpc_id  = aws_route53_vpc_association_authorization.example.vpc_id\n  zone_id = aws_route53_vpc_association_authorization.example.zone_id\n}",
+  "bleuScore": 0.091454,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/generated-source/row-0001-llm-a2e122f0932f",
+  "generatedSourceFiles": [
+    "generated-source/row-0001-llm-a2e122f0932f/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_configuration_valid\": false, \"is_valid_r53_zone\": true, \"is_valid_vpc\": true, \"is_valid_vpc_association\": false, \"is_valid_zone_association\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_route53_vpc_association_authorization": false,
+    "aws_route53_zone": true,
+    "aws_route53_zone_association": true,
+    "aws_vpc": true
+  },
+  "missingMarkers": [
+    "aws_route53_vpc_association_authorization"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates two AWS VPCs and a private Route 53 hosted zone. The hosted zone is initially associated with the first VPC, and an explicit `aws_route53_zone_association` resource associates the same private hosted zone with the second VPC.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"private_zone_name\" {\n  description = \"Name of the private Route 53 hosted zone.\"\n  type        = string\n  default     = \"internal.example.com\"\n}\n\nresource \"aws_vpc\" \"primary\" {\n  cidr_block           = \"10.0.0.0/16\"\n  enable_dns_support   = true\n  enable_dns_hostnames = true\n\n  tags = {\n    Name = \"primary-vpc\"\n  }\n}\n\nresource \"aws_vpc\" \"secondary\" {\n  cidr_block           = \"10.1.0.0/16\"\n  enable_dns_support   = true\n  enable_dns_hostnames = true\n\n  tags = {\n    Name = \"secondary-vpc\"\n  }\n}\n\nresource \"aws_route53_zone\" \"private\" {\n  name = var.private_zone_name\n\n  vpc {\n    v",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/run-summaries/row-0001-llm-a2e122f0932f.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Configure a valid Route 53 zone association resource",
+  "answer": "This Terraform configuration creates two AWS VPCs and a private Route 53 hosted zone. The hosted zone is initially associated with the first VPC, and an explicit `aws_route53_zone_association` resource associates the same private hosted zone with the second VPC.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_configuration_valid\": false, \"is_valid_r53_zone\": true, \"is_valid_vpc\": true, \"is_valid_vpc_association\": false, \"is_valid_zone_association\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

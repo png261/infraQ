@@ -1,0 +1,82 @@
+{
+  "index": 375,
+  "rowId": "375",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-0d61a782edb1",
+  "userId": "local-user",
+  "durationSeconds": 79.8,
+  "difficulty": "3",
+  "resource": "aws_lightsail_bucket, aws_lightsail_bucket_resource_access, aws_lightsail_instance",
+  "prompt": "Create a lightsail resource access to a bucket.",
+  "intent": "have one aws_lightsail_bucket\n    with name\n    with bundle_id\n\nhave one aws_lightsail_bucket_resource_access\n    with bucket_name\n    with resource_name\n\nhave one \"aws_lightsail_instance\" resource\n    with \"name\" argument\n    with \"availability_zone\" argument\n    with \"blueprint_id\" argument\n    with \"bundle_id\" argument",
+  "referenceOutput": "provider \"aws\" {\n  region     = \"us-east-1\"\n}\n\nresource \"aws_lightsail_bucket\" \"test\" {\n  name      = \"mytestbucket\"\n  bundle_id = \"small_1_0\"\n}\n\nresource \"aws_lightsail_instance\" \"test\" {\n  name              = \"mytestinstance\"\n  availability_zone = \"us-east-1b\"\n  blueprint_id      = \"amazon_linux_2\"\n  bundle_id         = \"nano_1_0\"\n}\n\nresource \"aws_lightsail_bucket_resource_access\" \"test\" {\n  bucket_name   = aws_lightsail_bucket.test.name\n  resource_name = aws_lightsail_instance.test.name\n}",
+  "bleuScore": 0.04459,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0375-llm-0d61a782edb1",
+  "generatedSourceFiles": [
+    "generated-source/row-0375-llm-0d61a782edb1/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_valid_lightsail_instance\": true, \"has_valid_resources\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_lightsail_bucket": true,
+    "aws_lightsail_bucket_resource_access": true,
+    "aws_lightsail_instance": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS Lightsail instance, a Lightsail object storage bucket, and grants the Lightsail instance resource access to that bucket using `aws_lightsail_bucket_resource_access`.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Lightsail resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"availability_zone\" {\n  description = \"Availability zone for the Lightsail instance.\"\n  type        = string\n  default     = \"us-east-1a\"\n}\n\nvariable \"lightsail_instance_name\" {\n  description = \"Name of the Lightsail instance.\"\n  type        = string\n  default     = \"lightsail-bucket-client\"\n}\n\nvariable \"lightsail_bucket_bundle_id\" {\n  description = \"Bundle ID for the Lightsail bucket.\"\n  type        = string\n  default     = \"small_1_0\"\n}\n\nvariable \"lightsail_instance_blueprint_id\" {\n  description = \"Blueprint ID for the Lightsail inst",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0375-llm-0d61a782edb1.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a lightsail resource access to a bucket.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS Lightsail instance, a Lightsail object storage bucket, and grants the Lightsail instance resource access to that bucket using `aws_lightsail_bucket_resource_access`.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_valid_lightsail_instance\": true, \"has_valid_resources\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

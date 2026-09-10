@@ -1,0 +1,82 @@
+{
+  "index": 122,
+  "rowId": "122",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-6ea87204ddb3",
+  "userId": "local-user",
+  "durationSeconds": 69.81,
+  "difficulty": "1",
+  "resource": "aws_s3_bucket_object",
+  "prompt": "Craft a Terraform configuration for creating an AWS S3 bucket object. Define an S3 bucket object (with value \"object\") with specific attributes including the bucket name (with value \"your_bucket_name\"), object key (with value \"new_object_key\"), and the path to the source file (with value \"path/to/file\").",
+  "intent": "Resource \"aws_s3_bucket_object\"\nhas one \"bucket\"\nhas one \"key\"\nhas one \"source\"\nhas one \"etag\"",
+  "referenceOutput": "provider \"aws\" {\n    region = \"us-west-1\"\n}\n\nresource \"aws_s3_bucket_object\" \"object\" {\n  bucket = \"your_bucket_name\"\n  key    = \"new_object_key\"\n  source = \"path/to/file\"\n}",
+  "bleuScore": 0.075247,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0122-llm-6ea87204ddb3",
+  "generatedSourceFiles": [
+    "generated-source/row-0122-llm-6ea87204ddb3/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: Error in function call\n\n  on main.tf line 61, in resource \"aws_s3_object\" \"object\":\n  61:   etag = filemd5(local_file.source_file.filename)\n    ├────────────────\n    │ while calling filemd5(path)\n    │ local_file.source_file.filename is \"path/to/file\"\n\nCall to function \"filemd5\" failed: open path/to/file: no such file or\ndirectory.\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_s3_bucket_object": false
+  },
+  "missingMarkers": [
+    "aws_s3_bucket_object"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates an AWS S3 bucket and uploads an S3 object to it. The uploaded object uses:\n\n- Object content: `\"object\"`\n- Object key: `\"new_object_key\"`\n- Source file path: `\"path/to/file\"`\n\nNote: AWS S3 bucket names cannot contain underscores, so the bucket is created with a valid name derived from `your-bucket-name`.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    local = {\n      source  = \"hashicorp/local\"\n      version = \">= 2.4\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"random_id\" \"bucket_suffix\" {\n  byte_length = 4\n}\n\nresource \"aws_s3_bucket\" \"your_bucket_name\" {\n  bucket = \"your-bucket-name-${random_id.bucket_suffix.hex}\"\n}\n\nresource \"aws_s3_bucket_ownership_controls\" \"your_bucket_name\" {\n  bucket = aws_s3_bucket.your_bucket_name.id\n\n  rule {\n    object_ownership = \"BucketOwnerEnforced\"\n  }\n}\n\nresource \"aws_s3_bucket_public_access_block\" \"your_bucket_name\" {\n  bucket = aws_s3_bucket.your_bucket_name.id\n\n  block_public_acls       = true\n  block",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0122-llm-6ea87204ddb3.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Craft a Terraform configuration for creating an AWS S3 bucket object. Define an S3 bucket object (with value \"object\") with specific attributes including the bucket name (with value \"your_bucket_name\"), object key (with value \"new_object_key\"), and the path to the source file (with value \"path/to/file\").",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS S3 bucket and uploads an S3 object to it. The uploaded object uses:\n\n- Object content: `\"object\"`\n- Object key: `\"new_object_key\"`\n- Source file path: `\"path/to/file\"`\n\nNote: AWS S3 bucket names cannot contain underscores, so the bucket is created with a valid name derived from `your-bucket-name`.",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: Error in function call on main.tf line 61, in resource \"aws_s3_object\" \"object\": 61: etag = filemd5(local_file.source_file.filename) ├──────────────── │ while calling filemd5(path) │ local_file.source_file.filename is \"path/to/file\" Call to function \"filemd5\" failed: open path/to/file: no such file or directory."
+}

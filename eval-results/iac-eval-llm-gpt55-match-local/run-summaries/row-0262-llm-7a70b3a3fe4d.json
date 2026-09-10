@@ -1,0 +1,85 @@
+{
+  "index": 262,
+  "rowId": "262",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-7a70b3a3fe4d",
+  "userId": "local-user",
+  "durationSeconds": 67.87,
+  "difficulty": "3",
+  "resource": "aws_iam_group, aws_iam_group_policy_attachment, aws_iam_policy, aws_iam_policy_document",
+  "prompt": "Make a basic AWS IAM group example with an example group policy attachment resource attaching a policy to it",
+  "intent": "Has one \"aws_iam_group\" resource\nwith one \"name\" with any value\n\nHas one \"aws_iam_policy\" resource\nwith one \"policy\" with any value\n\nHas one \"aws_iam_group_policy_attachment\" resource\nwith one \"group\" with the group resource name\nwith one \"policy_arn\" with the policy resource arn",
+  "referenceOutput": "resource \"aws_iam_group\" \"group\" {\n  name = \"test-group\"\n}\n\ndata \"aws_iam_policy_document\" \"example\" {\n  statement {\n    effect = \"Allow\"\n    actions = [\n      \"ec2:DescribeSubnets\",\n      \"ec2:DescribeSecurityGroups\",\n      \"ec2:DescribeVpcs\"\n    ]\n    resources = [\n      \"*\"\n    ]\n  }\n}\n\nresource \"aws_iam_policy\" \"policy\" {\n  name        = \"test-policy\"\n  description = \"A test policy\"\n  policy      = data.aws_iam_policy_document.example.json\n}\n\nresource \"aws_iam_group_policy_attachment\" \"test-attach\" {\n  group      = aws_iam_group.group.name\n  policy_arn = aws_iam_policy.policy.arn\n}",
+  "bleuScore": 0.05558,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0262-llm-7a70b3a3fe4d",
+  "generatedSourceFiles": [
+    "generated-source/row-0262-llm-7a70b3a3fe4d/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_iam_group": true,
+    "aws_iam_group_policy_attachment": true,
+    "aws_iam_policy": true,
+    "aws_iam_policy_document": false
+  },
+  "missingMarkers": [
+    "aws_iam_policy_document"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates a basic AWS IAM group and attaches an IAM policy to it using `aws_iam_group_policy_attachment`. The example policy grants read-only access to list S3 buckets and read S3 bucket contents.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_iam_group\" \"example_group\" {\n  name = \"example-iam-group\"\n  path = \"/\"\n}\n\nresource \"aws_iam_policy\" \"example_policy\" {\n  name        = \"example-s3-readonly-policy\"\n  description = \"Example IAM policy granting read-only access to S3\"\n  path        = \"/\"\n\n  policy = jsonencode({\n    Version = \"2012-10-17\"\n    Statement = [\n      {\n        Sid    = \"ListAllBuckets\"\n        Effect = \"Allow\"\n        Action = [\n          \"s3:ListAllMyBuckets\"\n        ]\n        Resource = \"*\"\n      },\n      {\n        Sid    = \"ReadBucketObjects\"\n        Effect = \"Allow\"\n        Action = [\n          \"s3:GetObject\",\n          \"s3:ListBucket\"\n        ]\n        Resource = [\n          \"arn:aws:s3:::*\",\n          \"arn:aws:s3:::*/*\"\n        ]\n      }\n    ]\n  })\n}\n\nresource \"aws_iam",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0262-llm-7a70b3a3fe4d.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Make a basic AWS IAM group example with an example group policy attachment resource attaching a policy to it",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a basic AWS IAM group and attaches an IAM policy to it using `aws_iam_group_policy_attachment`. The example policy grants read-only access to list S3 buckets and read S3 bucket contents.",
+  "failure_category": "",
+  "failure_reason": ""
+}

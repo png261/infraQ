@@ -1,0 +1,80 @@
+{
+  "index": 225,
+  "rowId": "225",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-14140127b646",
+  "userId": "local-user",
+  "durationSeconds": 64.84,
+  "difficulty": "3",
+  "resource": "aws_dynamodb_table",
+  "prompt": "Create a DynamoDB table with read and write capacity both set to 10.",
+  "intent": "Has one \"aws_dynamodb_table\" resource\nwith one \"read_capacity\" = 10\nwith one \"write_capacity\" = 10",
+  "referenceOutput": "terraform {\nrequired_providers {\naws = {\nsource = \"hashicorp/aws\"\nversion = \"~> 5.0\"\n}\n}\n}\n\nresource \"aws_dynamodb_table\" \"basic-dynamodb-table\" {\nname = \"GameScores\"\nbilling_mode = \"PROVISIONED\"\nread_capacity = 10\nwrite_capacity = 10\nhash_key = \"UserId\"\nrange_key = \"GameTitle\"\n\nattribute {\nname = \"UserId\"\ntype = \"S\"\n}\n\nattribute {\nname = \"GameTitle\"\ntype = \"S\"\n}\n\ntags = {\nName = \"dynamodb-table-1\"\nEnvironment = \"production\"\n}\n}",
+  "bleuScore": 0.567179,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0225-llm-14140127b646",
+  "generatedSourceFiles": [
+    "generated-source/row-0225-llm-14140127b646/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_dynamodb_table": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS DynamoDB table with provisioned billing mode. Both read and write capacity units are set to `10`. The table uses a simple primary key named `id` of type string.\n\n```hcl\nterraform {\n  required_version = \">= 1.0.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_dynamodb_table\" \"example\" {\n  name           = \"example-dynamodb-table\"\n  billing_mode   = \"PROVISIONED\"\n  read_capacity  = 10\n  write_capacity = 10\n\n  hash_key = \"id\"\n\n  attribute {\n    name = \"id\"\n    type = \"S\"\n  }\n\n  tags = {\n    Name        = \"example-dynamodb-table\"\n    Environment = \"dev\"\n  }\n}\n```",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0225-llm-14140127b646.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a DynamoDB table with read and write capacity both set to 10.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS DynamoDB table with provisioned billing mode. Both read and write capacity units are set to `10`. The table uses a simple primary key named `id` of type string.",
+  "failure_category": "",
+  "failure_reason": ""
+}

@@ -1,0 +1,81 @@
+{
+  "index": 377,
+  "rowId": "377",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-cd904a06eee1",
+  "userId": "local-user",
+  "durationSeconds": 78.81,
+  "difficulty": "3",
+  "resource": "aws_lightsail_bucket, aws_lightsail_distribution",
+  "prompt": "managing an AWS Lightsail Distribution with bucket as the origin",
+  "intent": "have one aws_lightsail_distribution\n    with name\n    with bundle_id\n    with default_cache_behavior \n        with behavior\n    with origin \n        with name\n        with region_name\n    with cache_behavior_settings \n        with forwarded_cookies\n            with cookies_allow_list \n        with forwarded_headers  \n            with headers_allow_list \n        with forwarded_query_strings \n            with query_strings_allowed_list\n\nhave one aws_lightsail_bucket\n    with name\n    with bundle_id",
+  "referenceOutput": "resource \"aws_lightsail_bucket\" \"test\" {\n  name      = \"test-bucket\"\n  bundle_id = \"small_1_0\"\n}\nresource \"aws_lightsail_distribution\" \"test\" {\n  name      = \"test-distribution\"\n  bundle_id = \"small_1_0\"\n  origin {\n    name        = aws_lightsail_bucket.test.name\n    region_name = aws_lightsail_bucket.test.region\n  }\n  default_cache_behavior {\n    behavior = \"cache\"\n  }\n  cache_behavior_settings {\n    allowed_http_methods = \"GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE\"\n    cached_http_methods  = \"GET,HEAD\"\n    default_ttl          = 86400\n    maximum_ttl          = 31536000\n    minimum_ttl          = 0\n    forwarded_cookies {\n      option = \"none\"\n    }\n    forwarded_headers {\n      option = \"default\"\n    }\n    forwarded_query_strings {\n      option = false\n    }\n  }\n}",
+  "bleuScore": 0.133114,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0377-llm-cd904a06eee1",
+  "generatedSourceFiles": [
+    "generated-source/row-0377-llm-cd904a06eee1/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: Unsupported block type\n\n  on main.tf line 59, in resource \"aws_lightsail_bucket\" \"origin\":\n  59:   access_rules {\n\nBlocks of type \"access_rules\" are not expected here.\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_lightsail_bucket": true,
+    "aws_lightsail_distribution": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "Description: This Terraform configuration creates an AWS Lightsail bucket and configures an AWS Lightsail Distribution with that bucket as the origin. It also grants the distribution access to the Lightsail bucket, making the distribution suitable for serving objects stored in the bucket through Lightsail CDN.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Lightsail bucket and distribution will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"bucket_base_name\" {\n  description = \"Base name for the Lightsail bucket. A random suffix will be added for global uniqueness.\"\n  type        = string\n  default     = \"lightsail-origin-bucket\"\n}\n\nvariable \"bucket_bundle_id\" {\n  description = \"Lightsail bucket bundle ID.\"\n  type        = string\n  default     = \"small_1_0\"\n}\n\nvariable \"distribution_name\" {\n  description = \"Name of the Lightsail distribution.\"\n  type        ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0377-llm-cd904a06eee1.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: managing an AWS Lightsail Distribution with bucket as the origin",
+  "promptStrategy": "default",
+  "answer": "Description: This Terraform configuration creates an AWS Lightsail bucket and configures an AWS Lightsail Distribution with that bucket as the origin. It also grants the distribution access to the Lightsail bucket, making the distribution suitable for serving objects stored in the bucket through Lightsail CDN.",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: Unsupported block type on main.tf line 59, in resource \"aws_lightsail_bucket\" \"origin\": 59: access_rules { Blocks of type \"access_rules\" are not expected here."
+}

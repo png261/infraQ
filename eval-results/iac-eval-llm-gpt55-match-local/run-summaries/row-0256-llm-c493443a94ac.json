@@ -1,0 +1,106 @@
+{
+  "index": 256,
+  "rowId": "256",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-c493443a94ac",
+  "userId": "local-user",
+  "durationSeconds": 93.62,
+  "difficulty": "4",
+  "resource": "aws_redshift_cluster, aws_redshift_endpoint_access, aws_redshift_subnet_group, aws_subnet, aws_subnet, aws_vpc",
+  "prompt": "Create an AWS Redshift cluster with endpoint access from two subnets",
+  "intent": "Has one resource \"aws_vpc\"\n\nHas one resource \"aws_subnet\"\nwith one \"vpc_id\" with value \"aws_vpc.{VPC NAME}.id\"\n\nHas another resource \"aws_subnet\"\nwith one \"vpc_id\" with value \"aws_vpc.{VPC NAME}.id\"\n\nHas one resource \"aws_redshift_subnet_group\"\nwith both subnet ids in subnet_ids\n\nHas one resource \"aws_redshift_cluster\"\n\nHas one resource \"aws_redshift_endpoint_access\"\nwith the subnet group referenced in subnet_group_name\nand the cluster referenced in cluster_identifier",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_redshift_cluster\" \"example\" {\n  cluster_identifier = \"tf-redshift-cluster\"\n  database_name      = \"mydb\"\n  master_username    = \"exampleuser\"\n  master_password    = \"Mustbe8characters\"\n  node_type          = \"ra3.xlplus\"\n  cluster_type       = \"single-node\"\n}\n\nresource \"aws_redshift_endpoint_access\" \"example\" {\n  endpoint_name      = \"example\"\n  subnet_group_name  = aws_redshift_subnet_group.foobar.id\n  cluster_identifier = aws_redshift_cluster.example.cluster_identifier\n}\n\nresource \"aws_vpc\" \"foo\" {\n  cidr_block = \"10.1.0.0/16\"\n}\n\ndata \"aws_availability_zones\" \"azs\" {\n    state = \"available\"\n}\n\nresource \"aws_subnet\" \"foo\" {\n  cidr_block        = \"10.1.1.0/24\"\n  availability_zone = data.aws_availability_zones.azs.names[0]\n  vpc_id            = aws_vpc.foo.id\n}\n\nresource \"aws_subnet\" \"bar\" {\n  cidr_block        = \"10.1.2.0/24\"\n  availability_zone = data.aws_availability_zones.azs.names[1]\n  vpc_id            = aws_vpc.foo.id\n}\n\nresource \"aws_redshift_subnet_group\" \"foobar\" {\n  name       = \"foo\"\n  subnet_ids = [aws_subnet.foo.id, aws_subnet.bar.id]\n}",
+  "bleuScore": 0.071362,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0256-llm-c493443a94ac",
+  "generatedSourceFiles": [
+    "generated-source/row-0256-llm-c493443a94ac/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "133",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "159",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "179",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_redshift_cluster": true,
+    "aws_redshift_endpoint_access": true,
+    "aws_redshift_subnet_group": true,
+    "aws_subnet": true,
+    "aws_vpc": true,
+    "aws_vpc.{VPC NAME}.id": false
+  },
+  "missingMarkers": [
+    "aws_vpc.{VPC NAME}.id"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "The Terraform configuration below creates a complete AWS Redshift provisioned cluster deployment with private endpoint access across two subnets. It includes:\n\n- An AWS provider in `us-east-1`\n- A new VPC\n- Two private subnets in separate Availability Zones\n- A Redshift subnet group using both subnets\n- Security groups for the Redshift cluster and endpoint access\n- A two-node RA3 Redshift cluster\n- A Redshift-managed endpoint access resource connected to the cluster from the two-subnet subnet group\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"vpc_cidr\" {\n  description = \"CIDR block for the Redshift VPC.\"\n  type        = string\n  default     = \"10.50.0.0/16\"\n}\n\nvariable \"subnet_a_cidr\" {\n  description = \"CIDR block for the first private subnet.\"\n  type        = string\n  default     = \"10.50.1.0/24\"\n}\n\nvariable \"subnet_b_cidr\" {\n  description = \"CIDR block for the second private s",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0256-llm-c493443a94ac.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an AWS Redshift cluster with endpoint access from two subnets",
+  "promptStrategy": "default",
+  "answer": "The Terraform configuration below creates a complete AWS Redshift provisioned cluster deployment with private endpoint access across two subnets. It includes:\n\n- An AWS provider in `us-east-1`\n- A new VPC\n- Two private subnets in separate Availability Zones\n- A Redshift subnet group using both subnets\n- Security groups for the Redshift cluster and endpoint access\n- A two-node RA3 Redshift cluster\n- A Redshift-managed endpoint access resource connected to the cluster from the two-subnet subnet group",
+  "failure_category": "",
+  "failure_reason": ""
+}

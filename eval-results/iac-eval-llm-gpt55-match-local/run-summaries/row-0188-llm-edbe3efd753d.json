@@ -1,0 +1,90 @@
+{
+  "index": 188,
+  "rowId": "188",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-edbe3efd753d",
+  "userId": "local-user",
+  "durationSeconds": 71.33,
+  "difficulty": "4",
+  "resource": "aws_instance, aws_instance, aws_subnet, aws_subnet, aws_vpc, aws_ami",
+  "prompt": "Create two subnets in us-east-1a and us-east-1b with the latest Amazon Linux 2 AMI instance in each with t2.micro instance type and an attached EBS volume of 50 GB.",
+  "intent": "Create a VPC, 2 subnets, and ec2 instance in each subnet with latest Amazon Linux 2 AMI, with t2.micro instance type and an attached EBS volume of 50 GB.",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\ndata \"aws_ami\" \"latest_amazon_linux_2\" {\n  most_recent = true\n\n  owners = [\"amazon\"]\n\n  filter {\n    name   = \"name\"\n    values = [\"amzn2-ami-hvm-*-x86_64-gp2\"]\n  }\n\n  filter {\n    name   = \"root-device-type\"\n    values = [\"ebs\"]\n  }\n}\n\nresource \"aws_vpc\" \"my_vpc\" {\n  cidr_block = \"10.0.0.0/16\"\n}\n\ndata \"aws_availability_zones\" \"azs\" {\n    state = \"available\"\n}\n\n# Create Subnet in us-east-1a\nresource \"aws_subnet\" \"subnet_a\" {\n  vpc_id            = aws_vpc.my_vpc.id\n  cidr_block        = \"10.0.1.0/24\"\n  availability_zone = data.aws_availability_zones.azs.names[0]\n}\n\n# Create Subnet in us-east-1b\nresource \"aws_subnet\" \"subnet_b\" {\n  vpc_id            = aws_vpc.my_vpc.id\n  cidr_block        = \"10.0.2.0/24\"\n  availability_zone = data.aws_availability_zones.azs.names[1]\n}\n\n# Create an EC2 instance in Subnet A\nresource \"aws_instance\" \"ec2_instance_a\" {\n  ami           = data.aws_ami.latest_amazon_linux_2.id\n  instance_type = \"t2.micro\"\n  subnet_id     = aws_subnet.subnet_a.id\n\n  root_block_device {\n    volume_size = 50\n  }\n}\n\n# # Create an EC2 instance in Subnet B\nresource \"aws_instance\" \"ec2_instance_b\" {\n  ami           = data.aws_ami.latest_amazon_linux_2.id\n  instance_type = \"t2.micro\"\n  subnet_id     = aws_subnet.subnet_b.id\n\n  root_block_device {\n    volume_size = 50\n  }\n}",
+  "bleuScore": 0.192177,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0188-llm-edbe3efd753d",
+  "generatedSourceFiles": [
+    "generated-source/row-0188-llm-edbe3efd753d/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "109",
+        "finding": "broad_ingress_or_egress_cidr"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"main\": {\"allow\": false, \"aws_instances\": []}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_instance": true,
+    "aws_subnet": true,
+    "aws_vpc": true,
+    "aws_ami": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a new VPC in `us-east-1`, two subnets in Availability Zones `us-east-1a` and `us-east-1b`, and launches one `t2.micro` EC2 instance in each subnet using the latest Amazon Linux 2 AMI. Each instance has an additional 50 GB EBS volume attached.\n\n```hcl\nterraform {\n  required_version = \">= 1.3.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\ndata \"aws_ami\" \"amazon_linux_2\" {\n  most_recent = true\n  owners      = [\"amazon\"]\n\n  filter {\n    name   = \"name\"\n    values = [\"amzn2-ami-hvm-*-x86_64-gp2\"]\n  }\n\n  filter {\n    name   = \"virtualization-type\"\n    values = [\"hvm\"]\n  }\n\n  filter {\n    name   = \"root-device-type\"\n    values = [\"ebs\"]\n  }\n}\n\nresource \"aws_vpc\" \"main\" {\n  cidr_block           = \"10.0.0.0/16\"\n  enable_dns_support   = true\n  enable_dns_hostnames = true\n\n  tags = {\n    Name = \"amazon-linux-2-vpc\"\n  }\n}\n\nresource \"aws_internet_gateway\" \"main\" {\n  vpc_id = aws_vpc.main.id\n\n  tags = {\n    Name = \"amazon-linux-2-igw\"\n  }\n}\n\nresource \"aws_route_table\" \"public\" {\n  vpc_id = aws_vpc.main.id\n\n  route {\n    cidr_block = \"0.0.0.0/0\"\n    gateway",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0188-llm-edbe3efd753d.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create two subnets in us-east-1a and us-east-1b with the latest Amazon Linux 2 AMI instance in each with t2.micro instance type and an attached EBS volume of 50 GB.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a new VPC in `us-east-1`, two subnets in Availability Zones `us-east-1a` and `us-east-1b`, and launches one `t2.micro` EC2 instance in each subnet using the latest Amazon Linux 2 AMI. Each instance has an additional 50 GB EBS volume attached.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"main\": {\"allow\": false, \"aws_instances\": []}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

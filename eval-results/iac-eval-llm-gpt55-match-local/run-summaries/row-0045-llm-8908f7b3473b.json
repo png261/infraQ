@@ -1,0 +1,81 @@
+{
+  "index": 45,
+  "rowId": "45",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-8908f7b3473b",
+  "userId": "local-user",
+  "durationSeconds": 69.61,
+  "difficulty": "6",
+  "resource": "aws_lex_bot, aws_lex_intent",
+  "prompt": "create an aws_lex_bot for ordering pizzas with a conclusion statement",
+  "intent": "Has one resource \"aws_lex_bot\" and at least one resource \"aws_lex_intent\" with at least one user prompt",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_lex_intent\" \"order_pizza_intent\" {\n  name                       = \"OrderPizzaIntent\"\n  description                = \"To order a pizza\"\n  \n  sample_utterances = [\n    \"I would like to pick up a pizza\",\n    \"I would like to order some pizzas\",\n  ]\n\n  fulfillment_activity {\n    type = \"ReturnIntent\"\n  }\n\n  slot {\n    name                     = \"PizzaType\"\n    description              = \"Type of pizza to order\"\n    slot_constraint          = \"Required\" \n    slot_type                = \"AMAZON.AlphaNumeric\"\n    priority                 = 1\n    value_elicitation_prompt {\n      message {\n        content             = \"What type of pizza would you like?\"\n        content_type        = \"PlainText\"\n      }\n      max_attempts         = 2\n    }\n  }\n\n  slot {\n    name                     = \"PizzaSize\"\n    description              = \"Size of pizza to order\"\n    slot_constraint          = \"Required\" \n    slot_type                = \"AMAZON.NUMBER\"\n    priority                 = 2\n    value_elicitation_prompt {\n      message {\n        content             = \"What size of pizza would you like?\"\n        content_type        = \"PlainText\"\n      }\n      max_attempts         = 2\n    }\n  }\n\n  slot {\n    name                     = \"PizzaQuantity\"\n    description              = \"Number of pizzas to order\"\n    slot_constraint          = \"Required\" \n    slot_type                = \"AMAZON.NUMBER\"\n    priority                 = 3\n    value_elicitation_prompt {\n      message {\n        content             = \"How many pizzas do you want to order?\"\n        content_type        = \"PlainText\"\n      }\n      max_attempts         = 2\n    }\n  }\n\n  conclusion_statement {\n    message {\n      content              = \"Your pizza order has been received.\"\n      content_type         = \"PlainText\"\n    }\n  } \n}\n\nresource \"aws_lex_bot\" \"pizza_ordering_bot\" {\n  name                     = \"PizzaOrderingBot\"\n  description              = \"Bot to order pizzas\"\n  voice_id                 = \"Joanna\"\n  idle_session_ttl_in_seconds = 300\n  child_directed           = false\n  clarification_prompt {\n    message {\n      content      = \"I didn't understand you, what type of pizza would you like to order?\"\n      content_type = \"PlainText\"\n    }\n    max_attempts = 5\n  }\n  abort_statement {\n    message {\n      content      = \"Sorry, I am unable to assist at the moment.\"\n      content_type = \"PlainText\"\n    }\n  }\n\n  locale                  = \"en-US\"\n  process_behavior        = \"BUILD\"\n\n  intent {\n    intent_name    = aws_lex_intent.order_pizza_intent.name\n    intent_version = aws_lex_intent.order_pizza_intent.version\n  }\n}",
+  "bleuScore": 0.226166,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/generated-source/row-0045-llm-8908f7b3473b",
+  "generatedSourceFiles": [
+    "generated-source/row-0045-llm-8908f7b3473b/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_lex_bot": true,
+    "aws_lex_intent": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "Description: This Terraform configuration creates an Amazon Lex Classic bot for ordering pizzas. It defines custom slot types for pizza size, crust, and topping, creates a Lex intent that collects those required values, and includes a conclusion statement confirming the pizza order. The Lex bot is configured with clarification and abort prompts and is built automatically after creation.\n\n```hcl\nterraform {\n  required_version = \">= 1.0.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_lex_slot_type\" \"pizza_size\" {\n  name        = \"PizzaSize\"\n  description = \"Available pizza sizes\"\n\n  enumeration_value {\n    value    = \"small\"\n    synonyms = [\"personal\", \"little\"]\n  }\n\n  enumeration_value {\n    value    = \"medium\"\n    synonyms = [\"regular\"]\n  }\n\n  enumeration_value {\n    value    = \"large\"\n    synonyms = [\"big\", \"family size\"]\n  }\n\n  value_selection_strategy = \"ORIGINAL_VALUE\"\n}\n\nresource \"aws_lex_slot_type\" \"pizza_crust\" {\n  name        = \"PizzaCrust\"\n  description = \"Available pizza crust types\"\n\n  enumeration_value {\n    value    = \"thin\"\n    synonyms = [\"thin crust\"",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/run-summaries/row-0045-llm-8908f7b3473b.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: create an aws_lex_bot for ordering pizzas with a conclusion statement",
+  "promptStrategy": "default",
+  "answer": "Description: This Terraform configuration creates an Amazon Lex Classic bot for ordering pizzas. It defines custom slot types for pizza size, crust, and topping, creates a Lex intent that collects those required values, and includes a conclusion statement confirming the pizza order. The Lex bot is configured with clarification and abort prompts and is built automatically after creation.",
+  "failure_category": "",
+  "failure_reason": ""
+}

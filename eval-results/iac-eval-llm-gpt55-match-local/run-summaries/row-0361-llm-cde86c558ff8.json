@@ -1,0 +1,80 @@
+{
+  "index": 361,
+  "rowId": "361",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-cde86c558ff8",
+  "userId": "local-user",
+  "durationSeconds": 74.35,
+  "difficulty": "1",
+  "resource": "aws_lightsail_instance",
+  "prompt": "create AWS Lightsail with default blueprint",
+  "intent": "have one \"aws_lightsail_instance\" resource\nwith \"name\" argument\nwith \"availability_zone\" argument\nwith \"blueprint_id\" argument\nwith \"bundle_id\" argument",
+  "referenceOutput": "provider \"aws\" {\n  region     = \"us-east-1\"\n}\n\nresource \"aws_lightsail_instance\" \"gitlab_test\" {\n  name              = \"custom_gitlab\"\n  availability_zone = \"us-east-1b\"\n  blueprint_id      = \"amazon_linux_2\"\n  bundle_id         = \"nano_2_0\"\n}",
+  "bleuScore": 0.033763,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0361-llm-cde86c558ff8",
+  "generatedSourceFiles": [
+    "generated-source/row-0361-llm-cde86c558ff8/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_lightsail_instance": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a basic AWS Lightsail instance using a default Linux blueprint. It uses the AWS provider in `us-east-1`, provisions a Lightsail instance with the `amazon_linux_2` blueprint and a small default bundle, and outputs the instance name, public IP, and ARN.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Lightsail instance will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"lightsail_instance_name\" {\n  description = \"Name of the AWS Lightsail instance.\"\n  type        = string\n  default     = \"default-lightsail-instance\"\n}\n\nvariable \"lightsail_availability_zone\" {\n  description = \"Availability zone for the Lightsail instance.\"\n  type        = string\n  default     = \"us-east-1a\"\n}\n\nvariable \"lightsail_blueprint_id\" {\n  description = \"Lightsail blueprint ID. Default is Amazon Linux 2.\"\n  type        = string\n  default     = \"amazon_linux_2\"\n}\n\nvariable \"lightsail_bundle_id\" {\n  description = \"Lightsail bundle I",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0361-llm-cde86c558ff8.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: create AWS Lightsail with default blueprint",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a basic AWS Lightsail instance using a default Linux blueprint. It uses the AWS provider in `us-east-1`, provisions a Lightsail instance with the `amazon_linux_2` blueprint and a small default bundle, and outputs the instance name, public IP, and ARN.",
+  "failure_category": "",
+  "failure_reason": ""
+}

@@ -1,0 +1,88 @@
+{
+  "index": 184,
+  "rowId": "184",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-4956c4767f9e",
+  "userId": "local-user",
+  "durationSeconds": 83.72,
+  "difficulty": "3",
+  "resource": "aws_iam_role, aws_sagemaker_endpoint, aws_sagemaker_endpoint_configuration, aws_sagemaker_model, aws_iam_policy_document, aws_sagemaker_prebuilt_ecr_image",
+  "prompt": "Create a SageMaker endpoint",
+  "intent": "",
+  "referenceOutput": "resource \"aws_sagemaker_model\" \"example\" {\n  name               = \"my-model\"\n  execution_role_arn = aws_iam_role.example.arn\n\n  primary_container {\n    image = data.aws_sagemaker_prebuilt_ecr_image.test.registry_path\n  }\n}\n\nresource \"aws_iam_role\" \"example\" {\n  assume_role_policy = data.aws_iam_policy_document.assume_role.json\n}\n\ndata \"aws_iam_policy_document\" \"assume_role\" {\n  statement {\n    actions = [\"sts:AssumeRole\"]\n\n    principals {\n      type        = \"Service\"\n      identifiers = [\"sagemaker.amazonaws.com\"]\n    }\n  }\n}\n\ndata \"aws_sagemaker_prebuilt_ecr_image\" \"test\" {\n  repository_name = \"kmeans\"\n}\n\nresource \"aws_sagemaker_endpoint_configuration\" \"ec\" {\n  name = \"my-endpoint-config\"\n\n  production_variants {\n    variant_name           = \"variant-1\"\n    model_name             = aws_sagemaker_model.example.name\n    initial_instance_count = 1\n    instance_type          = \"ml.t2.medium\"\n  }\n\n}\n\nresource \"aws_sagemaker_endpoint\" \"e\" {\n  name                 = \"my-endpoint\"\n  endpoint_config_name = aws_sagemaker_endpoint_configuration.ec.name\n\n}",
+  "bleuScore": 0.048853,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0184-llm-4956c4767f9e",
+  "generatedSourceFiles": [
+    "generated-source/row-0184-llm-4956c4767f9e/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_iam_role": true,
+    "aws_sagemaker_endpoint": true,
+    "aws_sagemaker_endpoint_configuration": true,
+    "aws_sagemaker_model": true,
+    "aws_iam_policy_document": false,
+    "aws_sagemaker_prebuilt_ecr_image": false
+  },
+  "missingMarkers": [
+    "aws_iam_policy_document",
+    "aws_sagemaker_prebuilt_ecr_image"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates an AWS SageMaker real-time inference endpoint using a Hugging Face prebuilt inference container. It provisions:\n\n- An IAM execution role for SageMaker\n- Required IAM policy attachment\n- A SageMaker model using a Hugging Face inference image\n- A SageMaker endpoint configuration\n- A SageMaker endpoint running on a single `ml.m5.large` instance\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the SageMaker endpoint will be deployed.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"project_name\" {\n  description = \"Name prefix for SageMaker resources.\"\n  type        = string\n  default     = \"demo-sagemaker-endpoint\"\n}\n\nvariable \"sagemaker_instance_type\" {\n  description = \"Instance type for the SageMaker endpoint.\"\n  type        = string\n  default     = \"ml.m5.large\"\n}\n\nvariable \"initial_instance_count\" {\n  description = \"Initial number of instances for the SageMaker endpoint.\"\n  type        = number\n  default     = 1\n}\n\nvaria",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0184-llm-4956c4767f9e.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a SageMaker endpoint",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS SageMaker real-time inference endpoint using a Hugging Face prebuilt inference container. It provisions:\n\n- An IAM execution role for SageMaker\n- Required IAM policy attachment\n- A SageMaker model using a Hugging Face inference image\n- A SageMaker endpoint configuration\n- A SageMaker endpoint running on a single `ml.m5.large` instance",
+  "failure_category": "",
+  "failure_reason": ""
+}

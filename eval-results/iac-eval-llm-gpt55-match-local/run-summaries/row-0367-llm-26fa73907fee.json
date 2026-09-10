@@ -1,0 +1,80 @@
+{
+  "index": 367,
+  "rowId": "367",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-26fa73907fee",
+  "userId": "local-user",
+  "durationSeconds": 66.13,
+  "difficulty": "1",
+  "resource": "aws_lightsail_database",
+  "prompt": "create an AWS Lightsail instance that creates a mysql database",
+  "intent": "have one \"aws_lightsail_database\" resource\n    with relational_database_name argument\n    with master_database_name \n    with master_password\n    with master_username\n    with blueprint_id = mysql_8_0\n    with bundle_id",
+  "referenceOutput": "resource \"aws_lightsail_database\" \"test\" {\n  relational_database_name = \"test\"\n  availability_zone        = \"us-east-1a\"\n  master_database_name     = \"testdatabasename\"\n  master_password          = \"testdatabasepassword\"\n  master_username          = \"test\"\n  blueprint_id             = \"mysql_8_0\"\n  bundle_id                = \"micro_1_0\"\n}",
+  "bleuScore": 0.016009,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0367-llm-26fa73907fee",
+  "generatedSourceFiles": [
+    "generated-source/row-0367-llm-26fa73907fee/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_lightsail_database": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "The following Terraform configuration deploys:\n\n- An AWS Lightsail Linux instance\n- A managed AWS Lightsail MySQL database\n- Public SSH access on port `22`\n- A startup script on the instance that installs a MySQL client and writes database connection details to `/home/ec2-user/db_connection_info.txt`\n- Outputs for the instance IP address and database endpoint\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where Lightsail resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"availability_zone\" {\n  description = \"Availability zone for the Lightsail instance.\"\n  type        = string\n  default     = \"us-east-1a\"\n}\n\nvariable \"instance_name\" {\n  description = \"Name of the Lightsail instance.\"\n  type        = string\n  default     = \"mysql-app-lightsail-instance\"\n}\n\nvariable \"database_name\" {\n  description = \"Name of the Lightsail MySQL database resource.\"\n  type        = string\n  default     = \"mysql-lightsail-database\"\n}\n\nvariable \"master_databa",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0367-llm-26fa73907fee.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: create an AWS Lightsail instance that creates a mysql database",
+  "promptStrategy": "default",
+  "answer": "The following Terraform configuration deploys:\n\n- An AWS Lightsail Linux instance\n- A managed AWS Lightsail MySQL database\n- Public SSH access on port `22`\n- A startup script on the instance that installs a MySQL client and writes database connection details to `/home/ec2-user/db_connection_info.txt`\n- Outputs for the instance IP address and database endpoint",
+  "failure_category": "",
+  "failure_reason": ""
+}

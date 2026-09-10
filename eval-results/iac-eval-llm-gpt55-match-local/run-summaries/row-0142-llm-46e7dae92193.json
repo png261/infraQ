@@ -1,0 +1,95 @@
+{
+  "index": 142,
+  "rowId": "142",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-46e7dae92193",
+  "userId": "local-user",
+  "durationSeconds": 113.09,
+  "difficulty": "2",
+  "resource": "aws_redshift_cluster, aws_redshift_snapshot_schedule, aws_redshift_snapshot_schedule_association",
+  "prompt": "Create a 1 node RedShift cluster and automatically create a snapshot every 12 hours",
+  "intent": "Has an aws_redshift resouce with 1 node and aws_redshift_snapshot_schedule resource with rate set to 12 hours. Then have a aws_redshift_snapshot_schedle_association to conect the 2",
+  "referenceOutput": "resource \"aws_redshift_cluster\" \"example\" {\n  cluster_identifier = \"redshift-cluster-1\"\n  node_type          = \"dc2.large\"\n  number_of_nodes    = 1\n\n  database_name = \"mydb\"\n  master_username = \"foo\"\n  master_password = \"Mustbe8characters\"\n\n  skip_final_snapshot = true\n}\n\nresource \"aws_redshift_snapshot_schedule\" \"default\" {\n  identifier = \"tf-redshift-snapshot-schedule\"\n  definitions = [\n    \"rate(12 hours)\",\n  ]\n}\n\nresource \"aws_redshift_snapshot_schedule_association\" \"default\" {\n  cluster_identifier  = aws_redshift_cluster.example.id\n  schedule_identifier = aws_redshift_snapshot_schedule.default.id\n}",
+  "bleuScore": 0.016923,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0142-llm-46e7dae92193",
+  "generatedSourceFiles": [
+    "generated-source/row-0142-llm-46e7dae92193/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "142",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "200",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_redshift_cluster": true,
+    "aws_redshift_snapshot_schedule": true,
+    "aws_redshift_snapshot_schedule_association": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a single-node Amazon Redshift cluster in a dedicated VPC. It also configures an automated Redshift snapshot schedule that runs every 12 hours and associates that schedule with the cluster. Automated snapshots are retained for 7 days.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region to deploy the Redshift cluster into.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"cluster_identifier\" {\n  description = \"Identifier for the Redshift cluster.\"\n  type        = string\n  default     = \"single-node-redshift-cluster\"\n}\n\nvariable \"database_name\" {\n  description = \"Initial database name for the Redshift cluster.\"\n  type        = string\n  default     = \"dev\"\n}\n\nvariable \"master_username\" {\n  description = \"Master username for the Redshift cluster.\"\n  type        = string\n  default     = \"adminuser\"\n}\n\nvariable \"node_type\" {\n  description = \"Redshift node ty",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0142-llm-46e7dae92193.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a 1 node RedShift cluster and automatically create a snapshot every 12 hours",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a single-node Amazon Redshift cluster in a dedicated VPC. It also configures an automated Redshift snapshot schedule that runs every 12 hours and associates that schedule with the cluster. Automated snapshots are retained for 7 days.",
+  "failure_category": "",
+  "failure_reason": ""
+}

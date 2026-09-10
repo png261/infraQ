@@ -1,0 +1,87 @@
+{
+  "index": 132,
+  "rowId": "132",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-93e71ec0554f",
+  "userId": "local-user",
+  "durationSeconds": 78.24,
+  "difficulty": "2",
+  "resource": "aws_elasticache_cluster",
+  "prompt": "Provide a Memcached Cluster",
+  "intent": "requires cluster id, engine=memcached, node_type, num_cache_nodes, parameter_group_name",
+  "referenceOutput": "provider \"aws\" {\n  region=\"us-east-1\"\n}\nresource \"aws_elasticache_cluster\" \"example\" {\n  cluster_id           = \"cluster-example\"\n  engine               = \"memcached\"\n  node_type            = \"cache.m4.large\"\n  num_cache_nodes      = 2\n  parameter_group_name = \"default.memcached1.4\"\n  port                 = 11211\n}",
+  "bleuScore": 0.010234,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0132-llm-93e71ec0554f",
+  "generatedSourceFiles": [
+    "generated-source/row-0132-llm-93e71ec0554f/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "139",
+        "finding": "broad_ingress_or_egress_cidr"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_elasticache_cluster": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration provisions a deployable AWS ElastiCache Memcached cluster. It creates:\n\n- A new VPC\n- Two public subnets across available Availability Zones\n- An internet gateway and route table\n- A security group allowing Memcached access on port `11211`\n- An ElastiCache subnet group\n- A Memcached cluster using AWS ElastiCache\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be deployed.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"project_name\" {\n  description = \"Name prefix for all resources.\"\n  type        = string\n  default     = \"memcached-demo\"\n}\n\nvariable \"vpc_cidr\" {\n  description = \"CIDR block for the VPC.\"\n  type        = string\n  default     = \"10.50.0.0/16\"\n}\n\nvariable \"memcached_node_type\" {\n  description = \"Instance class for the Memcached nodes.\"\n  type        = string\n  default     = \"cache.t3.micro\"\n}\n\nvariable \"memcached_node_count\" {\n  description = \"Number of Memcached cache nodes.\"\n  type        = number",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0132-llm-93e71ec0554f.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Provide a Memcached Cluster",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration provisions a deployable AWS ElastiCache Memcached cluster. It creates:\n\n- A new VPC\n- Two public subnets across available Availability Zones\n- An internet gateway and route table\n- A security group allowing Memcached access on port `11211`\n- An ElastiCache subnet group\n- A Memcached cluster using AWS ElastiCache",
+  "failure_category": "",
+  "failure_reason": ""
+}

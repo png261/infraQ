@@ -1,0 +1,23 @@
+{
+  "index": 16,
+  "rowId": "16",
+  "status": "error",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-7852933d53f2",
+  "userId": "local-user",
+  "durationSeconds": 83.31,
+  "difficulty": "6",
+  "resource": "aws_db_instance, aws_db_snapshot, aws_elastic_beanstalk_application, aws_elastic_beanstalk_environment, aws_elastic_beanstalk_environment, aws_iam_instance_profile, aws_iam_role, aws_iam_role_policy_attachment",
+  "prompt": "Configure blue/green deployment with Elastic Beanstalk Environments that are associated with an RDS database. Take a snapshot of the database prior to deployment and name the database \"my_db\" and the instance profile \"ec2_eb_profile1\"",
+  "intent": "Has one \"aws_iam_role\" resource\n    with \"name\"\n    with \"assume_role_policy\" and \"Service\" set to \"ec2.amazonaws.com\"\n\nHas one \"aws_iam_role_policy_attachment\" resource\n    with \"role\" referencing the \"aws_iam_role\"\n    with \"policy_arn\" set to \"arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier\"\n\nHas one \"aws_iam_instance_profile\" resource\n    with \"name\"\n    with \"role\" referencing the \"aws_iam_role\" resource\n\nHas one \"aws_elastic_beanstalk_application\" resource\n    with \"name\"\n\nHas two \"aws_elastic_beanstalk_environment\" resources\n    with \"name\"\n    with \"application\" referencing the \"aws_elastic_beanstalk_application\" resource\n    with \"solution_stack_name\"\n    with one \"setting\" block which has a \"value\" that references the \"aws_iam_instance_profile\" resource\n    with a \"setting\" block that has a \"value\"  that references the \"address\" from the \"db_instance\" resource\n    with a \"setting\" block that has a \"value\"  that references the \"username\" from the \"db_instance\" resource \n    with a \"setting\" block that has a \"value\"  that references the \"password\" from the \"db_instance\" resource\n\n\nHas one \"aws_db_instance\" resource\n    with \"instance_class\"\n    with \"allocated_storage\"\n    with \"engine\"\n    with \"username\"\n    with \"password\"\n    with \"skip_final_snapshot\" set to false\n    with \"multi_az\" set to true\n    with \"backup_retention_period\" set to a non-zero number \n    with \"final_snapshot_identifier\"\n\nHas a \"aws_db_snapshot\" resource\n    with \"db_instance_identifier\" referencing the \"aws_db_instance\" resource\n    with \"db_snapshot_identifier\"",
+  "error": "[Errno 17] File exists: '/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/generated-source/.official-eval-row-0016-llm-7852933d53f2/eb-app'",
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/generated-source/row-0016-llm-7852933d53f2",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/run-summaries/row-0016-llm-7852933d53f2.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "failure_category": "runtime_error",
+  "failure_reason": "[Errno 17] File exists: '/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/generated-source/.official-eval-row-0016-llm-7852933d53f2/eb-app'"
+}

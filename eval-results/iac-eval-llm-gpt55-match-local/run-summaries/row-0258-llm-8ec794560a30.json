@@ -1,0 +1,95 @@
+{
+  "index": 258,
+  "rowId": "258",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-8ec794560a30",
+  "userId": "local-user",
+  "durationSeconds": 71.04,
+  "difficulty": "3",
+  "resource": "aws_redshift_cluster, aws_redshift_event_subscription, aws_sns_topic",
+  "prompt": "Create an AWS Redshift cluster with an AWS Redshift event subscription resource that sends events to an AWS SNS topic",
+  "intent": "Has one resource \"aws_sns_topic\"\n\nHas one resource \"aws_redshift_cluster\"\n\nHas one resource \"aws_redshift_event_subscription\"\nwith source_type = \"cluster\"\nand sns topic referenced in sns_topic_arn\nand cluster referenced in source_ids",
+  "referenceOutput": "resource \"aws_redshift_cluster\" \"example\" {\n  cluster_identifier = \"default\"\n  database_name      = \"default\"\n  master_username    = \"exampleuser\"\n  master_password    = \"Mustbe8characters\"\n  node_type          = \"ra3.xlplus\"\n  cluster_type       = \"single-node\"\n}\n\nresource \"aws_sns_topic\" \"default\" {\n  name = \"redshift-events\"\n}\n\nresource \"aws_redshift_event_subscription\" \"default\" {\n  name          = \"redshift-event-sub\"\n  sns_topic_arn = aws_sns_topic.default.arn\n\n  source_type = \"cluster\"\n  source_ids  = [aws_redshift_cluster.example.id]\n\n  severity = \"INFO\"\n\n  event_categories = [\n    \"configuration\",\n    \"management\",\n    \"monitoring\",\n    \"security\",\n  ]\n\n  tags = {\n    Name = \"default\"\n  }\n}",
+  "bleuScore": 0.033288,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0258-llm-8ec794560a30",
+  "generatedSourceFiles": [
+    "generated-source/row-0258-llm-8ec794560a30/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "111",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "136",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_redshift_cluster": true,
+    "aws_redshift_event_subscription": true,
+    "aws_sns_topic": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "Description: This Terraform configuration creates a complete AWS Redshift deployment with an Amazon SNS topic for notifications. It provisions a VPC with two subnets, a security group for Redshift, a Redshift subnet group, a single-node Redshift cluster, an SNS topic, an SNS topic policy allowing Redshift to publish events, and an AWS Redshift event subscription that sends cluster events to the SNS topic.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \"~> 3.6\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"project_name\" {\n  description = \"Name prefix for all resources.\"\n  type        = string\n  default     = \"redshift-events-demo\"\n}\n\nvariable \"redshift_database_name\" {\n  description = \"Initial Redshift database name.\"\n  type        = string\n  default     = \"analytics\"\n}\n\nvariable \"redshift_master_username\" {\n  description = \"Master username for the Redshi",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0258-llm-8ec794560a30.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an AWS Redshift cluster with an AWS Redshift event subscription resource that sends events to an AWS SNS topic",
+  "promptStrategy": "default",
+  "answer": "Description: This Terraform configuration creates a complete AWS Redshift deployment with an Amazon SNS topic for notifications. It provisions a VPC with two subnets, a security group for Redshift, a Redshift subnet group, a single-node Redshift cluster, an SNS topic, an SNS topic policy allowing Redshift to publish events, and an AWS Redshift event subscription that sends cluster events to the SNS topic.",
+  "failure_category": "",
+  "failure_reason": ""
+}

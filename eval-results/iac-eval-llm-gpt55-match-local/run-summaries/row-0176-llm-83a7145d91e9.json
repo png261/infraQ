@@ -1,0 +1,80 @@
+{
+  "index": 176,
+  "rowId": "176",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-83a7145d91e9",
+  "userId": "local-user",
+  "durationSeconds": 73.66,
+  "difficulty": "1",
+  "resource": "aws_sagemaker_code_repository",
+  "prompt": "Create a sagemaker_code_repository to aws_sagemaker_code_repository to \"https://github.com/hashicorp/terraform-provider-aws.git\"",
+  "intent": "",
+  "referenceOutput": "resource \"aws_sagemaker_code_repository\" \"example\" {\n  code_repository_name = \"example\"\n\n  git_config {\n    repository_url = \"https://github.com/hashicorp/terraform-provider-aws.git\"\n  }\n}",
+  "bleuScore": 0.130949,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0176-llm-83a7145d91e9",
+  "generatedSourceFiles": [
+    "generated-source/row-0176-llm-83a7145d91e9/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_sagemaker_code_repository": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS SageMaker Code Repository that points to the public GitHub repository `https://github.com/hashicorp/terraform-provider-aws.git`. It uses the AWS provider in the `us-east-1` region and requires no additional IAM roles because the repository is public.\n\n```hcl\nterraform {\n  required_version = \">= 1.0.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_sagemaker_code_repository\" \"terraform_provider_aws\" {\n  code_repository_name = \"terraform-provider-aws-repository\"\n\n  git_config {\n    repository_url = \"https://github.com/hashicorp/terraform-provider-aws.git\"\n  }\n}\n\noutput \"sagemaker_code_repository_name\" {\n  value = aws_sagemaker_code_repository.terraform_provider_aws.code_repository_name\n}\n\noutput \"sagemaker_code_repository_url\" {\n  value = aws_sagemaker_code_repository.terraform_provider_aws.git_config[0].repository_url\n}\n```",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0176-llm-83a7145d91e9.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a sagemaker_code_repository to aws_sagemaker_code_repository to \"https://github.com/hashicorp/terraform-provider-aws.git\"",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS SageMaker Code Repository that points to the public GitHub repository `https://github.com/hashicorp/terraform-provider-aws.git`. It uses the AWS provider in the `us-east-1` region and requires no additional IAM roles because the repository is public.",
+  "failure_category": "",
+  "failure_reason": ""
+}

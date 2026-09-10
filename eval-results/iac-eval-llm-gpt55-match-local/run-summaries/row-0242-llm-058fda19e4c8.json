@@ -1,0 +1,82 @@
+{
+  "index": 242,
+  "rowId": "242",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-058fda19e4c8",
+  "userId": "local-user",
+  "durationSeconds": 59.47,
+  "difficulty": "3",
+  "resource": "aws_neptune_subnet_group, aws_subnet, aws_subnet, aws_vpc",
+  "prompt": "Create two example subnets and group them to be used for a AWS Neptune cluster",
+  "intent": "Has \"aws_vpc\"\n\nHas two \"aws_subnet\"\n\nHas \"aws_neptune_subnet_group\"\nwith subnet_ids = array with both \"aws_subnet\"",
+  "referenceOutput": "resource \"aws_vpc\" \"example_vpc\" {\n  cidr_block = \"10.0.0.0/16\"\n}\n\nresource \"aws_subnet\" \"subnet1\" {\n  vpc_id     = aws_vpc.example_vpc.id\n  cidr_block = \"10.0.1.0/24\"\n}\n\nresource \"aws_subnet\" \"subnet2\" {\n  vpc_id     = aws_vpc.example_vpc.id\n  cidr_block = \"10.0.2.0/24\"\n}\nresource \"aws_neptune_subnet_group\" \"default\" {\n  name       = \"main\"\n  subnet_ids = [aws_subnet.subnet1.id, aws_subnet.subnet2.id]\n\n  tags = {\n    Name = \"My neptune subnet group\"\n  }\n}",
+  "bleuScore": 0.051178,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0242-llm-058fda19e4c8",
+  "generatedSourceFiles": [
+    "generated-source/row-0242-llm-058fda19e4c8/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_neptune_subnet_group": true,
+    "aws_subnet": true,
+    "aws_vpc": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a small AWS networking setup suitable for an example Amazon Neptune deployment. It defines:\n\n- An AWS provider in `us-east-1`\n- A dedicated VPC\n- Two example private subnets in different Availability Zones\n- An Amazon Neptune subnet group that includes both subnets\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region to deploy the Neptune subnet group resources into.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"vpc_cidr_block\" {\n  description = \"CIDR block for the example VPC.\"\n  type        = string\n  default     = \"10.0.0.0/16\"\n}\n\nvariable \"subnet_one_cidr_block\" {\n  description = \"CIDR block for the first Neptune subnet.\"\n  type        = string\n  default     = \"10.0.1.0/24\"\n}\n\nvariable \"subnet_two_cidr_block\" {\n  description = \"CIDR block for the second Neptune subnet.\"\n  type        = string\n  default     = \"10.0.2.0/24\"\n}\n\ndata \"aws_availability_zones\" \"available\" {\n  state = \"available\"\n}\n\nresource \"aws_vpc\" \"example\" {\n",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0242-llm-058fda19e4c8.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create two example subnets and group them to be used for a AWS Neptune cluster",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a small AWS networking setup suitable for an example Amazon Neptune deployment. It defines:\n\n- An AWS provider in `us-east-1`\n- A dedicated VPC\n- Two example private subnets in different Availability Zones\n- An Amazon Neptune subnet group that includes both subnets",
+  "failure_category": "",
+  "failure_reason": ""
+}

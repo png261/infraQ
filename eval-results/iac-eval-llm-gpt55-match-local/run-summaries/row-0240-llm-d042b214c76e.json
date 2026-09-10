@@ -1,0 +1,101 @@
+{
+  "index": 240,
+  "rowId": "240",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-d042b214c76e",
+  "userId": "local-user",
+  "durationSeconds": 68.34,
+  "difficulty": "3",
+  "resource": "aws_instance, aws_subnet, aws_vpc, aws_ami",
+  "prompt": "Create an AWS VPC resource with one subnet and then launches an EC2 instance into that subnet. Use AMI lookup for an ubuntu 20.04 AMD64 server.",
+  "intent": "Has one resource \"aws_vpc\"\n\nHas one resource \"aws_subnet\"\nwith one \"vpc_id\" with value \"aws_vpc.{VPC NAME}.id\"\n\nHas one data source \"aws_ami\"\nwith one \"filter\" with \"values\" = \"ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*\"\n\nHas one resource \"aws_instance\"\nwith one \"ami\" with value \"data.aws_ami.{DATA NAME}.id\"\nwith one \"subnet_id\" with value \"aws_subnet.{SUBNET NAME}.id\"",
+  "referenceOutput": "resource \"aws_vpc\" \"main\" {\n  cidr_block = \"10.0.0.0/16\"\n}\n\nresource \"aws_subnet\" \"example_subnet\" {\n  vpc_id                  = aws_vpc.main.id\n  cidr_block              = \"10.0.1.0/24\"\n  map_public_ip_on_launch = true\n}\n\ndata \"aws_ami\" \"ubuntu_ami\" {\n  most_recent = true\n\n  filter {\n    name   = \"name\"\n    values = [\"ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*\"]\n  }\n\n  filter {\n    name   = \"virtualization-type\"\n    values = [\"hvm\"]\n  }\n\n  owners = [\"099720109477\"]\n}\n\nresource \"aws_instance\" \"example_instance\" {\n  ami             = data.aws_ami.ubuntu_ami.id\n  instance_type   = \"t2.micro\"\n  subnet_id       = aws_subnet.example_subnet.id\n}",
+  "bleuScore": 0.089367,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0240-llm-d042b214c76e",
+  "generatedSourceFiles": [
+    "generated-source/row-0240-llm-d042b214c76e/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "127",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "135",
+        "finding": "broad_ingress_or_egress_cidr"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_instance": true,
+    "aws_subnet": true,
+    "aws_vpc": true,
+    "aws_ami": true,
+    "aws_vpc.{VPC NAME}.id": false,
+    "aws_subnet.{SUBNET NAME}.id": false
+  },
+  "missingMarkers": [
+    "aws_vpc.{VPC NAME}.id",
+    "aws_subnet.{SUBNET NAME}.id"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates an AWS VPC with a single public subnet, attaches an Internet Gateway, configures a route table for internet access, looks up the latest Ubuntu 20.04 AMD64 Server AMI, and launches an EC2 instance into the subnet.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region to deploy resources into.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"vpc_cidr\" {\n  description = \"CIDR block for the VPC.\"\n  type        = string\n  default     = \"10.0.0.0/16\"\n}\n\nvariable \"subnet_cidr\" {\n  description = \"CIDR block for the public subnet.\"\n  type        = string\n  default     = \"10.0.1.0/24\"\n}\n\nvariable \"instance_type\" {\n  description = \"EC2 instance type.\"\n  type        = string\n  default     = \"t3.micro\"\n}\n\ndata \"aws_availability_zones\" \"available\" {\n  state = \"available\"\n}\n\ndata \"aws_ami\" \"ubuntu_2004_amd64\" {\n  most_recent = true\n  owners      = [\"099720109477\"]\n\n  filter {\n    name   = \"name\"\n    values = [\"ubuntu/images/hvm-ssd/ubuntu-focal-2",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0240-llm-d042b214c76e.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an AWS VPC resource with one subnet and then launches an EC2 instance into that subnet. Use AMI lookup for an ubuntu 20.04 AMD64 server.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS VPC with a single public subnet, attaches an Internet Gateway, configures a route table for internet access, looks up the latest Ubuntu 20.04 AMD64 Server AMI, and launches an EC2 instance into the subnet.",
+  "failure_category": "",
+  "failure_reason": ""
+}

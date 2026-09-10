@@ -1,0 +1,81 @@
+{
+  "index": 51,
+  "rowId": "51",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-00aad0396c6c",
+  "userId": "local-user",
+  "durationSeconds": 160.35,
+  "difficulty": "3",
+  "resource": "aws_iam_role, aws_lexv2models_bot",
+  "prompt": "create a aws_lexv2models_bot",
+  "intent": "Has one resource \"aws_iam_role\" and one resource \"aws_lexv2models_bot\"",
+  "referenceOutput": "provider \"aws\" {\n  region = \"us-west-2\"\n}\n\nresource \"aws_iam_role\" \"test_rolelex\" {\n  name = \"test_rolelex\"\n\n  assume_role_policy = jsonencode({\n    Version = \"2012-10-17\"\n    Statement = [\n      {\n        Action = \"sts:AssumeRole\"\n        Effect = \"Allow\"\n        Sid    = \"\"\n        Principal = {\n          Service = \"codebuild.amazonaws.com\"\n        }\n      },\n    ]\n  })\n}\n\nresource \"aws_lexv2models_bot\" \"example\" {\n  name = \"example\"\n  data_privacy {\n    child_directed = false\n  }\n  idle_session_ttl_in_seconds = 100\n  role_arn                    = aws_iam_role.test_rolelex.arn\n\n  tags = {\n    foo = \"bar\"\n  }\n}",
+  "bleuScore": 0.077636,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-0/generated-source/row-0051-llm-00aad0396c6c",
+  "generatedSourceFiles": [
+    "generated-source/row-0051-llm-00aad0396c6c/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_valid_lexv2models_bot_instance\": true, \"has_valid_resources\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_iam_role": true,
+    "aws_lexv2models_bot": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "Description: This Terraform configuration creates an Amazon Lex V2 bot using the `aws_lexv2models_bot` resource. It also creates the required IAM service role that Amazon Lex V2 assumes to operate the bot.\n\n```hcl\nterraform {\n  required_version = \">= 1.3.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Lex V2 bot will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"bot_name\" {\n  description = \"Name of the Amazon Lex V2 bot.\"\n  type        = string\n  default     = \"example-lexv2-bot\"\n}\n\ndata \"aws_iam_policy_document\" \"lex_assume_role_policy\" {\n  statement {\n    effect = \"Allow\"\n\n    principals {\n      type        = \"Service\"\n      identifiers = [\"lexv2.amazonaws.com\"]\n    }\n\n    actions = [\"sts:AssumeRole\"]\n  }\n}\n\nresource \"aws_iam_role\" \"lex_bot_role\" {\n  name               = \"example-lexv2-bot-role\"\n  assume_role_policy = data.aws_iam_policy_document.lex_assume_role_policy.json\n}\n\ndata \"aws_iam_policy_document\" \"lex_bot_permissions\" {\n  statement {\n    effect = \"Allow\"\n\n    actions = [\n ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-0/run-summaries/row-0051-llm-00aad0396c6c.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: create a aws_lexv2models_bot",
+  "promptStrategy": "default",
+  "answer": "Description: This Terraform configuration creates an Amazon Lex V2 bot using the `aws_lexv2models_bot` resource. It also creates the required IAM service role that Amazon Lex V2 assumes to operate the bot.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_valid_lexv2models_bot_instance\": true, \"has_valid_resources\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

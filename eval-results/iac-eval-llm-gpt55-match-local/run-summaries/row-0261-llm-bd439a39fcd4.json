@@ -1,0 +1,82 @@
+{
+  "index": 261,
+  "rowId": "261",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-bd439a39fcd4",
+  "userId": "local-user",
+  "durationSeconds": 38.59,
+  "difficulty": "3",
+  "resource": "aws_iam_group, aws_iam_group_membership, aws_iam_user, aws_iam_user",
+  "prompt": "Create two basic AWS IAM users that are a part of a basic IAM group",
+  "intent": "Has one \"aws_iam_group\" resource\nwith one \"name\" with any value\n\nHas one \"aws_iam_user\" resource\nwith one \"name\" with any value\n\nHas another \"aws_iam_user\" resource\nwith one \"name\" with any value\n\nHas one \"aws_iam_group_membership\" resource\nwith one \"name\" with any value\nwith one \"users\" with the two user resource names\nwith one \"group\" with the group resource name",
+  "referenceOutput": "resource \"aws_iam_group_membership\" \"team\" {\n  name = \"tf-testing-group-membership\"\n\n  users = [\n    aws_iam_user.user_one.name,\n    aws_iam_user.user_two.name,\n  ]\n\n  group = aws_iam_group.group.name\n}\n\nresource \"aws_iam_group\" \"group\" {\n  name = \"test-group\"\n}\n\nresource \"aws_iam_user\" \"user_one\" {\n  name = \"test-user\"\n}\n\nresource \"aws_iam_user\" \"user_two\" {\n  name = \"test-user-two\"\n}",
+  "bleuScore": 0.05331,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0261-llm-bd439a39fcd4",
+  "generatedSourceFiles": [
+    "generated-source/row-0261-llm-bd439a39fcd4/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_iam_group": true,
+    "aws_iam_group_membership": true,
+    "aws_iam_user": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a basic AWS IAM setup with:\n\n- Two IAM users: `basic-user-1` and `basic-user-2`\n- One IAM group: `basic-iam-group`\n- A group membership that adds both users to the IAM group\n- A basic read-only AWS managed policy attachment for the group using `ReadOnlyAccess`\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_iam_user\" \"basic_user_1\" {\n  name = \"basic-user-1\"\n\n  tags = {\n    Name        = \"basic-user-1\"\n    Environment = \"basic\"\n  }\n}\n\nresource \"aws_iam_user\" \"basic_user_2\" {\n  name = \"basic-user-2\"\n\n  tags = {\n    Name        = \"basic-user-2\"\n    Environment = \"basic\"\n  }\n}\n\nresource \"aws_iam_group\" \"basic_group\" {\n  name = \"basic-iam-group\"\n}\n\nresource \"aws_iam_group_membership\" \"basic_group_membership\" {\n  name = \"basic-iam-group-membership\"\n\n  users = [\n    aws_iam_user.basic_user_1.name,\n    aws_iam_user.basic_user_2.name\n  ]\n\n  group = aws_iam_group.basic_group.name\n}\n\nresource \"aws_iam_group_policy_attachment\" \"readonly_access\" {\n  group      = aws_iam_group.basic_group.name\n ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0261-llm-bd439a39fcd4.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create two basic AWS IAM users that are a part of a basic IAM group",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a basic AWS IAM setup with:\n\n- Two IAM users: `basic-user-1` and `basic-user-2`\n- One IAM group: `basic-iam-group`\n- A group membership that adds both users to the IAM group\n- A basic read-only AWS managed policy attachment for the group using `ReadOnlyAccess`",
+  "failure_category": "",
+  "failure_reason": ""
+}

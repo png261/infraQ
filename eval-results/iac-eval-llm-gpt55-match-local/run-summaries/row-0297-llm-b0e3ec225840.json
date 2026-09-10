@@ -1,0 +1,89 @@
+{
+  "index": 297,
+  "rowId": "297",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-b0e3ec225840",
+  "userId": "local-user",
+  "durationSeconds": 93.09,
+  "difficulty": "4",
+  "resource": "aws_codebuild_project, aws_iam_policy, aws_iam_role, aws_iam_role_policy_attachment, aws_s3_bucket, aws_iam_policy_document, aws_iam_policy_document",
+  "prompt": "An AWS S3 bucket to store code build output. An AWS CodeBuild project resource with an artifacts argument block of type S3 to store students' code build output with location being the S3 bucket resource, an environment argument block with \"BUILD_GENERAL1_SMALL\" computer_type, \"alpine\" image, and \"LINUX_CONTAINER\" type, and a source argument block of \"GITHUB\" type, 1 git_clone_depth, and \"github.com/source-location\" location.",
+  "intent": "have one \"aws_s3_bucket\" resource\nhave one \"aws_codebuild_project\" resource\n  with \"artifacts\" argument block\n    with \"type\" argument with value \"S3\"\n    with \"location\" argument\n    with \"name\" argument\n  with \"environment\" argument block\n    with \"computer_type\" argument with value \"BUILD_GENERAL1_SMALL\"\n    with \"image\" argument with value \"alpine\"\n    with \"type\" argument with value \"LINUX_CONTAINER\"\n  with \"source\" argument block\n    with \"type\" argument with value \"GITHUB\"\n    with \"location\" argument with value \"github.com/source-location\"",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_s3_bucket\" \"artifact_bucket\" {\n  bucket_prefix = \"artifact-bucket-\"\n}\n\nresource \"aws_codebuild_project\" \"autograder_build\" {\n  name         = \"autograder_build\"\n  service_role = aws_iam_role.autograder_build_role.arn\n\n  artifacts {\n    type     = \"S3\"\n    location = aws_s3_bucket.artifact_bucket.arn\n    name     = \"results.zip\" # include this\n  }\n\n  environment { # arguments required, exact value not specified\n    compute_type = \"BUILD_GENERAL1_SMALL\"\n    image        = \"aws/codebuild/standard:7.0-24.10.29\"\n    type         = \"LINUX_CONTAINER\"\n  }\n\n  source {\n    type            = \"GITHUB\"\n    git_clone_depth = 1 # good to have, not required\n    location        = \"github.com/source-location\"\n  }\n}\n\nresource \"aws_iam_role\" \"autograder_build_role\" {\n  assume_role_policy = data.aws_iam_policy_document.autograder_build_policy_assume.json\n}\n\ndata \"aws_iam_policy_document\" \"autograder_build_policy_assume\" {\n  statement {\n    actions = [\"sts:AssumeRole\"]\n\n    principals {\n      type        = \"Service\"\n      identifiers = [\"codebuild.amazonaws.com\"]\n    }\n  }\n\n}\n\ndata \"aws_iam_policy_document\" \"autograder_build_policy\" {\n  statement {\n    effect = \"Allow\"\n    actions = [\n      \"ec2:DescribeSubnets\",\n      \"ec2:DescribeSecurityGroups\",\n      \"ec2:DescribeVpcs\"\n    ]\n    resources = [\n      \"*\"\n    ]\n  }\n}\n\nresource \"aws_iam_policy\" \"autograder_build_policy\" {\n  name        = \"lambda_policy\"\n  description = \"Grants permissions to Lambda to describe vpc, subnet, security group\"\n\n  policy = data.aws_iam_policy_document.autograder_build_policy.json\n}\n\nresource \"aws_iam_role_policy_attachment\" \"lambda_policy_attach\" {\n  role       = aws_iam_role.autograder_build_role.name\n  policy_arn = aws_iam_policy.autograder_build_policy.arn\n}",
+  "bleuScore": 0.165825,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0297-llm-b0e3ec225840",
+  "generatedSourceFiles": [
+    "generated-source/row-0297-llm-b0e3ec225840/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"autograder\": {\"valid\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_codebuild_project": true,
+    "aws_iam_policy": false,
+    "aws_iam_role": true,
+    "aws_iam_role_policy_attachment": false,
+    "aws_s3_bucket": true,
+    "aws_iam_policy_document": false
+  },
+  "missingMarkers": [
+    "aws_iam_policy",
+    "aws_iam_role_policy_attachment",
+    "aws_iam_policy_document"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates an AWS S3 bucket for storing AWS CodeBuild build artifacts and defines an AWS CodeBuild project configured to output artifacts to that bucket. It also creates the required IAM service role and permissions allowing CodeBuild to write artifacts to S3 and logs to CloudWatch.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"random_id\" \"suffix\" {\n  byte_length = 4\n}\n\nresource \"aws_s3_bucket\" \"codebuild_output\" {\n  bucket        = \"students-codebuild-output-${random_id.suffix.hex}\"\n  force_destroy = true\n}\n\nresource \"aws_s3_bucket_ownership_controls\" \"codebuild_output\" {\n  bucket = aws_s3_bucket.codebuild_output.id\n\n  rule {\n    object_ownership = \"BucketOwnerPreferred\"\n  }\n}\n\nresource \"aws_s3_bucket_public_access_block\" \"codebuild_output\" {\n  bucket = aws_s3_bucket.codebuild_output.id\n\n  block_public_acls       = true\n  block_public_policy     = true\n  ignore_public_acls      = true\n  restrict_public_buckets = ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0297-llm-b0e3ec225840.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: An AWS S3 bucket to store code build output. An AWS CodeBuild project resource with an artifacts argument block of type S3 to store students' code build output with location being the S3 bucket resource, an environment argument block with \"BUILD_GENERAL1_SMALL\" computer_type, \"alpine\" image, and \"LINUX_CONTAINER\" type, and a source argument block of \"GITHUB\" type, 1 git_clone_depth, and \"github.com/source-location\" location.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS S3 bucket for storing AWS CodeBuild build artifacts and defines an AWS CodeBuild project configured to output artifacts to that bucket. It also creates the required IAM service role and permissions allowing CodeBuild to write artifacts to S3 and logs to CloudWatch.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"autograder\": {\"valid\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

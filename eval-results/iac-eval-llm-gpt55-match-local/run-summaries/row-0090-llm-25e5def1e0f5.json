@@ -1,0 +1,86 @@
+{
+  "index": 90,
+  "rowId": "90",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-25e5def1e0f5",
+  "userId": "local-user",
+  "durationSeconds": 119.17,
+  "difficulty": "6",
+  "resource": "aws_eks_cluster, aws_eks_fargate_profile, aws_iam_role, aws_iam_role, aws_iam_role_policy_attachment, aws_subnet, aws_subnet, aws_vpc, null_resource, aws_eks_cluster_auth",
+  "prompt": "Create an IAM role for EKS Fargate profiles with the necessary policies for pod execution. Attach the AmazonEKSFargatePodExecutionRolePolicy to the IAM role. Define an AWS EKS Fargate profile for the 'kube-system' namespace, associating it with the EKS cluster and specifying the pod execution role ARN. Ensure that the specified subnets have the required resource tag for cluster association. Use a null_resource to patch the Kubernetes deployment 'coredns' in the 'kube-system' namespace, using the EKS cluster's endpoint, certificate authority, and authentication token for communication.",
+  "intent": "Resource \"aws_iam_role\" \"eks-fargate-profile\"\nhas one \"name\"\nhas one \"assume_role_policy\"\nResource \"aws_iam_role_policy_attachment\" \"eks-fargate-profile\"\nhas one \"policy_arn\"\nhas one \"role\"\nResource \"aws_eks_fargate_profile\" \"kube-system\"\nhas one \"cluster_name\"\nhas one \"fargate_profile_name\"\nhas one \"pod_execution_role_arn\"\nhas one \"subnet_ids\"\nhas one \"namespace\" in \"selector\"\nData \"aws_eks_cluster_auth\" \"eks\"\nhas one \"name\"\nResource \"null_resource\" \"k8s_patcher\"\nhas multiple \"triggers\" (endpoint, ca_crt, token)\nuses a \"local-exec\" provisioner to execute a command that patches the Kubernetes deployment\nhas a \"lifecycle\" policy to ignore changes in \"triggers\"",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_vpc\" \"main\" {\n  cidr_block = \"10.0.0.0/16\"\n}\n\ndata \"aws_availability_zones\" \"available\" {\n  state = \"available\"\n}\n\nresource \"aws_subnet\" \"test_eks_1\" {\n  vpc_id     = aws_vpc.main.id\n  cidr_block = \"10.0.1.0/24\"\n\n  availability_zone = data.aws_availability_zones.available.names[0]\n\n  tags = {\n    \"kubernetes.io/cluster/test\" = \"shared\"\n  }\n}\n\nresource \"aws_subnet\" \"test_eks_2\" {\n  vpc_id     = aws_vpc.main.id\n  cidr_block = \"10.0.2.0/24\"\n\n  availability_zone = data.aws_availability_zones.available.names[1]\n\n  tags = {\n    \"kubernetes.io/cluster/test\" = \"shared\"\n  }\n}\n\nresource \"aws_iam_role\" \"eks-cluster\" {\n  name = \"eks-cluster-1\"\n\n  assume_role_policy = <<POLICY\n{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Principal\": {\n        \"Service\": \"eks.amazonaws.com\"\n      },\n      \"Action\": \"sts:AssumeRole\"\n    }\n  ]\n}\nPOLICY\n}\n\nresource \"aws_iam_role_policy_attachment\" \"eks_cluster_policy\" {\n  policy_arn = \"arn:aws:iam::aws:policy/AmazonEKSClusterPolicy\"\n  role       = aws_iam_role.eks-cluster.name\n}\n\nresource \"aws_iam_role_policy_attachment\" \"eks_service_policy\" {\n  policy_arn = \"arn:aws:iam::aws:policy/AmazonEKSServicePolicy\"\n  role       = aws_iam_role.eks-cluster.name\n}\n\n\nresource \"aws_eks_cluster\" \"cluster\" {\n  name     = \"test\"\n  role_arn = aws_iam_role.eks-cluster.arn\n\n  vpc_config {\n    subnet_ids = [\n      aws_subnet.test_eks_1.id,\n      aws_subnet.test_eks_2.id\n    ]\n  }\n\n  depends_on = [\n    aws_iam_role_policy_attachment.eks_cluster_policy,\n    aws_iam_role_policy_attachment.eks_service_policy,\n  ]\n}\n\nresource \"aws_iam_role\" \"eks-fargate-profile\" {\n  name = \"eks-fargate-profile\"\n\n  assume_role_policy = jsonencode({\n    Statement = [{\n      Action = \"sts:AssumeRole\"\n      Effect = \"Allow\"\n      Principal = {\n        Service = \"eks-fargate-pods.amazonaws.com\"\n      }\n    }]\n    Version = \"2012-10-17\"\n  })\n}\n\nresource \"aws_iam_role_policy_attachment\" \"eks-fargate-profile\" {\n  policy_arn = \"arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy\"\n  role       = aws_iam_role.eks-fargate-profile.name\n}\n\nresource \"aws_eks_fargate_profile\" \"kube-system\" {\n  cluster_name           = aws_eks_cluster.cluster.name\n  fargate_profile_name   = \"kube-system\"\n  pod_execution_role_arn = aws_iam_role.eks-fargate-profile.arn\n\n  subnet_ids = [\n    aws_subnet.test_eks_1.id,\n    aws_subnet.test_eks_2.id\n  ]\n\n  selector {\n    namespace = \"kube-system\"\n  }\n\n  depends_on = [ aws_iam_role_policy_attachment.eks-fargate-profile ]\n}\n\ndata \"aws_eks_cluster_auth\" \"eks\" {\n  name = aws_eks_cluster.cluster.id\n}\n\nresource \"null_resource\" \"k8s_patcher\" {\n  depends_on = [aws_eks_fargate_profile.kube-system]\n\n  triggers = {\n    endpoint = aws_eks_cluster.cluster.endpoint\n    ca_crt   = base64decode(aws_eks_cluster.cluster.certificate_authority[0].data)\n    token    = data.aws_eks_cluster_auth.eks.token\n  }\n\n  provisioner \"local-exec\" {\n    command = <<EOH\n      cat >/tmp/ca.crt <<EOF\n      ${base64decode(aws_eks_cluster.cluster.certificate_authority[0].data)}\n      EOF\n      kubectl \\\n        --server=\"${aws_eks_cluster.cluster.endpoint}\" \\\n        --certificate_authority=/tmp/ca.crt \\\n        --token=\"${data.aws_eks_cluster_auth.eks.token}\" \\\n        patch deployment coredns \\\n        -n kube-system --type json \\\n        -p='[{\"op\": \"remove\", \"path\": \"/spec/template/metadata/annotations/eks.amazonaws.com~1compute-type\"}]'\n      EOH\n  }\n\n  lifecycle {\n    ignore_changes = [triggers]\n  }\n}",
+  "bleuScore": 0.134391,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0090-llm-25e5def1e0f5",
+  "generatedSourceFiles": [
+    "generated-source/row-0090-llm-25e5def1e0f5/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_aws_eks_cluster_auth\": true, \"has_aws_eks_fargate_profile\": false, \"has_aws_iam_role_fargate\": false, \"has_aws_iam_role_policy_attachment_fargate\": false, \"has_null_resource_k8s_patcher\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_eks_cluster": true,
+    "aws_eks_fargate_profile": true,
+    "aws_iam_role": true,
+    "aws_iam_role_policy_attachment": true,
+    "aws_subnet": true,
+    "aws_vpc": true,
+    "aws_eks_cluster_auth": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a deployable AWS EKS cluster with private subnets suitable for EKS Fargate workloads. It defines an IAM role for EKS Fargate pod execution, attaches the required `AmazonEKSFargatePodExecutionRolePolicy`, creates an EKS Fargate profile for the `kube-system` namespace, and ensures the selected subnets are tagged for EKS cluster association. It also uses a `null_resource` with `kubectl` to patch the `coredns` deployment in the `kube-system` namespace using the EKS cluster endpoint, certificate authority, and authentication token.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    null = {\n      source  = \"hashicorp/null\"\n      version = \">= 3.2\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the EKS cluster and related resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"cluster_name\" {\n  description = \"Name of the EKS cluster.\"\n  type        = string\n  default     = \"example-fargate-eks-cluster\"\n}\n\nvariable \"kubernetes_version\" {\n  descr",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0090-llm-25e5def1e0f5.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an IAM role for EKS Fargate profiles with the necessary policies for pod execution. Attach the AmazonEKSFargatePodExecutionRolePolicy to the IAM role. Define an AWS EKS Fargate profile for the 'kube-system' namespace, associating it with the EKS cluster and specifying the pod execution role ARN. Ensure that the specified subnets have the required resource tag for cluster association. Use a null_resource to patch the Kubernetes deployment 'coredns' in the 'kube-system' namespace, using the EKS cluster's endpoint, certificate authority, and authentication token for communication.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a deployable AWS EKS cluster with private subnets suitable for EKS Fargate workloads. It defines an IAM role for EKS Fargate pod execution, attaches the required `AmazonEKSFargatePodExecutionRolePolicy`, creates an EKS Fargate profile for the `kube-system` namespace, and ensures the selected subnets are tagged for EKS cluster association. It also uses a `null_resource` with `kubectl` to patch the `coredns` deployment in the `kube-system` namespace using the EKS cluster endpoint, certificate authority, and authentication token.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_aws_eks_cluster_auth\": true, \"has_aws_eks_fargate_profile\": false, \"has_aws_iam_role_fargate\": false, \"has_aws_iam_role_policy_attachment_fargate\": false, \"has_null_resource_k8s_patcher\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

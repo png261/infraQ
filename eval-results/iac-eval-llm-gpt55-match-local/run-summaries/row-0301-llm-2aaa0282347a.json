@@ -1,0 +1,92 @@
+{
+  "index": 301,
+  "rowId": "301",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-2aaa0282347a",
+  "userId": "local-user",
+  "durationSeconds": 72.03,
+  "difficulty": "6",
+  "resource": "aws_codebuild_project, aws_iam_policy, aws_iam_role, aws_iam_role_policy_attachment, aws_s3_bucket, aws_security_group, aws_subnet, aws_vpc, aws_iam_policy_document, aws_iam_policy_document",
+  "prompt": "An AWS S3 bucket to store code build output. An AWS VPC with cidr_block \"10.0.0.0/16\" and VPC subnet with cidr_block \"10.0.0.0/24\". An AWS Security Group linked to the VPC, and make sure there is no ingress and egress to block internet access. An AWS CodeBuild project resource with an artifacts argument block of type S3 to store students' code build output with location being the S3 bucket resource, an environment argument block with \"BUILD_GENERAL1_SMALL\" computer_type, \"alpine\" image, and \"LINUX_CONTAINER\" type, and a source argument block of \"GITHUB\" type, 1 git_clone_depth, and \"github.com/source-location\" location, and a vpc_config argument block to link to the VPC resources.",
+  "intent": "have one \"aws_s3_bucket\" resource\nhave one \"aws_codebuild_project\" resource\n  with \"artifacts\" argument block\n    with \"type\" argument with value \"S3\"\n    with \"location\" argument\n    with \"name\" argument\n  with \"environment\" argument block\n    with \"computer_type\" argument with value \"BUILD_GENERAL1_SMALL\"\n    with \"image\" argument with value \"alpine\"\n    with \"type\" argument with value \"LINUX_CONTAINER\"\n  with \"source\" argument block\n    with \"type\" argument with value \"GITHUB\"\n    with \"git_clone_depth\" argument set to 1\n    with \"location\" argument with value \"github.com/source-location\"\n  with \"vpc_config\" argument block\n    with \"vpc_id\" argument\n    with \"subnets\" argument\n    with \"security_group_ids\" argument\nhave one \"aws_vpc\" resource\n  with \"cidr_block\" argument with value \"10.0.0.0/16\"\nhave one \"aws_subnet\" resource\n  with \"vpc_id\" argument\n  with \"cidr_block\" argument with value \"10.0.0.0/24\"\nhave one \"aws_security_group\" resource\n  with \"vpc_id\" argument",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_s3_bucket\" \"artifact_bucket\" {\n  bucket_prefix = \"artifact-bucket-\"\n}\n\nresource \"aws_codebuild_project\" \"autograder_build\" {\n  name         = \"autograder_build\"\n  service_role = aws_iam_role.autograder_build_role.arn\n\n  artifacts {\n    type     = \"S3\"\n    location = aws_s3_bucket.artifact_bucket.arn\n    name     = \"results.zip\" # include this\n  }\n\n  environment { # arguments required, exact value not specified\n    compute_type = \"BUILD_GENERAL1_SMALL\"\n    image        = \"aws/codebuild/standard:7.0-24.10.29\"\n    type         = \"LINUX_CONTAINER\"\n  }\n\n  source {\n    type            = \"GITHUB\"\n    git_clone_depth = 1 # good to have, not required\n    location        = \"github.com/source-location\"\n  }\n\n  vpc_config {\n    vpc_id             = aws_vpc.autograder_vpc.id\n    subnets            = [aws_subnet.autograder_vpc_subnet.id]\n    security_group_ids = [aws_security_group.autograder_vpc_securitygroup.id]\n  }\n}\n\nresource \"aws_vpc\" \"autograder_vpc\" {\n  cidr_block = \"10.0.0.0/16\" # extra value not specified\n}\n\nresource \"aws_subnet\" \"autograder_vpc_subnet\" {\n  vpc_id     = aws_vpc.autograder_vpc.id\n  cidr_block = \"10.0.0.0/24\" # include this\n}\n\nresource \"aws_security_group\" \"autograder_vpc_securitygroup\" {\n  vpc_id = aws_vpc.autograder_vpc.id\n}\n\nresource \"aws_iam_role\" \"autograder_build_role\" {\n  assume_role_policy = data.aws_iam_policy_document.autograder_build_policy_assume.json\n}\n\ndata \"aws_iam_policy_document\" \"autograder_build_policy_assume\" {\n  statement {\n    actions = [\"sts:AssumeRole\"]\n\n    principals {\n      type        = \"Service\"\n      identifiers = [\"codebuild.amazonaws.com\"]\n    }\n  }\n}\n\ndata \"aws_iam_policy_document\" \"autograder_build_policy\" {\n  statement {\n    effect = \"Allow\"\n    actions = [\n      \"ec2:DescribeSubnets\",\n      \"ec2:DescribeSecurityGroups\",\n      \"ec2:DescribeVpcs\"\n    ]\n    resources = [\n      \"*\"\n    ]\n  }\n\n  statement {\n    effect  = \"Allow\"\n    actions = [\"s3:*\"]\n    resources = [\n      aws_s3_bucket.artifact_bucket.arn,\n      \"${aws_s3_bucket.artifact_bucket.arn}/*\",\n    ]\n  }\n}\n\nresource \"aws_iam_policy\" \"autograder_build_policy\" {\n  name        = \"lambda_policy\"\n  description = \"Grants permissions to Lambda to describe vpc, subnet, security group\"\n\n  policy = data.aws_iam_policy_document.autograder_build_policy.json\n}\n\nresource \"aws_iam_role_policy_attachment\" \"lambda_policy_attach\" {\n  role       = aws_iam_role.autograder_build_role.name\n  policy_arn = aws_iam_policy.autograder_build_policy.arn\n}",
+  "bleuScore": 0.146805,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0301-llm-2aaa0282347a",
+  "generatedSourceFiles": [
+    "generated-source/row-0301-llm-2aaa0282347a/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"autograder\": {\"valid\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_codebuild_project": true,
+    "aws_iam_policy": false,
+    "aws_iam_role": true,
+    "aws_iam_role_policy_attachment": false,
+    "aws_s3_bucket": true,
+    "aws_security_group": true,
+    "aws_subnet": true,
+    "aws_vpc": true,
+    "aws_iam_policy_document": false
+  },
+  "missingMarkers": [
+    "aws_iam_policy",
+    "aws_iam_role_policy_attachment",
+    "aws_iam_policy_document"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates:\n\n- An S3 bucket for AWS CodeBuild build artifacts/output.\n- A VPC with CIDR block `10.0.0.0/16`.\n- A subnet inside that VPC with CIDR block `10.0.0.0/24`.\n- A security group attached to the VPC with no ingress or egress rules, blocking network traffic.\n- An IAM role and policy for AWS CodeBuild.\n- An AWS CodeBuild project configured to:\n  - Store artifacts in the S3 bucket.\n  - Use a Linux container environment with `BUILD_GENERAL1_SMALL`, image `alpine`, and type `LINUX_CONTAINER`.\n  - Use GitHub as the source with clone depth `1`.\n  - Attach to the created VPC, subnet, and security group.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region for all resources.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"project_name\" {\n  description = \"Name of the AWS CodeBuild project.\"\n  type        = string\n  default     = \"students-codebuild-project\"\n}\n\nre",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0301-llm-2aaa0282347a.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: An AWS S3 bucket to store code build output. An AWS VPC with cidr_block \"10.0.0.0/16\" and VPC subnet with cidr_block \"10.0.0.0/24\". An AWS Security Group linked to the VPC, and make sure there is no ingress and egress to block internet access. An AWS CodeBuild project resource with an artifacts argument block of type S3 to store students' code build output with location being the S3 bucket resource, an environment argument block with \"BUILD_GENERAL1_SMALL\" computer_type, \"alpine\" image, and \"LINUX_CONTAINER\" type, and a source argument block of \"GITHUB\" type, 1 git_clone_depth, and \"github.com/source-location\" location, and a vpc_config argument block to link to the VPC resources.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates:\n\n- An S3 bucket for AWS CodeBuild build artifacts/output.\n- A VPC with CIDR block `10.0.0.0/16`.\n- A subnet inside that VPC with CIDR block `10.0.0.0/24`.\n- A security group attached to the VPC with no ingress or egress rules, blocking network traffic.\n- An IAM role and policy for AWS CodeBuild.\n- An AWS CodeBuild project configured to:\n  - Store artifacts in the S3 bucket.\n  - Use a Linux container environment with `BUILD_GENERAL1_SMALL`, image `alpine`, and type `LINUX_CONTAINER`.\n  - Use GitHub as the source with clone depth `1`.\n  - Attach to the created VPC, subnet, and security group.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"autograder\": {\"valid\": false}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

@@ -1,0 +1,80 @@
+{
+  "index": 368,
+  "rowId": "368",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-ebe9cdfc50b8",
+  "userId": "local-user",
+  "durationSeconds": 68.52,
+  "difficulty": "2",
+  "resource": "aws_lightsail_database",
+  "prompt": "create AWS Lightsail that creates a mysql database. It should allow daily backups to take place between 16:00 and 16:30 each day and  requires any maintiance tasks (anything that would cause an outage, including changing some attributes) to take place on Tuesdays between 17:00 and 17:30",
+  "intent": "have one \"aws_lightsail_database\" resource\n    with relational_database_name argument\n    with master_database_name \n    with master_password\n    with master_username\n    with blueprint_id\n    with bundle_id\n    with  preferred_backup_window    = \"16:00-16:30\"\n  preferred_maintenance_window = \"Tue:17:00-Tue:17:30\"",
+  "referenceOutput": "resource \"aws_lightsail_database\" \"test\" {\n  relational_database_name     = \"test\"\n  availability_zone            = \"us-east-1a\"\n  master_database_name         = \"testdatabasename\"\n  master_password              = \"testdatabasepassword\"\n  master_username              = \"test\"\n  blueprint_id                 = \"mysql_8_0\"\n  bundle_id                    = \"micro_1_0\"\n  preferred_backup_window      = \"16:00-16:30\"\n  preferred_maintenance_window = \"Tue:17:00-Tue:17:30\"\n}",
+  "bleuScore": 0.026334,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/generated-source/row-0368-llm-ebe9cdfc50b8",
+  "generatedSourceFiles": [
+    "generated-source/row-0368-llm-ebe9cdfc50b8/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_valid_lightsail_database\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_lightsail_database": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "The Terraform configuration below creates an AWS Lightsail MySQL managed database. It configures:\n\n- A Lightsail relational database using MySQL 8.0\n- Daily automated backups between `16:00` and `16:30` UTC\n- Maintenance operations, including potentially disruptive changes, on Tuesdays between `17:00` and `17:30` UTC\n- A generated secure master password\n- Required provider configuration with default values for all variables\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nprovider \"random\" {}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Lightsail database will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"availability_zone\" {\n  description = \"Availability zone for the Lightsail database.\"\n  type        = string\n  default     = \"us-east-1a\"\n}\n\nvariable \"database_name\" {\n  description = \"The name of the Lightsail relational database resource.\"\n  type        = string\n  default     = \"mysql-lightsail-db\"\n",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-1/run-summaries/row-0368-llm-ebe9cdfc50b8.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: create AWS Lightsail that creates a mysql database. It should allow daily backups to take place between 16:00 and 16:30 each day and  requires any maintiance tasks (anything that would cause an outage, including changing some attributes) to take place on Tuesdays between 17:00 and 17:30",
+  "promptStrategy": "default",
+  "answer": "The Terraform configuration below creates an AWS Lightsail MySQL managed database. It configures:\n\n- A Lightsail relational database using MySQL 8.0\n- Daily automated backups between `16:00` and `16:30` UTC\n- Maintenance operations, including potentially disruptive changes, on Tuesdays between `17:00` and `17:30` UTC\n- A generated secure master password\n- Required provider configuration with default values for all variables",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"has_valid_lightsail_database\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

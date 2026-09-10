@@ -1,0 +1,80 @@
+{
+  "index": 267,
+  "rowId": "267",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-2c9d26d77846",
+  "userId": "local-user",
+  "durationSeconds": 73.24,
+  "difficulty": "1",
+  "resource": "aws_s3_bucket",
+  "prompt": "Create a S3 bucket with an example name",
+  "intent": "Has an aws_s3_bucket resource",
+  "referenceOutput": "resource \"aws_s3_bucket\" \"example\" {\n  bucket = \"my-tf-test-bucket\"\n}",
+  "bleuScore": 0.02364,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0267-llm-2c9d26d77846",
+  "generatedSourceFiles": [
+    "generated-source/row-0267-llm-2c9d26d77846/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_s3_bucket": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "Description: This Terraform configuration creates an AWS S3 bucket using an example name with a random suffix to help ensure global uniqueness. It also enables basic security settings, including blocking public access and server-side encryption.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n    random = {\n      source  = \"hashicorp/random\"\n      version = \"~> 3.6\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the S3 bucket will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"bucket_name_prefix\" {\n  description = \"Prefix for the example S3 bucket name.\"\n  type        = string\n  default     = \"example-s3-bucket\"\n}\n\nresource \"random_id\" \"bucket_suffix\" {\n  byte_length = 4\n}\n\nresource \"aws_s3_bucket\" \"example\" {\n  bucket = \"${var.bucket_name_prefix}-${random_id.bucket_suffix.hex}\"\n\n  tags = {\n    Name        = \"Example S3 Bucket\"\n    Environment = \"Example\"\n    ManagedBy   = \"Terraform\"\n  }\n}\n\nresource \"aws_s3_bucket_public_access_block\" \"example\" {\n  bucket = aws_s3_bucket.example.id",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0267-llm-2c9d26d77846.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a S3 bucket with an example name",
+  "promptStrategy": "default",
+  "answer": "Description: This Terraform configuration creates an AWS S3 bucket using an example name with a random suffix to help ensure global uniqueness. It also enables basic security settings, including blocking public access and server-side encryption.",
+  "failure_category": "",
+  "failure_reason": ""
+}

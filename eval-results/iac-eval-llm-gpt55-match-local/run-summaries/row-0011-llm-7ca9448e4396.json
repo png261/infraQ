@@ -1,0 +1,99 @@
+{
+  "index": 11,
+  "rowId": "11",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-7ca9448e4396",
+  "userId": "local-user",
+  "durationSeconds": 81.97,
+  "difficulty": "6",
+  "resource": "aws_elastic_beanstalk_application, aws_elastic_beanstalk_application_version, aws_elastic_beanstalk_environment, aws_iam_instance_profile, aws_iam_role, aws_iam_role_policy_attachment, aws_route53_record, aws_route53_zone, aws_s3_bucket, aws_s3_object",
+  "prompt": "Configure Route 53 resources to manage a domain and directs traffic to an Elastic Beanstalk environment. \nName the zone \"main\", the environment \"eb-env\", the iam role \"eb_ec2_role\", the instance profile \"eb_ec2_profile\", the bucket (with unique name), the object \"examplebucket_object\", the application \"myapp\" and the application version \"version\"",
+  "intent": "Has one \"aws_iam_role\" resource\n    with \"name\"\n    with \"assume_role_policy\" and \"Service\" set to \"ec2.amazonaws.com\"\n\nHas one \"aws_iam_role_policy_attachment\" resource\n    with \"role\" referencing the \"aws_iam_role\"\n    with \"policy_arn\" set to \"arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier\"\n\nHas one \"aws_iam_instance_profile\" resource\n    with \"name\"\n    with \"role\" referencing the \"aws_iam_role\" resource\n\nHas one \"aws_elastic_beanstalk_application\" resource\n    with \"name\"\n\nHas one \"aws_s3_bucket\" resource\n    with \"bucket\"\n\nHas one \"aws_s3_object\" resource\n    with \"key\"\n    with \"source\"\n    with \"bucket\" referencing the \"aws_s3_bucket\" resource\n\nHas one \"aws_elastic_beanstalk_application_version\" resource\n    with \"name\n    with \"application\" referencing the \"aws_elastic_beanstalk_application\" resource\n    with \"bucket\" referencing the \"bucket\" from the \"aws_s3_object\" resource\n    with \"key\" referencing the \"key\" from the \"aws_s3_object\" resource\n\nHas one \"aws_elastic_beanstalk_environment\" resource\n    with \"name\"\n    with \"application\" referencing the \"aws_elastic_beanstalk_application\" resource\n    with \"solution_stack_name\"\n    with \"version_label\" referencing the \"aws_elastic_beanstalk_application_version\" resource\n    with one \"setting\" block which has a \"value\" that references the \"aws_iam_instance_profile\" resource\n\nHas one \"aws_route53_zone\" resource\n    with \"name\"\n\nHas one \"aws_route53_record\" resources\n    with \"name\"\n    with \"type\"\n    with \"ttl\"\n    with \"zone_id\" referencing the \"aws_route53_zone\" resource\n    with \"records\" referencing one of the \"aws_elastic_beanstalk_environment\" resources",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_iam_role\" \"eb_ec2_role\" {\n  name = \"elastic_beanstalk_ec2_role\"\n\n  assume_role_policy = jsonencode({\n    Version = \"2012-10-17\",\n    Statement = [\n      {\n        Action = \"sts:AssumeRole\",\n        Effect = \"Allow\",\n        Principal = {\n          Service = \"ec2.amazonaws.com\"\n        },\n      },\n    ]\n  })\n}\n\n# Attach the AWS managed policy for Elastic Beanstalk to the role\nresource \"aws_iam_role_policy_attachment\" \"eb_managed_policy\" {\n  role       = aws_iam_role.eb_ec2_role.name\n  policy_arn = \"arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier\"\n}\n\n\n# Create an instance profile tied to the role\nresource \"aws_iam_instance_profile\" \"eb_ec2_profile\" {\n  name = \"elastic_beanstalk_ec2_profile\"\n  role = aws_iam_role.eb_ec2_role.name\n}\n\n# Assuming you have a hosted zone for your domain in Route 53.\n# Route 53 Hosted Zone\nresource \"aws_route53_zone\" \"main\" {\n  name = \"example56.com\"\n}\n\n# DNS Record to point to the Elastic Beanstalk environment\nresource \"aws_route53_record\" \"www\" {\n  zone_id = aws_route53_zone.main.zone_id\n  name    = \"app.example56.com\"\n  type    = \"CNAME\"\n  ttl     = 60\n  records = [aws_elastic_beanstalk_environment.eb-env.cname]\n}\n\nresource \"aws_s3_bucket\" \"sample_bucket\" {\n  bucket_prefix = \"sample-\"\n}\n\nresource \"aws_s3_object\" \"examplebucket_object\" {\n  key    = \"randofile\"\n  bucket = aws_s3_bucket.sample_bucket.id\n  source = \"./supplement/app.zip\"\n}\n\n# Define the Elastic Beanstalk application\nresource \"aws_elastic_beanstalk_application\" \"myapp\" {\n  name        = \"something-application\"\n}\n\n# Define the Elastic Beanstalk application version\nresource \"aws_elastic_beanstalk_application_version\" \"version\" {\n  name        = \"app-version\"\n  application = aws_elastic_beanstalk_application.myapp.name\n  bucket = aws_s3_object.examplebucket_object.bucket\n  key    = aws_s3_object.examplebucket_object.key\n}\n\n\n# Elastic Beanstalk environment\nresource \"aws_elastic_beanstalk_environment\" \"eb-env\" {\n  name                = \"awesomeenv\"\n  application         = aws_elastic_beanstalk_application.myapp.name\n  solution_stack_name = \"64bit Amazon Linux 2023 v4.3.0 running Python 3.9\"\n  version_label = aws_elastic_beanstalk_application_version.version.name\n\n  setting {\n    namespace = \"aws:autoscaling:launchconfiguration\"\n    name      = \"IamInstanceProfile\"\n    value     = aws_iam_instance_profile.eb_ec2_profile.name\n  }\n}",
+  "bleuScore": 0.174541,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/generated-source/row-0011-llm-7ca9448e4396",
+  "generatedSourceFiles": [
+    "generated-source/row-0011-llm-7ca9448e4396/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": false,
+    "missingPathModuleFiles": [
+      "myapp.zip"
+    ],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "myapp.zip",
+        "line": "",
+        "finding": "missing_path_module_file"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: Invalid reference\n\n  on main.tf line 171, in data \"archive_file\" \"app_source\":\n 171:   console.log(`Application listening on port ${port}`);\n\nA reference to a resource type must be followed by at least one attribute\naccess, specifying the resource name.\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": [
+      "myapp.zip"
+    ]
+  },
+  "requiredMarkers": {
+    "aws_elastic_beanstalk_application": true,
+    "aws_elastic_beanstalk_application_version": true,
+    "aws_elastic_beanstalk_environment": true,
+    "aws_iam_instance_profile": true,
+    "aws_iam_role": true,
+    "aws_iam_role_policy_attachment": true,
+    "aws_route53_record": true,
+    "aws_route53_zone": true,
+    "aws_s3_bucket": true,
+    "aws_s3_object": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates:\n\n- A Route 53 hosted zone named `main`\n- An Elastic Beanstalk application named `myapp`\n- An Elastic Beanstalk application version named `version`\n- An Elastic Beanstalk environment named `eb-env`\n- An IAM role named `eb_ec2_role`\n- An instance profile named `eb_ec2_profile`\n- A uniquely named S3 bucket for the Elastic Beanstalk source bundle\n- An S3 object named `examplebucket_object`\n- A Route 53 DNS record that routes traffic to the Elastic Beanstalk environment\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n\n    archive = {\n      source  = \"hashicorp/archive\"\n      version = \">= 2.4\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region to deploy resources into.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"domain_name\" {\n  description = \"Domain name to manage with Route 53.\"\n  type        = string\n  default     = \"example.com\"\n}\n\nvariable \"record_name\" {\n  description = \"Subdomain r",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/run-summaries/row-0011-llm-7ca9448e4396.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Configure Route 53 resources to manage a domain and directs traffic to an Elastic Beanstalk environment. \nName the zone \"main\", the environment \"eb-env\", the iam role \"eb_ec2_role\", the instance profile \"eb_ec2_profile\", the bucket (with unique name), the object \"examplebucket_object\", the application \"myapp\" and the application version \"version\"",
+  "answer": "This Terraform configuration creates:\n\n- A Route 53 hosted zone named `main`\n- An Elastic Beanstalk application named `myapp`\n- An Elastic Beanstalk application version named `version`\n- An Elastic Beanstalk environment named `eb-env`\n- An IAM role named `eb_ec2_role`\n- An instance profile named `eb_ec2_profile`\n- A uniquely named S3 bucket for the Elastic Beanstalk source bundle\n- An S3 object named `examplebucket_object`\n- A Route 53 DNS record that routes traffic to the Elastic Beanstalk environment",
+  "failure_category": "artifact_incomplete",
+  "failure_reason": "Missing local files: myapp.zip"
+}

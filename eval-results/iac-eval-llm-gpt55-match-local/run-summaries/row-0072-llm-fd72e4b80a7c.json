@@ -1,0 +1,84 @@
+{
+  "index": 72,
+  "rowId": "72",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-fd72e4b80a7c",
+  "userId": "local-user",
+  "durationSeconds": 122.44,
+  "difficulty": "3",
+  "resource": "aws_iam_role, aws_kinesisanalyticsv2_application, aws_iam_policy_document",
+  "prompt": "Generate a basic Amazon Kinesis V2 Analytics Application to manage a SQL application",
+  "intent": "Has one \"aws_iam_role\" resource, and one \"aws_kinesisanalyticsv2_application\" with argument runtime_environment == \"SQL-1_0\"",
+  "referenceOutput": "provider \"aws\" {\n  region = \"us-west-2\"\n}\n\ndata \"aws_iam_policy_document\" \"KinesisAssume\" {\n  statement {\n    effect  = \"Allow\"\n    actions = [\"sts:AssumeRole\"]\n    principals {\n      type        = \"Service\"\n      identifiers = [\"kinesisanalytics.amazonaws.com\"]\n    }\n  }\n}\n\n\nresource \"aws_iam_role\" \"kinesis_role\" {\n  name               = \"kinesis_role\"\n  assume_role_policy = data.aws_iam_policy_document.KinesisAssume.json\n}\n\nresource \"aws_kinesisanalyticsv2_application\" \"flink_app\" {\n  name                 = \"example-application1\"\n  runtime_environment  = \"SQL-1_0\"\n  service_execution_role = aws_iam_role.kinesis_role.arn\n}",
+  "bleuScore": 0.029775,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-1/generated-source/row-0072-llm-fd72e4b80a7c",
+  "generatedSourceFiles": [
+    "generated-source/row-0072-llm-fd72e4b80a7c/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_iam_role": true,
+    "aws_kinesisanalyticsv2_application": true,
+    "aws_iam_policy_document": false
+  },
+  "missingMarkers": [
+    "aws_iam_policy_document"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "Description: This Terraform program creates a basic Amazon Kinesis Data Analytics V2 SQL application. It provisions:\n\n- An input Amazon Kinesis Data Stream\n- An output Amazon Kinesis Data Stream\n- An IAM execution role for Kinesis Data Analytics\n- IAM permissions to read from the input stream and write to the output stream\n- A Kinesis Data Analytics V2 SQL application using `SQL-1_0`\n- A simple SQL pump that copies selected JSON fields from the input stream to an output stream\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nvariable \"application_name\" {\n  description = \"Name of the Amazon Kinesis Data Analytics V2 SQL application.\"\n  type        = string\n  default     = \"basic-kinesis-sql-analytics-app\"\n}\n\nvariable \"input_stream_name\" {\n  description = \"Name of the input Kinesis Data Stream.\"\n  type        = string\n  default     = \"basic-kda-sql-input-stream\"\n}\n\nvariable \"output_stream_name\" {\n  description = \"Name of the output Kinesis Data Stream.\"\n  type        = string\n  default     = \"basic-kda-sql-output-stream\"\n}\n\nresource \"",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-1/run-summaries/row-0072-llm-fd72e4b80a7c.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Generate a basic Amazon Kinesis V2 Analytics Application to manage a SQL application",
+  "promptStrategy": "default",
+  "answer": "Description: This Terraform program creates a basic Amazon Kinesis Data Analytics V2 SQL application. It provisions:\n\n- An input Amazon Kinesis Data Stream\n- An output Amazon Kinesis Data Stream\n- An IAM execution role for Kinesis Data Analytics\n- IAM permissions to read from the input stream and write to the output stream\n- A Kinesis Data Analytics V2 SQL application using `SQL-1_0`\n- A simple SQL pump that copies selected JSON fields from the input stream to an output stream",
+  "failure_category": "",
+  "failure_reason": ""
+}

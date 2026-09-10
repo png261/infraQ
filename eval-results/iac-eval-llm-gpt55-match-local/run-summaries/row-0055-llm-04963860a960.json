@@ -1,0 +1,89 @@
+{
+  "index": 55,
+  "rowId": "55",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-04963860a960",
+  "userId": "local-user",
+  "durationSeconds": 104.58,
+  "difficulty": "4",
+  "resource": "aws_connect_bot_association, aws_connect_instance, aws_lex_bot, aws_lex_intent, aws_region",
+  "prompt": "create an aws_connect_bot_association resource with a SAML aws_connect_instance",
+  "intent": "Has one resource \"aws_connect_instance\" with argument \"identity_management_type\" = SAML, at least one \"aws_lex_intent\" resource, one \"aws_lex_bot\" resource, and one \"aws_connnect_bot_association\" resource",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\ndata \"aws_region\" \"current\" {}\n\nresource \"aws_connect_instance\" \"example\" {\n  identity_management_type = \"CONNECT_MANAGED\"\n  inbound_calls_enabled    = true\n  instance_alias           = \"friendly-name-connect-13\"\n  outbound_calls_enabled   = true\n}\n\nresource \"aws_lex_intent\" \"example\" {\n  create_version = true\n  name           = \"connect_lex_intent\"\n  \n  sample_utterances = [\n    \"I would like to pick up flowers.\",\n  ]\n\n  fulfillment_activity {\n    type = \"ReturnIntent\"\n  }\n}\n\nresource \"aws_lex_bot\" \"example13\" {\n  name             = \"connect_lex_bot\"\n  process_behavior = \"BUILD\"\n  child_directed   = false\n\n  abort_statement {\n    message {\n      content      = \"Sorry, I am not able to assist at this time.\"\n      content_type = \"PlainText\"\n    }\n  }\n  clarification_prompt {\n    max_attempts = 2\n    message {\n      content      = \"I didn't understand you, what would you like to do?\"\n      content_type = \"PlainText\"\n    }\n  }\n  intent {\n    intent_name    = aws_lex_intent.example.name\n    intent_version = \"1\"\n  }  \n}\n\nresource \"aws_connect_bot_association\" \"example\" {\n  instance_id = aws_connect_instance.example.id\n  lex_bot {\n    lex_region = data.aws_region.current.name\n    name       = aws_lex_bot.example13.name\n  }\n}",
+  "bleuScore": 0.082736,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-0/generated-source/row-0055-llm-04963860a960",
+  "generatedSourceFiles": [
+    "generated-source/row-0055-llm-04963860a960/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": false,
+    "terraformPlanError": "\nError: Missing required argument\n\n  on main.tf line 135, in resource \"aws_lexv2models_bot_version\" \"connect_bot_version\":\n 135: resource \"aws_lexv2models_bot_version\" \"connect_bot_version\" {\n\nThe argument \"locale_specification\" is required, but no definition was found.\n\nError: Unsupported block type\n\n  on main.tf line 138, in resource \"aws_lexv2models_bot_version\" \"connect_bot_version\":\n 138:   locale_specification {\n\nBlocks of type \"locale_specification\" are not expected here. Did you mean to\ndefine argument \"locale_specification\"? If so, use the equals sign to assign\nit a value.\n\nError: Invalid resource type\n\n  on main.tf line 151, in resource \"aws_lexv2models_bot_alias\" \"connect_bot_alias\":\n 151: resource \"aws_lexv2models_bot_alias\" \"connect_bot_alias\" {\n\nThe provider hashicorp/aws does not support resource type\n\"aws_lexv2models_bot_alias\".\n\nError: Insufficient lex_bot blocks\n\n  on main.tf line 169, in resource \"aws_connect_bot_association\" \"lex_v2_association\":\n 169: resource \"aws_connect_bot_association\" \"lex_v2_association\" {\n\nAt least 1 \"lex_bot\" blocks are required.\n\nError: Unsupported block type\n\n  on main.tf line 172, in resource \"aws_connect_bot_association\" \"lex_v2_association\":\n 172:   lex_v2_bot {\n\nBlocks of type \"lex_v2_bot\" are not expected here.\n",
+    "opaEvaluationResult": "",
+    "opaEvaluationError": "",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_connect_bot_association": true,
+    "aws_connect_instance": true,
+    "aws_lex_bot": false,
+    "aws_lex_intent": false,
+    "aws_region": true,
+    "aws_connnect_bot_association": false
+  },
+  "missingMarkers": [
+    "aws_lex_bot",
+    "aws_lex_intent",
+    "aws_connnect_bot_association"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates an Amazon Connect instance using SAML identity management, creates a minimal Amazon Lex V2 bot, publishes a bot version and alias, and associates that Lex bot alias with the Amazon Connect instance using `aws_connect_bot_association`.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the Amazon Connect instance and Lex bot will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"connect_instance_alias\" {\n  description = \"Alias for the Amazon Connect instance.\"\n  type        = string\n  default     = \"saml-connect-instance-demo\"\n}\n\nvariable \"lex_bot_name\" {\n  description = \"Name of the Amazon Lex V2 bot.\"\n  type        = string\n  default     = \"connect-demo-lex-v2-bot\"\n}\n\nresource \"aws_iam_role\" \"lex_bot_role\" {\n  name = \"connect-demo-lex-v2-bot-role\"\n\n  assume_role_policy = jsonencode({\n    Version = \"2012-10-17\"\n    Statement = [\n      {\n        Effect = \"Allow\"\n        Principal = {\n          Service = \"lexv2.am",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-0/run-summaries/row-0055-llm-04963860a960.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: create an aws_connect_bot_association resource with a SAML aws_connect_instance",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an Amazon Connect instance using SAML identity management, creates a minimal Amazon Lex V2 bot, publishes a bot version and alias, and associates that Lex bot alias with the Amazon Connect instance using `aws_connect_bot_association`.",
+  "failure_category": "terraform_plan",
+  "failure_reason": "Error: Missing required argument on main.tf line 135, in resource \"aws_lexv2models_bot_version\" \"connect_bot_version\": 135: resource \"aws_lexv2models_bot_version\" \"connect_bot_version\" { The argument \"locale_specification\" is required, but no definition was found. Error: Unsupported block type on main.tf line 138, in resource \"aws_lexv2models_bot_version\" \"connect_bot_version\": 138: locale_specification { Blocks of type \"locale_specification\" are not expected here. Did you mean to define argumen... <truncated 749 chars>"
+}

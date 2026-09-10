@@ -1,0 +1,87 @@
+{
+  "index": 102,
+  "rowId": "102",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-843ec94b85f4",
+  "userId": "local-user",
+  "durationSeconds": 95.46,
+  "difficulty": "4",
+  "resource": "aws_eks_cluster, aws_iam_role, aws_iam_role_policy_attachment, aws_subnet, aws_subnet, aws_vpc",
+  "prompt": "Create a Terraform configuration to provision an AWS IAM role with attribute name set to \"example\" for an Amazon EKS cluster. The role's assume role policy should allow access for EKS services. Attach the AmazonEKSClusterPolicy to this role. Additionally, define an AWS EKS cluster with a name set to \"example\", with a subnet and attached VPC. Ensure proper dependency handling for the IAM role's policy attachment during the EKS cluster creation process. The EKS cluster's endpoint private access should be set to false, and endpoint public access set to true",
+  "intent": "has one \"aws_iam_role\" \nwith one \"name\"\nwith one \"assume_role_policy\"\n\nhas one \"aws_iam_role_policy_attachment\"\nwith one \"policy_arn\"\nwith one \"role\" referencing the \"aws_iam_role.eks.name\"\n\nhas one \"aws_eks_cluster\"\nwith one \"name\"\nwith one \"version\"\nwith one \"role_arn\"\nwith one \"vpc_config\" containing \"endpoint_private_access\", \"endpoint_public_access\", and \"subnet_ids\"",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_vpc\" \"main\" {\n  cidr_block = \"10.0.0.0/16\"\n}\n\nresource \"aws_subnet\" \"private-us-east-1a\" {\n  vpc_id     = aws_vpc.main.id\n  cidr_block = \"10.0.1.0/24\"\n}\n\nresource \"aws_subnet\" \"public-us-east-1a\" {\n  vpc_id     = aws_vpc.main.id\n  cidr_block = \"10.0.2.0/24\"\n}\n\nresource \"aws_iam_role\" \"example\" {\n  name = \"example\"\n\n  assume_role_policy = <<POLICY\n{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Principal\": {\n        \"Service\": \"eks.amazonaws.com\"\n      },\n      \"Action\": \"sts:AssumeRole\"\n    }\n  ]\n}\nPOLICY\n}\n\nresource \"aws_iam_role_policy_attachment\" \"eks_cluster_policy\" {\n  policy_arn = \"arn:aws:iam::aws:policy/AmazonEKSClusterPolicy\"\n  role       = aws_iam_role.example.name\n}\n\nresource \"aws_iam_role_policy_attachment\" \"eks_service_policy\" {\n  policy_arn = \"arn:aws:iam::aws:policy/AmazonEKSServicePolicy\"\n  role       = aws_iam_role.example.name\n}\n\nresource \"aws_eks_cluster\" \"eks\" {\n  name     = \"example\"\n  version  = \"test-version\"\n  role_arn = aws_iam_role.example.arn\n\n  vpc_config {\n    endpoint_private_access = false\n    endpoint_public_access  = true\n\n    subnet_ids = [\n      aws_subnet.private-us-east-1a.id,\n      aws_subnet.public-us-east-1a.id\n    ]\n  }\n\n  depends_on = [aws_iam_role_policy_attachment.eks_cluster_policy,\n                aws_iam_role_policy_attachment.eks_service_policy]\n}",
+  "bleuScore": 0.19141,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0102-llm-843ec94b85f4",
+  "generatedSourceFiles": [
+    "generated-source/row-0102-llm-843ec94b85f4/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_eks_cluster": true,
+    "aws_iam_role": true,
+    "aws_iam_role_policy_attachment": true,
+    "aws_subnet": true,
+    "aws_vpc": true,
+    "aws_iam_role.eks.name": false
+  },
+  "missingMarkers": [
+    "aws_iam_role.eks.name"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration provisions an AWS EKS control plane named `example`. It creates a VPC with two public subnets across different Availability Zones, an IAM role named `example` that can be assumed by the EKS service, attaches the AWS-managed `AmazonEKSClusterPolicy`, and ensures the EKS cluster creation depends on the policy attachment. The EKS cluster is configured with public endpoint access enabled and private endpoint access disabled.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\ndata \"aws_availability_zones\" \"available\" {\n  state = \"available\"\n}\n\nresource \"aws_vpc\" \"example\" {\n  cidr_block           = \"10.0.0.0/16\"\n  enable_dns_support   = true\n  enable_dns_hostnames = true\n\n  tags = {\n    Name = \"example\"\n  }\n}\n\nresource \"aws_internet_gateway\" \"example\" {\n  vpc_id = aws_vpc.example.id\n\n  tags = {\n    Name = \"example\"\n  }\n}\n\nresource \"aws_route_table\" \"example_public\" {\n  vpc_id = aws_vpc.example.id\n\n  route {\n    cidr_block = \"0.0.0.0/0\"\n    gateway_id = aws_internet_gateway.example.id\n  }\n\n  tags = {\n    Name = ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0102-llm-843ec94b85f4.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a Terraform configuration to provision an AWS IAM role with attribute name set to \"example\" for an Amazon EKS cluster. The role's assume role policy should allow access for EKS services. Attach the AmazonEKSClusterPolicy to this role. Additionally, define an AWS EKS cluster with a name set to \"example\", with a subnet and attached VPC. Ensure proper dependency handling for the IAM role's policy attachment during the EKS cluster creation process. The EKS cluster's endpoint private access should be set to false, and endpoint public access set to true",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration provisions an AWS EKS control plane named `example`. It creates a VPC with two public subnets across different Availability Zones, an IAM role named `example` that can be assumed by the EKS service, attaches the AWS-managed `AmazonEKSClusterPolicy`, and ensures the EKS cluster creation depends on the policy attachment. The EKS cluster is configured with public endpoint access enabled and private endpoint access disabled.",
+  "failure_category": "",
+  "failure_reason": ""
+}

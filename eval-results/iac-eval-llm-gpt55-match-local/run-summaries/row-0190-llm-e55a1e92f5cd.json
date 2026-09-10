@@ -1,0 +1,121 @@
+{
+  "index": 190,
+  "rowId": "190",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-e55a1e92f5cd",
+  "userId": "local-user",
+  "durationSeconds": 101.94,
+  "difficulty": "5",
+  "resource": "aws_db_instance, aws_instance, aws_instance, aws_security_group, aws_subnet, aws_subnet, aws_subnet, aws_vpc",
+  "prompt": "Create one public subnet and two private subnets.The public subnet will run a webserver, the private subnets will have  a application server and relational databse.",
+  "intent": "",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\n# Create a Virtual Private Cloud (VPC)\nresource \"aws_vpc\" \"my_vpc\" {\n  cidr_block = \"10.0.0.0/16\"\n}\n\ndata \"aws_availability_zones\" \"available\" {\n  state = \"available\"\n}\n\n# Create Public Subnet\nresource \"aws_subnet\" \"public_subnet\" {\n  vpc_id                  = aws_vpc.my_vpc.id\n  cidr_block              = \"10.0.1.0/24\"\n  availability_zone       = data.aws_availability_zones.available.names[0]\n  map_public_ip_on_launch = true\n}\n\n# Create Private Subnet 1\nresource \"aws_subnet\" \"private_subnet_1\" {\n  vpc_id            = aws_vpc.my_vpc.id\n  cidr_block        = \"10.0.2.0/24\"\n  availability_zone = data.aws_availability_zones.available.names[1]\n}\n\n# Create Private Subnet 2\nresource \"aws_subnet\" \"private_subnet_2\" {\n  vpc_id            = aws_vpc.my_vpc.id\n  cidr_block        = \"10.0.3.0/24\"\n  availability_zone = data.aws_availability_zones.available.names[2]\n}\n\n# Create Security Group for EC2 instances\nresource \"aws_security_group\" \"web_sg\" {\n  vpc_id = aws_vpc.my_vpc.id\n  name   = \"web_sg\"\n\n  # Define inbound and outbound rules as needed\n}\n\ndata \"aws_ami\" \"latest_amazon_linux_2\" {\n  most_recent = true\n  owners      = [\"amazon\"]\n\n  filter {\n    name   = \"name\"\n    values = [\"*ubuntu-noble-24.04-amd64-server-*\"]\n  }\n}\n\n# Create EC2 instance in the Public Subnet (Web Server)\nresource \"aws_instance\" \"web_instance\" {\n  ami             =  data.aws_ami.latest_amazon_linux_2.id\n  instance_type   = \"t2.micro\"\n  subnet_id       = aws_subnet.public_subnet.id\n  security_groups = [aws_security_group.web_sg.id]\n\n  # Additional configurations can be added as needed\n}\n\n# Create EC2 instance in Private Subnet 1 (Application Server)\nresource \"aws_instance\" \"app_instance\" {\n  ami           = data.aws_ami.latest_amazon_linux_2.id\n  instance_type = \"t2.micro\"\n  subnet_id     = aws_subnet.private_subnet_1.id\n\n  # Additional configurations can be added as needed\n}\n\nresource \"aws_db_subnet_group\" \"main\" {\n  name       = \"mydb-subnet-group\"\n  subnet_ids = [aws_subnet.private_subnet_1.id, aws_subnet.private_subnet_2.id]\n}\n\n# Create RDS instance in Private Subnet 2 (Database)\nresource \"aws_db_instance\" \"db_instance\" {\n  identifier           = \"mydb\"\n  engine               = \"mysql\"\n  instance_class       = \"db.t3.micro\"\n  allocated_storage    = 20\n  username             = \"admin\"\n  password             = \"your-password\" # Replace with your desired password\n  skip_final_snapshot  = true\n  db_subnet_group_name = aws_db_subnet_group.main.name\n}",
+  "bleuScore": 0.102198,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/generated-source/row-0190-llm-e55a1e92f5cd",
+  "generatedSourceFiles": [
+    "generated-source/row-0190-llm-e55a1e92f5cd/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "165",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "173",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "181",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "207",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "233",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "medium",
+        "file": "main.tf",
+        "line": "306",
+        "finding": "rds_final_snapshot_disabled"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"main\": {\"allow\": true, \"aws_instances\": [{\"address\": \"aws_instance.app\", \"change\": {\"actions\": [\"create\"], \"after\": {\"ami\": \"ami-02fe376e6ac9632c8\", \"credit_specification\": [], \"get_password_data\": false, \"hibernation\": null, \"instance_type\": \"t3.micro\", \"launch_template\": [], \"source_dest_check\": true, \"tags\": {\"Name\": \"three-tier-demo-app-server\", \"Tier\": \"application\"}, \"tags_all\": {\"Name\": \"three-tier-demo-app-server\", \"Tier\": \"application\"}, \"timeouts\": null, \"user_data\": \"5b0cab192ef4a71a7a1dd8c66b2a88d8cf2eb437\", \"user_data_replace_on_change\": false, \"volume_tags\": null}, \"after_sensitive\": {\"capacity_reservation_specification\": [], \"cpu_options\": [], \"credit_specification\": [], \"ebs_block_device\": [], \"enclave_options\": [], \"ephemeral_block_device\": [], \"instance_market_options\": [], \"ipv6_addresses\": [], \"launch_template\": [], \"maintenance_options\": [], \"metadata_options\": [], \"network_interface\": [], \"private_dns_name_options\": [], \"root_block_device\": [], \"secondary_private_ips\": [], \"security_groups\": [], \"tags\": {}, \"tags_all\": {}, \"vpc_security_group_ids\": []}, \"after_unknown\": {\"arn\": true, \"associate_public_ip_address\": true, \"availability_zone\": true, \"capacity_reservation_specification\": true, \"cpu_core_count\": true, \"cpu_options\": true, \"cpu_threads_per_core\": true, \"credit_specification\": [], \"disable_api_stop\": true, \"disable_api_termination\": true, \"ebs_block_device\": true, \"ebs_optimized\": true, \"enable_primary_ipv6\": true, \"enclave_options\": true, \"ephemeral_block_device\": true, \"host_id\": true, \"host_resource_group_arn\": true, \"iam_instance_profile\": true, \"id\": true, \"instance_initiated_shutdown_behavior\": true, \"instance_lifecycle\": true, \"instance_market_options\": true, \"instance_state\": true, \"ipv6_address_count\": true, \"ipv6_addresses\": true, \"key_name\": true, \"launch_template\": [], \"maintenance_options\": true, \"metadata_options\": true, \"monitoring\": true, \"network_interface\": true, \"outpost_arn\": true, \"password_data\": true, \"placement_group\": true, \"placement_partition_number\": true, \"primary_network_interface_id\": true, \"private_dns\": true, \"private_dns_name_options\": true, \"private_ip\": true, \"public_dns\": true, \"public_ip\": true, \"root_block_device\": true, \"secondary_private_ips\": true, \"security_groups\": true, \"spot_instance_request_id\": true, \"subnet_id\": true, \"tags\": {}, \"tags_all\": {}, \"tenancy\": true, \"user_data_base64\": true, \"vpc_security_group_ids\": true}, \"before\": null, \"before_sensitive\": false}, \"mode\": \"managed\", \"name\": \"app\", \"provider_name\": \"registry.terraform.io/hashicorp/aws\", \"type\": \"aws_instance\"}, {\"address\": \"aws_instance.web\", \"change\": {\"actions\": [\"create\"], \"after\": {\"ami\": \"ami-02fe376e6ac9632c8\", \"associate_public_ip_address\": true, \"credit_specification\": [], \"get_password_data\": false, \"hibernation\": null, \"instance_type\": \"t3.micro\", \"launch_template\": [], \"source_dest_check\": true, \"tags\": {\"Name\": \"three-tier-demo-web-server\", \"Tier\": \"web\"}, \"tags_all\": {\"Name\": \"three-tier-demo-web-server\", \"Tier\": \"web\"}, \"timeouts\": null, \"user_data\": \"afa065e678524ddee43fbbee58d3dec05d20379b\", \"user_data_replace_on_change\": false, \"volume_tags\": null}, \"after_sensitive\": {\"capacity_reservation_specification\": [], \"cpu_options\": [], \"credit_specification\": [], \"ebs_block_device\": [], \"enclave_options\": [], \"ephemeral_block_device\": [], \"instance_market_options\": [], \"ipv6_addresses\": [], \"launch_template\": [], \"maintenance_options\": [], \"metadata_options\": [], \"network_interface\": [], \"private_dns_name_options\": [], \"root_block_device\": [], \"secondary_private_ips\": [], \"security_groups\": [], \"tags\": {}, \"tags_all\": {}, \"vpc_security_group_ids\": []}, \"after_unknown\": {\"arn\": true, \"availability_zone\": true, \"capacity_reservation_specification\": true, \"cpu_core_count\": true, \"cpu_options\": true, \"cpu_threads_per_core\": true, \"credit_specification\": [], \"disable_api_stop\": true, \"disable_api_termination\": true, \"ebs_block_device\": t... <truncated 3553 chars>",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_db_instance": true,
+    "aws_instance": true,
+    "aws_security_group": true,
+    "aws_subnet": true,
+    "aws_vpc": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS network with:\n\n- One VPC\n- One public subnet for a web server\n- Two private subnets across different Availability Zones\n- One EC2 web server in the public subnet\n- One EC2 application server in a private subnet\n- One MySQL RDS relational database deployed into the private subnets\n- Internet Gateway and public route table for public internet access\n- Security groups allowing:\n  - HTTP access to the web server from the internet\n  - Application traffic from the web server to the private app server\n  - MySQL traffic from the app server to the private database\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region to deploy resources into\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"project_name\" {\n  description = \"Name prefix for resources\"\n  type        = string\n  default     = \"three-tier-demo\"\n}\n\nvariable \"db_username\" {\n  description = \"Database admin username\"\n  type        = string\n  default     = \"adminuser\"\n}\n\nvariabl",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-3/run-summaries/row-0190-llm-e55a1e92f5cd.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create one public subnet and two private subnets.The public subnet will run a webserver, the private subnets will have  a application server and relational databse.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS network with:\n\n- One VPC\n- One public subnet for a web server\n- Two private subnets across different Availability Zones\n- One EC2 web server in the public subnet\n- One EC2 application server in a private subnet\n- One MySQL RDS relational database deployed into the private subnets\n- Internet Gateway and public route table for public internet access\n- Security groups allowing:\n  - HTTP access to the web server from the internet\n  - Application traffic from the web server to the private app server\n  - MySQL traffic from the app server to the private database",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"main\": {\"allow\": true, \"aws_instances\": [{\"address\": \"aws_instance.app\", \"change\": {\"actions\": [\"create\"], \"after\": {\"ami\": \"ami-02fe376e6ac9632c8\", \"credit_specification\": [], \"get_password_data\": false, \"hibernation\": null, \"instance_type\": \"t3.micro\", \"launch_template\": [], \"source_dest_check\": true, \"tags\": {\"Name\": \"three-tier-demo-app-server\", \"Tier\": \"application\"}, \"tags_all\": {\"Name\": \"three-tier-demo-app-server\", \"Tier\": \"application\"}, \"timeout... <truncated 3526 chars>"
+}

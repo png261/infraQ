@@ -1,0 +1,81 @@
+{
+  "index": 84,
+  "rowId": "84",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-bd0f64bf7e19",
+  "userId": "local-user",
+  "durationSeconds": 63.37,
+  "difficulty": "3",
+  "resource": "aws_route53_record, aws_route53_record, aws_route53_zone",
+  "prompt": "Configure a routing policy that navigates users to the least congested endpoint of a route 53 zone using Route 53 resources. Call the zone \"primary\" and use \"us-east-1\" and \"eu-central-1\" regions",
+  "intent": "Has one \"aws_route53_zone\" resource\n    with \"name\"\n\nHas two \"aws_route53_record\" resources\n    The first \"aws_route53_record\" \n        with \"name\"\n        with \"type\"\n        with \"ttl\"\n        with \"records\"\n        with \"zone_id\" referencing the \"aws_route53_zone\" resource\n        with \"set_identifier\"\n        with \"latency_routing_policy\" block that contains \"region\" set to \"us-east-1\" \n    The second \"aws_route53_record\" \n        with \"name\"\n        with \"type\"\n        with \"ttl\"\n        with \"records\"\n        with \"zone_id\" referencing the \"aws_route53_zone\" resource\n        with \"set_identifier\"\n        with \"latency_routing_policy\" block that contains \"region\" set to \"eu-central-1\"",
+  "referenceOutput": "provider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_route53_zone\" \"primary\" {\n  name = \"example53.com\"\n}\n\n\n# Record for the EC2 instance in the US East region\nresource \"aws_route53_record\" \"us_east_record\" {\n  zone_id = aws_route53_zone.primary.zone_id\n  name    = \"service.example53.com\"\n  type    = \"A\"\n  ttl     = \"60\"\n  records = [\"192.0.2.101\"]\n\n  set_identifier = \"US East N. Virginia\"\n  \n  latency_routing_policy {\n    region = \"us-east-1\"\n  }\n}\n\n# Record for the EC2 instance in the EU region\nresource \"aws_route53_record\" \"eu_central_record\" {\n  zone_id = aws_route53_zone.primary.zone_id\n  name    = \"service.example53.com\"\n  type    = \"A\"\n  ttl     = \"60\"\n  records = [\"192.0.2.102\"]\n\n  set_identifier = \"EU Frankfurt\"\n  \n  latency_routing_policy {\n    region = \"eu-central-1\"\n  }\n}",
+  "bleuScore": 0.137042,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0084-llm-bd0f64bf7e19",
+  "generatedSourceFiles": [
+    "generated-source/row-0084-llm-bd0f64bf7e19/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_route53_record": true,
+    "aws_route53_zone": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a Route 53 hosted zone named `primary` and configures latency-based routing records for two regional endpoints: `us-east-1` and `eu-central-1`. Route 53 will direct users to the endpoint with the lowest observed latency, which is the closest available Route 53 routing policy for sending users to the least congested or best-performing endpoint. Health checks are included so unhealthy endpoints are automatically removed from routing decisions.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nvariable \"zone_name\" {\n  description = \"The DNS name for the Route 53 hosted zone.\"\n  type        = string\n  default     = \"primary.example.com\"\n}\n\nvariable \"record_name\" {\n  description = \"The DNS record name to route users through.\"\n  type        = string\n  default     = \"app.primary.example.com\"\n}\n\nvariable \"us_east_1_endpoint_ip\" {\n  description = \"IPv4 address of the endpoint in us-east-1.\"\n  type        = string\n  default     = \"203.0.113.10\"\n}\n\nvariable \"eu_central_1_endpoint_ip\" {\n  description = \"IPv4 ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0084-llm-bd0f64bf7e19.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Configure a routing policy that navigates users to the least congested endpoint of a route 53 zone using Route 53 resources. Call the zone \"primary\" and use \"us-east-1\" and \"eu-central-1\" regions",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates a Route 53 hosted zone named `primary` and configures latency-based routing records for two regional endpoints: `us-east-1` and `eu-central-1`. Route 53 will direct users to the endpoint with the lowest observed latency, which is the closest available Route 53 routing policy for sending users to the least congested or best-performing endpoint. Health checks are included so unhealthy endpoints are automatically removed from routing decisions.",
+  "failure_category": "",
+  "failure_reason": ""
+}

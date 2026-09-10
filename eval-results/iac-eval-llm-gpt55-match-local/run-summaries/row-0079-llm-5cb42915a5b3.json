@@ -1,0 +1,81 @@
+{
+  "index": 79,
+  "rowId": "79",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-5cb42915a5b3",
+  "userId": "local-user",
+  "durationSeconds": 85.9,
+  "difficulty": "2",
+  "resource": "aws_route53_record, aws_route53_zone",
+  "prompt": "Set up a non-alias aws_route_53 record that is linked to an aws_route53_zone resource named \"example53.com\"",
+  "intent": "Has one \"aws_route53_zone\" resource\n    with \"name\" set to \"example53.com\"\n\nHas one \"aws_route53_record\" resource\n    with \"name\"\n    with \"type\"\n    with \"ttl\"\n    with \"records\"\n    with \"zone_id\" referencing the \"aws_route53_zone\" resource",
+  "referenceOutput": "provider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_route53_zone\" \"example53\" {\n  name = \"example53.com\"\n}\n\nresource \"aws_route53_record\" \"example53_A\" {\n  zone_id = aws_route53_zone.example53.zone_id\n  name    = \"example53.com\"\n  type    = \"A\"\n  ttl     = \"300\"\n  records = [\"192.0.2.1\"]  \n}",
+  "bleuScore": 0.331182,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-0/generated-source/row-0079-llm-5cb42915a5b3",
+  "generatedSourceFiles": [
+    "generated-source/row-0079-llm-5cb42915a5b3/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_configuration_valid\": false, \"is_valid_r53_record\": false, \"is_valid_r53_zone\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_route53_record": true,
+    "aws_route53_zone": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS Route 53 hosted zone for `example53.com` and a non-alias Route 53 `A` record inside that zone. The record is linked to the hosted zone using the zone resource’s `zone_id`.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_route53_zone\" \"example53_com\" {\n  name = \"example53.com\"\n}\n\nresource \"aws_route53_record\" \"www\" {\n  zone_id = aws_route53_zone.example53_com.zone_id\n  name    = \"www.example53.com\"\n  type    = \"A\"\n  ttl     = 300\n\n  records = [\n    \"192.0.2.10\"\n  ]\n}\n```",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-shards/worker-0/run-summaries/row-0079-llm-5cb42915a5b3.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Set up a non-alias aws_route_53 record that is linked to an aws_route53_zone resource named \"example53.com\"",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS Route 53 hosted zone for `example53.com` and a non-alias Route 53 `A` record inside that zone. The record is linked to the hosted zone using the zone resource’s `zone_id`.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_configuration_valid\": false, \"is_valid_r53_record\": false, \"is_valid_r53_zone\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

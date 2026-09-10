@@ -1,0 +1,88 @@
+{
+  "index": 0,
+  "rowId": "",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-5c1b1aaa7699",
+  "userId": "local-user",
+  "durationSeconds": 76.75,
+  "difficulty": "5",
+  "resource": "aws_cloudwatch_log_group, aws_cloudwatch_log_resource_policy, aws_route53_query_log, aws_route53_zone, aws_iam_policy_document",
+  "prompt": "Configure a query log that can create a log stream and put log events using Route 53 resources. Name the zone \"primary\", the cloudwatch log group \"aws_route53_example_com\", and the cloudwatch log resource policy \"route53-query-logging-policy\"",
+  "intent": "Has one \"aws_route53_zone\" resource    with \"name\"Has one \"aws_cloudwatch_log_group\" resourceHas one \"aws_cloudwatch_log_resource_policy\" resource    with \"policy_document\" enabling \"logs:CreateLogStream\" and \"logs:PutLogEvents\"    with \"policy_name\"Has one \"aws_route53_query_log\" resource    with \"cloudwatch_log_group_arn\" referencing the \"aws_cloudwatch_log_group\" resource    with \"zone_id\" referencing the \"aws_route53_zone\" resource    and depends on the \"aws_cloudwatch_log_resource_policy\" resource",
+  "referenceOutput": "terraform {  required_providers {    aws = {      source  = \"hashicorp/aws\"      version = \"~> 5.75\"    }  }  required_version = \"~> 1.9.8\"}provider \"aws\" {  region  = \"us-east-1\"  profile = \"admin-1\"  assume_role {    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"  }}resource \"aws_route53_zone\" \"primary\" {  name = \"example53.com\"}resource \"aws_cloudwatch_log_group\" \"aws_route53_example_com\" {  name              = \"/aws/route53/${aws_route53_zone.primary.name}\"  retention_in_days = 30}# Example CloudWatch log resource policy to allow Route53 to write logs# to any log group under /aws/route53/*data \"aws_iam_policy_document\" \"route53-query-logging-policy\" {  statement {    actions = [      \"logs:CreateLogStream\",      \"logs:PutLogEvents\",    ]    resources = [\"arn:aws:logs:*:*:log-group:/aws/route53/*\"]    principals {      identifiers = [\"route53.amazonaws.com\"]      type        = \"Service\"    }  }}resource \"aws_cloudwatch_log_resource_policy\" \"route53-query-logging-policy\" {  policy_document = data.aws_iam_policy_document.route53-query-logging-policy.json  policy_name     = \"route53-query-logging-policy\"}resource \"aws_route53_query_log\" \"example_com\" {  depends_on = [aws_cloudwatch_log_resource_policy.route53-query-logging-policy]  cloudwatch_log_group_arn = aws_cloudwatch_log_group.aws_route53_example_com.arn  zone_id                  = aws_route53_zone.primary.zone_id}",
+  "bleuScore": 0.241869,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-few-shot-match-local/generated-source/row-0000-llm-5c1b1aaa7699",
+  "generatedSourceFiles": [
+    "generated-source/row-0000-llm-5c1b1aaa7699/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Error",
+    "opaEvaluationError": "{\n  \"errors\": [\n    {\n      \"message\": \"var falsedefault is unsafe\",\n      \"code\": \"rego_unsafe_var_error\",\n      \"location\": {\n        \"file\": \"policy.rego\",\n        \"row\": 1,\n        \"col\": 62\n      }\n    },\n    {\n      \"message\": \"var falsedefault is unsafe\",\n      \"code\": \"rego_unsafe_var_error\",\n      \"location\": {\n        \"file\": \"policy.rego\",\n        \"row\": 1,\n        \"col\": 95\n      }\n    },\n    {\n      \"message\": \"var falsedefault is unsafe\",\n      \"code\": \"rego_unsafe_var_error\",\n      \"location\": {\n        \"file\": \"policy.rego\",\n        \"row\": 1,\n        \"col\": 140\n      }\n    },\n    {\n      \"message\": \"var falsedefault is unsafe\",\n      \"code\": \"rego_unsafe_var_error\",\n      \"location\": {\n        \"file\": \"policy.rego\",\n        \"row\": 1,\n        \"col\": 195\n      }\n    }\n  ]\n}\n",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_cloudwatch_log_group": true,
+    "aws_cloudwatch_log_resource_policy": true,
+    "aws_route53_query_log": true,
+    "aws_route53_zone": true,
+    "aws_iam_policy_document": false,
+    "logs:CreateLogStream": true,
+    "logs:PutLogEvents": true
+  },
+  "missingMarkers": [
+    "aws_iam_policy_document"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates a Route 53 hosted zone, a CloudWatch Logs log group, and a CloudWatch Logs resource policy allowing Route 53 to create log streams and put query log events. It then enables Route 53 query logging for the hosted zone.\n\n```hcl\nterraform {\n  required_version = \">= 1.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\ndata \"aws_caller_identity\" \"current\" {}\n\ndata \"aws_partition\" \"current\" {}\n\nresource \"aws_route53_zone\" \"primary\" {\n  name = \"example.com\"\n}\n\nresource \"aws_cloudwatch_log_group\" \"aws_route53_example_com\" {\n  name              = \"aws_route53_example_com\"\n  retention_in_days = 30\n}\n\nresource \"aws_cloudwatch_log_resource_policy\" \"route53_query_logging_policy\" {\n  policy_name = \"route53-query-logging-policy\"\n\n  policy_document = jsonencode({\n    Version = \"2012-10-17\"\n    Statement = [\n      {\n        Sid    = \"Route53QueryLoggingPermissions\"\n        Effect = \"Allow\"\n\n        Principal = {\n          Service = \"route53.amazonaws.com\"\n        }\n\n        Action = [\n          \"logs:CreateLogStream\",\n          \"logs:PutLogEvents\"\n        ]\n\n     ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-few-shot-match-local/run-summaries/row-0000-llm-5c1b1aaa7699.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here are a few examples:\n\nExample prompt 1: Create an AWS RDS instance with randomly generated id and password\nExample output 1: \n```hcl\nresource \"random_id\" \"suffix\" {\n  byte_length = 4\n}\n\nresource \"random_password\" \"db\" {\n  length  = 16\n  special = false\n}\n\nresource \"aws_db_instance\" \"test\" {\n  identifier          = \"metricbeat-test-${random_id.suffix.hex}\"\n  allocated_storage   = 20 // Gigabytes\n  engine              = \"mysql\"\n  instance_class      = \"db.t2.micro\"\n  db_name                = \"metricbeattest\"\n  username            = \"foo\"\n  password            = random_password.db.result\n  skip_final_snapshot = true // Required for cleanup\n}\n```\n\nExample prompt 2: Create an 20GB MySQL instance on aws with randomly generated id and password\nExample output 2: \n```hcl\nresource \"random_id\" \"suffix\" {\n  byte_length = 4\n}\n\nresource \"random_password\" \"db\" {\n  length  = 16\n  special = false\n}\n\nresource \"aws_db_instance\" \"test\" {\n  identifier          = \"metricbeat-test-${random_id.suffix.hex}\"\n  allocated_storage   = 20 // Gigabytes\n  engine              = \"mysql\"\n  instance_class      = \"db.t2.micro\"\n  db_name                = \"metricbeattest\"\n  username            = \"foo\"\n  password            = random_password.db.result\n  skip_final_snapshot = true // Required for cleanup\n}\n```\n\nExample prompt 3: create a AWS EFS, and create a replica of an this created EFS file system using regional storage in us-west-3\nExample output 3: \n```hcl\nresource \"aws_efs_file_system\" \"example\" {}\n\nresource \"aws_efs_replication_configuration\" \"example\" {\n  source_file_system_id = aws_efs_file_system.example.id\n\n  destination {\n    availability_zone_name = \"us-west-2b\"\n    kms_key_id             = \"1234abcd-12ab-34cd-56ef-1234567890ab\"\n  }\n}\n```\n\nHere is the actual prompt to answer:\nConfigure a query log that can create a log stream and put log events using Route 53 resources. Name the zone \"primary\", the cloudwatch log group \"aws_route53_example_com\", and the cloudwatch log resource policy \"route53-query-logging-policy\"",
+  "promptStrategy": "few-shot",
+  "answer": "This Terraform configuration creates a Route 53 hosted zone, a CloudWatch Logs log group, and a CloudWatch Logs resource policy allowing Route 53 to create log streams and put query log events. It then enables Route 53 query logging for the hosted zone.",
+  "failure_category": "opa_error",
+  "failure_reason": "OPA policy parse/compile error from dataset Rego intent: { \"errors\": [ { \"message\": \"var falsedefault is unsafe\", \"code\": \"rego_unsafe_var_error\", \"location\": { \"file\": \"policy.rego\", \"row\": 1, \"col\": 62 } }, { \"message\": \"var falsedefault is unsafe\", \"code\": \"rego_unsafe_var_error\", \"location\": { \"file\": \"policy.rego\", \"row\": 1, \"col\": 95 } }, { \"message\": \"var falsedefault is unsafe\", \"code\": \"rego_unsafe_var_error\", \"location\": { \"file\": \"policy.rego\", \"row\": 1, \"col\": 140 } }, { \"message\": \"... <truncated 127 chars>"
+}

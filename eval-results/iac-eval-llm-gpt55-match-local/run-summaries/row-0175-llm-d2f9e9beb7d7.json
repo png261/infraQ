@@ -1,0 +1,88 @@
+{
+  "index": 175,
+  "rowId": "175",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-d2f9e9beb7d7",
+  "userId": "local-user",
+  "durationSeconds": 76.11,
+  "difficulty": "5",
+  "resource": "aws_iam_role, aws_sagemaker_app, aws_sagemaker_domain, aws_sagemaker_user_profile, aws_subnet, aws_vpc, aws_iam_policy_document",
+  "prompt": "Create a sagemaker_app resource configured to be a JupyterServer.",
+  "intent": "",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\nresource \"aws_vpc\" \"example\" {\n  cidr_block = \"10.0.0.0/16\"\n}\n\nresource \"aws_subnet\" \"example\" {\n  vpc_id     = aws_vpc.example.id\n  cidr_block = \"10.0.1.0/24\"\n}\n\nresource \"aws_iam_role\" \"example\" {\n  name               = \"example\"\n  path               = \"/\"\n  assume_role_policy = data.aws_iam_policy_document.example.json\n}\n\ndata \"aws_iam_policy_document\" \"example\" {\n  statement {\n    actions = [\"sts:AssumeRole\"]\n\n    principals {\n      type        = \"Service\"\n      identifiers = [\"sagemaker.amazonaws.com\"]\n    }\n  }\n}\n\nresource \"aws_sagemaker_domain\" \"example\" {\n  domain_name = \"example\"\n  auth_mode   = \"IAM\"\n  vpc_id      = aws_vpc.example.id\n  subnet_ids  = [aws_subnet.example.id]\n\n  default_user_settings {\n    execution_role = aws_iam_role.example.arn\n  }\n}\n\nresource \"aws_sagemaker_user_profile\" \"example\" {\n  domain_id         = aws_sagemaker_domain.example.id\n  user_profile_name = \"example\"\n}\n\nresource \"aws_sagemaker_app\" \"example\" {\n  domain_id         = aws_sagemaker_domain.example.id\n  user_profile_name = aws_sagemaker_user_profile.example.user_profile_name\n  app_name          = \"example\"\n  app_type          = \"JupyterServer\"\n}",
+  "bleuScore": 0.104071,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0175-llm-d2f9e9beb7d7",
+  "generatedSourceFiles": [
+    "generated-source/row-0175-llm-d2f9e9beb7d7/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_iam_role": true,
+    "aws_sagemaker_app": true,
+    "aws_sagemaker_domain": true,
+    "aws_sagemaker_user_profile": true,
+    "aws_subnet": true,
+    "aws_vpc": true,
+    "aws_iam_policy_document": false
+  },
+  "missingMarkers": [
+    "aws_iam_policy_document"
+  ],
+  "allRequiredMarkersFound": false,
+  "responsePreview": "This Terraform configuration creates the required AWS infrastructure for a SageMaker Studio Domain and User Profile, then provisions an `aws_sagemaker_app` configured as a `JupyterServer`.\n\nIt includes:\n\n- AWS provider configuration\n- A VPC with two public subnets\n- IAM role for SageMaker execution\n- SageMaker Studio Domain\n- SageMaker User Profile\n- SageMaker JupyterServer App\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where SageMaker resources will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"project_name\" {\n  description = \"Name prefix for all resources.\"\n  type        = string\n  default     = \"sagemaker-jupyterserver-demo\"\n}\n\ndata \"aws_availability_zones\" \"available\" {\n  state = \"available\"\n}\n\nresource \"aws_vpc\" \"sagemaker_vpc\" {\n  cidr_block           = \"10.40.0.0/16\"\n  enable_dns_hostnames = true\n  enable_dns_support   = true\n\n  tags = {\n    Name = \"${var.project_name}-vpc\"\n  }\n}\n\nresource \"aws_internet_gateway\" \"sagemaker_igw\" {\n  vpc",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0175-llm-d2f9e9beb7d7.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a sagemaker_app resource configured to be a JupyterServer.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates the required AWS infrastructure for a SageMaker Studio Domain and User Profile, then provisions an `aws_sagemaker_app` configured as a `JupyterServer`.\n\nIt includes:\n\n- AWS provider configuration\n- A VPC with two public subnets\n- IAM role for SageMaker execution\n- SageMaker Studio Domain\n- SageMaker User Profile\n- SageMaker JupyterServer App",
+  "failure_category": "",
+  "failure_reason": ""
+}

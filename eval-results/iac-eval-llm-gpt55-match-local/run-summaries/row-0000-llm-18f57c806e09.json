@@ -1,0 +1,85 @@
+{
+  "index": 0,
+  "rowId": "",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-18f57c806e09",
+  "userId": "local-user",
+  "durationSeconds": 52.41,
+  "difficulty": "5",
+  "resource": "aws_cloudwatch_log_group, aws_cloudwatch_log_resource_policy, aws_route53_query_log, aws_route53_zone, aws_iam_policy_document",
+  "prompt": "Configure a query log that can create a log stream and put log events using Route 53 resources. Name the zone \"primary\", the cloudwatch log group \"aws_route53_example_com\", and the cloudwatch log resource policy \"route53-query-logging-policy\"",
+  "intent": "Has one \"aws_route53_zone\" resource\n    with \"name\"\n\nHas one \"aws_cloudwatch_log_group\" resource\n\nHas one \"aws_cloudwatch_log_resource_policy\" resource\n    with \"policy_document\" enabling \"logs:CreateLogStream\" and \"logs:PutLogEvents\"\n    with \"policy_name\"\n\nHas one \"aws_route53_query_log\" resource\n    with \"cloudwatch_log_group_arn\" referencing the \"aws_cloudwatch_log_group\" resource\n    with \"zone_id\" referencing the \"aws_route53_zone\" resource\n    and depends on the \"aws_cloudwatch_log_resource_policy\" resource",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region  = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\n\nresource \"aws_route53_zone\" \"primary\" {\n  name = \"example53.com\"\n}\n\nresource \"aws_cloudwatch_log_group\" \"aws_route53_example_com\" {\n  name              = \"/aws/route53/${aws_route53_zone.primary.name}\"\n  retention_in_days = 30\n}\n\n# Example CloudWatch log resource policy to allow Route53 to write logs\n# to any log group under /aws/route53/*\n\ndata \"aws_iam_policy_document\" \"route53-query-logging-policy\" {\n  statement {\n    actions = [\n      \"logs:CreateLogStream\",\n      \"logs:PutLogEvents\",\n    ]\n\n    resources = [\"arn:aws:logs:*:*:log-group:/aws/route53/*\"]\n\n    principals {\n      identifiers = [\"route53.amazonaws.com\"]\n      type        = \"Service\"\n    }\n  }\n}\n\nresource \"aws_cloudwatch_log_resource_policy\" \"route53-query-logging-policy\" {\n  policy_document = data.aws_iam_policy_document.route53-query-logging-policy.json\n  policy_name     = \"route53-query-logging-policy\"\n}\n\nresource \"aws_route53_query_log\" \"example_com\" {\n  depends_on = [aws_cloudwatch_log_resource_policy.route53-query-logging-policy]\n\n  cloudwatch_log_group_arn = aws_cloudwatch_log_group.aws_route53_example_com.arn\n  zone_id                  = aws_route53_zone.primary.zone_id\n}",
+  "bleuScore": 0.367177,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/generated-source/row-0000-llm-18f57c806e09",
+  "generatedSourceFiles": [
+    "generated-source/row-0000-llm-18f57c806e09/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_configuration_valid\": false, \"is_valid_cloudwatch_log_group\": true, \"is_valid_cloudwatch_log_resource_policy\": false, \"is_valid_r53_zone\": true, \"is_valid_route53_query_log\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_cloudwatch_log_group": true,
+    "aws_cloudwatch_log_resource_policy": true,
+    "aws_route53_query_log": true,
+    "aws_route53_zone": true,
+    "aws_iam_policy_document": true,
+    "logs:CreateLogStream": true,
+    "logs:PutLogEvents": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates a Route 53 public hosted zone named `primary` for `example.com`, a CloudWatch Log Group for Route 53 query logs, a CloudWatch Logs resource policy named `route53-query-logging-policy` that allows Route 53 to create log streams and put log events, and a Route 53 query logging configuration connecting the hosted zone to the log group.\n\n```hcl\nterraform {\n  required_version = \">= 1.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_route53_zone\" \"primary\" {\n  name = \"example.com\"\n}\n\nresource \"aws_cloudwatch_log_group\" \"aws_route53_example_com\" {\n  name              = \"/aws/route53/example.com\"\n  retention_in_days = 30\n}\n\ndata \"aws_iam_policy_document\" \"route53_query_logging_policy\" {\n  statement {\n    sid    = \"Route53LogsToCloudWatchLogs\"\n    effect = \"Allow\"\n\n    principals {\n      type        = \"Service\"\n      identifiers = [\"route53.amazonaws.com\"]\n    }\n\n    actions = [\n      \"logs:CreateLogStream\",\n      \"logs:PutLogEvents\"\n    ]\n\n    resources = [\n      \"${aws_cloudwatch_log_group.aws_route53_example_com.arn}:*\"\n    ]\n  }\n}\n\nres",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local/run-summaries/row-0000-llm-18f57c806e09.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Configure a query log that can create a log stream and put log events using Route 53 resources. Name the zone \"primary\", the cloudwatch log group \"aws_route53_example_com\", and the cloudwatch log resource policy \"route53-query-logging-policy\"",
+  "answer": "This Terraform configuration creates a Route 53 public hosted zone named `primary` for `example.com`, a CloudWatch Log Group for Route 53 query logs, a CloudWatch Logs resource policy named `route53-query-logging-policy` that allows Route 53 to create log streams and put log events, and a Route 53 query logging configuration connecting the hosted zone to the log group.",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_configuration_valid\": false, \"is_valid_cloudwatch_log_group\": true, \"is_valid_cloudwatch_log_resource_policy\": false, \"is_valid_r53_zone\": true, \"is_valid_route53_query_log\": false}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

@@ -1,0 +1,94 @@
+{
+  "index": 345,
+  "rowId": "345",
+  "status": "completed",
+  "pass": false,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-64c710227d20",
+  "userId": "local-user",
+  "durationSeconds": 74.55,
+  "difficulty": "4",
+  "resource": "aws_db_instance, aws_security_group, random_string",
+  "prompt": "creates a MySQL database instance on AWS RDS with a public access security group and a randomly generated password. It should not skip final snapshot",
+  "intent": "Has one \"aws_db_instance\" resource\n    with one \"allocated_storage\"\n    with one \"engine\" = \"mysql\"\n    with one \"instance_class\" and a valid instance class type\n    with one \"password\"\n    with one \"username\"\n    with one \"skip_final_snapshot\" = false\n\nhas one security_group\n\nhas one random_string",
+  "referenceOutput": "terraform {\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.75\"\n    }\n  }\n\n  required_version = \"~> 1.9.8\"\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n  profile = \"admin-1\"\n\n  assume_role {\n    role_arn = \"arn:aws:iam::590184057477:role/yicun-iac\"\n  }\n}\n\ndata \"aws_region\" \"current\" {}\n\nresource \"random_string\" \"db_password\" {\n  keepers = {\n    region = data.aws_region.current.name\n  }\n\n  special = false\n  length  = 20\n}\n\nresource \"aws_db_instance\" \"main\" {\n  identifier_prefix      = \"go-cloud-test\"\n  engine                 = \"mysql\"\n  engine_version         = \"5.7\"\n  instance_class         = \"db.t3.micro\"\n  allocated_storage      = 20\n  username               = \"root\"\n  password               = random_string.db_password.result\n  db_name                = \"testdb\"\n  publicly_accessible    = true\n  vpc_security_group_ids = [aws_security_group.main.id]\n  skip_final_snapshot    = false\n}\n\nresource \"aws_security_group\" \"main\" {\n  name_prefix = \"testdb\"\n  description = \"Security group for the Go CDK MySQL test database.\"\n\n  ingress {\n    from_port   = 3306\n    to_port     = 3306\n    protocol    = \"tcp\"\n    cidr_blocks = [\"0.0.0.0/0\"]\n    description = \"Public MySQL access\"\n  }\n\n  egress {\n    from_port   = 0\n    to_port     = 0\n    protocol    = \"-1\"\n    cidr_blocks = [\"0.0.0.0/0\"]\n    description = \"All outgoing traffic allowed\"\n  }\n}",
+  "bleuScore": 0.103507,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0345-llm-64c710227d20",
+  "generatedSourceFiles": [
+    "generated-source/row-0345-llm-64c710227d20/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "96",
+        "finding": "broad_ingress_or_egress_cidr"
+      },
+      {
+        "severity": "high",
+        "file": "main.tf",
+        "line": "149",
+        "finding": "public_rds_instance"
+      }
+    ],
+    "qualityGatePass": false
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Failure",
+    "opaEvaluationError": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_db_instance\": false, \"is_valid_random_string\": false, \"is_valid_security_group\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}",
+    "officialPass": false,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_db_instance": true,
+    "aws_security_group": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "The Terraform configuration below provisions an AWS RDS MySQL database instance with:\n\n- A randomly generated master password\n- A public security group allowing inbound MySQL access on port `3306`\n- Placement in the default VPC using a DB subnet group\n- `publicly_accessible = true`\n- Final snapshot enabled on deletion with `skip_final_snapshot = false`\n- A unique final snapshot identifier\n- Required AWS and Random providers\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n\n    random = {\n      source  = \"hashicorp/random\"\n      version = \">= 3.5\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nprovider \"random\" {}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the RDS MySQL instance will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"db_identifier\" {\n  description = \"Identifier for the RDS MySQL database instance.\"\n  type        = string\n  default     = \"public-mysql-rds-instance\"\n}\n\nvariable \"db_name\" {\n  description = \"Initial database name to create.\"\n  type        = string\n  default     = \"appdb\"\n}\n\nvariable \"db_username\" {\n ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0345-llm-64c710227d20.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: creates a MySQL database instance on AWS RDS with a public access security group and a randomly generated password. It should not skip final snapshot",
+  "promptStrategy": "default",
+  "answer": "The Terraform configuration below provisions an AWS RDS MySQL database instance with:\n\n- A randomly generated master password\n- A public security group allowing inbound MySQL access on port `3306`\n- Placement in the default VPC using a DB subnet group\n- `publicly_accessible = true`\n- Final snapshot enabled on deletion with `skip_final_snapshot = false`\n- A unique final snapshot identifier\n- Required AWS and Random providers",
+  "failure_category": "opa_rule_failure",
+  "failure_reason": "{\"result\": [{\"expressions\": [{\"value\": {\"terraform\": {\"validation\": {\"is_valid_db_instance\": false, \"is_valid_random_string\": false, \"is_valid_security_group\": true}}}, \"text\": \"data\", \"location\": {\"row\": 1, \"col\": 1}}]}]}"
+}

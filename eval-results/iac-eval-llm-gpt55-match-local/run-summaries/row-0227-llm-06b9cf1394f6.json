@@ -1,0 +1,80 @@
+{
+  "index": 227,
+  "rowId": "227",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-06b9cf1394f6",
+  "userId": "local-user",
+  "durationSeconds": 48.52,
+  "difficulty": "2",
+  "resource": "aws_dax_parameter_group",
+  "prompt": "Create a DAX parameter group.",
+  "intent": "Has one \"aws_dax_parameter_group\"",
+  "referenceOutput": "terraform {\nrequired_providers {\naws = {\nsource = \"hashicorp/aws\"\nversion = \"~> 5.0\"\n}\n}\n}\n\nresource \"aws_dax_parameter_group\" \"example\" {\nname = \"example\"\n\nparameters {\nname = \"query-ttl-millis\"\nvalue = \"100000\"\n}\n\nparameters {\nname = \"record-ttl-millis\"\nvalue = \"100000\"\n}\n}",
+  "bleuScore": 0.213682,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/generated-source/row-0227-llm-06b9cf1394f6",
+  "generatedSourceFiles": [
+    "generated-source/row-0227-llm-06b9cf1394f6/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_dax_parameter_group": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS DAX parameter group in a valid AWS region. The parameter group includes example DAX parameters and can be associated with an Amazon DynamoDB Accelerator cluster later.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \">= 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = var.aws_region\n}\n\nvariable \"aws_region\" {\n  description = \"AWS region where the DAX parameter group will be created.\"\n  type        = string\n  default     = \"us-east-1\"\n}\n\nvariable \"dax_parameter_group_name\" {\n  description = \"Name of the DAX parameter group.\"\n  type        = string\n  default     = \"example-dax-parameter-group\"\n}\n\nresource \"aws_dax_parameter_group\" \"example\" {\n  name        = var.dax_parameter_group_name\n  description = \"Example DAX parameter group managed by Terraform\"\n\n  parameters {\n    name  = \"query-ttl-millis\"\n    value = \"300000\"\n  }\n\n  parameters {\n    name  = \"record-ttl-millis\"\n    value = \"300000\"\n  }\n}\n\noutput \"dax_parameter_group_name\" {\n  description = \"The name of the created DAX parameter group.\"\n  value       = aws_dax_parameter_group.example.name\n}\n\noutput ",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-0/run-summaries/row-0227-llm-06b9cf1394f6.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create a DAX parameter group.",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS DAX parameter group in a valid AWS region. The parameter group includes example DAX parameters and can be associated with an Amazon DynamoDB Accelerator cluster later.",
+  "failure_category": "",
+  "failure_reason": ""
+}

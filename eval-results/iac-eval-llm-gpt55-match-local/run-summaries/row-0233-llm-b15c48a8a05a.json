@@ -1,0 +1,80 @@
+{
+  "index": 233,
+  "rowId": "233",
+  "status": "completed",
+  "pass": true,
+  "stack": "llm-only",
+  "region": "local",
+  "agentSet": "llm-only",
+  "sessionId": "llm-b15c48a8a05a",
+  "userId": "local-user",
+  "durationSeconds": 46.24,
+  "difficulty": "1",
+  "resource": "aws_vpc",
+  "prompt": "Create an AWS VPC resource with an example CIDR block and IPv6 enabled",
+  "intent": "Has one resource \"aws_vpc\"        \nwith one \"cidr_block\" with any valid IPv4 address\nwith one \"assign_generated_ipv6_cidr_block\" with value \"true\"",
+  "referenceOutput": "resource \"aws_vpc\" \"main\" {\n  cidr_block = \"10.0.0.0/16\"\n  assign_generated_ipv6_cidr_block = true\n}",
+  "bleuScore": 0.059104,
+  "eventCount": 1,
+  "toolNames": [
+    "gpt5.5"
+  ],
+  "toolCallSequence": [
+    "gpt5.5"
+  ],
+  "engineerLoop": {
+    "engineerCallCount": 0,
+    "verificationCallCount": 0,
+    "engineerAfterVerifier": false,
+    "engineerAfterReviewer": false
+  },
+  "allAgentsCalled": true,
+  "specialistProgress": {
+    "startedAgents": [
+      "gpt5.5"
+    ],
+    "completedAgents": [
+      "gpt5.5"
+    ],
+    "missingAgents": []
+  },
+  "terraformFiles": [
+    "main.tf"
+  ],
+  "generatedSourceDir": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/generated-source/row-0233-llm-b15c48a8a05a",
+  "generatedSourceFiles": [
+    "generated-source/row-0233-llm-b15c48a8a05a/main.tf"
+  ],
+  "artifactQuality": {
+    "artifactCompletePass": true,
+    "missingPathModuleFiles": [],
+    "qualityFindings": [],
+    "qualityGatePass": true
+  },
+  "officialEvaluation": {
+    "enabled": true,
+    "terraformPlanSuccess": true,
+    "terraformPlanError": "",
+    "opaEvaluationResult": "Success",
+    "opaEvaluationError": "",
+    "officialPass": true,
+    "notes": "",
+    "defaultInputFiles": [],
+    "createdMissingFiles": []
+  },
+  "requiredMarkers": {
+    "aws_vpc": true
+  },
+  "missingMarkers": [],
+  "allRequiredMarkersFound": true,
+  "responsePreview": "This Terraform configuration creates an AWS VPC in the `us-east-1` region using an example IPv4 CIDR block and enables AWS-generated IPv6 CIDR assignment for the VPC.\n\n```hcl\nterraform {\n  required_version = \">= 1.5.0\"\n\n  required_providers {\n    aws = {\n      source  = \"hashicorp/aws\"\n      version = \"~> 5.0\"\n    }\n  }\n}\n\nprovider \"aws\" {\n  region = \"us-east-1\"\n}\n\nresource \"aws_vpc\" \"example\" {\n  cidr_block                       = \"10.0.0.0/16\"\n  assign_generated_ipv6_cidr_block = true\n\n  enable_dns_support   = true\n  enable_dns_hostnames = true\n\n  tags = {\n    Name        = \"example-ipv6-vpc\"\n    Environment = \"example\"\n  }\n}\n\noutput \"vpc_id\" {\n  description = \"The ID of the created VPC\"\n  value       = aws_vpc.example.id\n}\n\noutput \"ipv4_cidr_block\" {\n  description = \"The IPv4 CIDR block assigned to the VPC\"\n  value       = aws_vpc.example.cidr_block\n}\n\noutput \"ipv6_cidr_block\" {\n  description = \"The AWS-generated IPv6 CIDR block assigned to the VPC\"\n  value       = aws_vpc.example.ipv6_cidr_block\n}\n```",
+  "summaryJson": "/Users/png/01. Project/graduation-thesis/src/eval-results/iac-eval-llm-gpt55-match-local-full-shards/worker-2/run-summaries/row-0233-llm-b15c48a8a05a.json",
+  "llmOnly": true,
+  "modelId": "gpt-5.5",
+  "officialSystemPrompt": "You are TerraformAI, an AI agent that builds and deploys Cloud Infrastructure written in Terraform HCL. Generate a description of the Terraform program you will define, followed by a single Terraform HCL program in response to each of my Instructions. Make sure the configuration is deployable. Create IAM roles as needed. If variables are used, make sure default values are supplied. Be sure to include a valid provider configuration within a valid region. Make sure there are no undeclared resources (e.g., as references) or variables, that is, all resources and variables needed in the configuration should be fully specified.",
+  "officialUserPrompt": "Here is the actual prompt: Create an AWS VPC resource with an example CIDR block and IPv6 enabled",
+  "promptStrategy": "default",
+  "answer": "This Terraform configuration creates an AWS VPC in the `us-east-1` region using an example IPv4 CIDR block and enables AWS-generated IPv6 CIDR assignment for the VPC.",
+  "failure_category": "",
+  "failure_reason": ""
+}
