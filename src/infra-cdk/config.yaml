@@ -19,8 +19,8 @@ backend:
   # OpenAI configuration for AgentCore Runtime
   # The API key should be stored in AWS Secrets Manager after deployment
   openai:
-    base_url: https://llm.chiasegpu.vn/v1   # OpenAI-compatible API base URL
-    model_id: gpt-5.5                       # OpenAI-compatible model ID to use
+    base_url: https://openrouter.ai/api/v1   # OpenAI-compatible API base URL
+    model_id: openrouter/free                # OpenAI-compatible model ID to use
 
   # GitHub App configuration for repository-scoped agent workspaces.
   # Store the GitHub App private key in AgentCore Identity under this API key provider name.
