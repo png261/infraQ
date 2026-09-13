@@ -119,20 +119,77 @@ def get_openai_credentials(
     values under api_key_value, while OpenAI clients require the actual bearer key.
 
     Returns:
-        dict: Dictionary containing 'api_key', plus base_url and model_id from environment fallbacks
+        dict: Dictionary containing 'api_key', plus base_url and model_id from secret or environment
     """
-    resolved_api_key = _normalize_api_key(api_key) or _normalize_api_key(os.environ.get("OPENAI_API_KEY")) or _get_api_key_from_provider(
-        os.environ.get("OPENAI_CREDENTIAL_PROVIDER_NAME", "")
-    )
+    secret_dict = _resolve_openai_secret_dict(api_key)
+    resolved_api_key = secret_dict.get("api_key")
     if not resolved_api_key:
         raise ValueError("OpenAI API key is not configured. Set OPENAI_API_KEY locally or OPENAI_CREDENTIAL_PROVIDER_NAME in AgentCore.")
     logger.info("Resolved OpenAI API key credential with length %d", len(resolved_api_key))
 
     return {
         "api_key": resolved_api_key,
-        "base_url": os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1"),
-        "model_id": os.environ.get("OPENAI_MODEL_ID", "gpt-4o"),
+        "base_url": secret_dict.get("base_url") or os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1"),
+        "model_id": secret_dict.get("model_id") or os.environ.get("OPENAI_MODEL_ID", "gpt-4o"),
     }
+
+
+def _resolve_openai_secret_dict(api_key: str | None = None) -> dict[str, str]:
+    if api_key:
+        return _parse_secret_payload(api_key)
+    if os.environ.get("OPENAI_API_KEY"):
+        return _parse_secret_payload(os.environ["OPENAI_API_KEY"])
+    provider_name = os.environ.get("OPENAI_CREDENTIAL_PROVIDER_NAME", "")
+    if provider_name:
+        secret_value = _get_secret_value_from_provider(provider_name)
+        if secret_value:
+            return _parse_secret_payload(secret_value)
+    return {}
+
+
+def _parse_secret_payload(value: str | None) -> dict[str, str]:
+    raw_value = str(value or "").strip()
+    if not raw_value:
+        return {}
+    try:
+        parsed = json.loads(raw_value)
+    except json.JSONDecodeError:
+        return {"api_key": raw_value}
+    if not isinstance(parsed, dict):
+        return {"api_key": raw_value}
+    return {
+        "api_key": str(parsed.get("api_key") or parsed.get("api_key_value") or "").strip(),
+        "base_url": str(parsed.get("base_url") or "").strip(),
+        "model_id": str(parsed.get("model_id") or "").strip(),
+    }
+
+
+def _get_secret_value_from_provider(provider_name: str) -> str:
+    if not provider_name:
+        return ""
+    cached_value = _get_cached_openai_provider_key(provider_name)
+    if cached_value:
+        return cached_value
+    try:
+        control = boto3.client(
+            "bedrock-agentcore-control",
+            region_name=os.environ.get("AWS_DEFAULT_REGION") or os.environ.get("AWS_REGION"),
+        )
+        provider = control.get_api_key_credential_provider(name=provider_name)
+        secret_arn = (provider.get("apiKeySecretArn") or {}).get("secretArn")
+        if not secret_arn:
+            return ""
+        secrets = boto3.client(
+            "secretsmanager",
+            region_name=os.environ.get("AWS_DEFAULT_REGION") or os.environ.get("AWS_REGION"),
+        )
+        secret_value = secrets.get_secret_value(SecretId=secret_arn).get("SecretString", "")
+        if secret_value:
+            _OPENAI_PROVIDER_CACHE[provider_name] = (time.monotonic(), secret_value)
+        return secret_value
+    except Exception:
+        logger.exception("Failed to resolve OpenAI API key from provider %s", provider_name)
+        return ""
 
 
 def _normalize_api_key(value: str | None) -> str:
