@@ -250,9 +250,9 @@ def _runtime_filesystem_root(repository: dict | None, session_id: str) -> Path:
 
 
 def _safe_runtime_path(root: Path, relative_path: str | None = None) -> Path:
-    raw_path = (relative_path or "").strip()
-    if raw_path.startswith("/"):
-        raise ValueError("absolute paths are not allowed")
+    raw_path = (relative_path or "").strip().lstrip("/")
+    if ".." in Path(raw_path).parts:
+        raise ValueError("path escapes runtime filesystem root")
     candidate = (root / raw_path).resolve()
     resolved_root = root.resolve()
     try:
@@ -267,34 +267,38 @@ def _iso_mtime(path: Path) -> str:
 
 
 def _list_runtime_files(repository: dict | None, session_id: str, prefix: str = "") -> list[dict]:
-    root = _runtime_filesystem_root(repository, session_id)
-    if not root.exists():
+    try:
+        root = _runtime_filesystem_root(repository, session_id)
+        if not root.exists():
+            return []
+
+        start = _safe_runtime_path(root, prefix)
+        if not start.exists():
+            return []
+
+        candidates = [start] if start.is_file() else start.rglob("*")
+        entries: list[dict] = []
+        for path in candidates:
+            if not path.is_file():
+                continue
+            relative_parts = path.relative_to(root).parts
+            if ".git" in relative_parts:
+                continue
+            entries.append(
+                {
+                    "key": path.relative_to(root).as_posix(),
+                    "size": path.stat().st_size,
+                    "lastModified": _iso_mtime(path),
+                    "eTag": None,
+                }
+            )
+            if len(entries) >= 1000:
+                break
+
+        return sorted(entries, key=lambda item: item["key"])
+    except Exception as exc:
+        logger.warning("Filesystem listFiles failed: %s", exc)
         return []
-
-    start = _safe_runtime_path(root, prefix)
-    if not start.exists():
-        return []
-
-    candidates = [start] if start.is_file() else start.rglob("*")
-    entries: list[dict] = []
-    for path in candidates:
-        if not path.is_file():
-            continue
-        relative_parts = path.relative_to(root).parts
-        if ".git" in relative_parts:
-            continue
-        entries.append(
-            {
-                "key": path.relative_to(root).as_posix(),
-                "size": path.stat().st_size,
-                "lastModified": _iso_mtime(path),
-                "eTag": None,
-            }
-        )
-        if len(entries) >= 1000:
-            break
-
-    return sorted(entries, key=lambda item: item["key"])
 
 
 def _get_runtime_file_content(repository: dict | None, session_id: str, key: str) -> dict:
@@ -914,7 +918,11 @@ async def invocations(payload, context: RequestContext):
         filesystem_action = payload.get("filesystemAction")
         if filesystem_action == "listFiles":
             prefix = str(payload.get("prefix") or "").strip()
-            yield {"status": "ok", "files": _list_runtime_files(repository, session_id, prefix)}
+            try:
+                yield {"status": "ok", "files": _list_runtime_files(repository, session_id, prefix)}
+            except Exception as exc:
+                logger.warning("Filesystem listFiles failed: %s", exc)
+                yield {"status": "ok", "files": []}
             return
         if filesystem_action == "getFileContent":
             file_key = str(payload.get("fileKey") or payload.get("key") or "").strip()
@@ -925,9 +933,16 @@ async def invocations(payload, context: RequestContext):
                 yield {"status": "ok", "file": _get_runtime_file_content(repository, session_id, file_key)}
             except FileNotFoundError:
                 yield {"status": "error", "error": f"file not found: {file_key}"}
+            except Exception as exc:
+                logger.warning("Filesystem getFileContent failed: %s", exc)
+                yield {"status": "error", "error": f"unable to read file: {exc}"}
             return
         if filesystem_action == "downloadSourceZip":
-            yield {"status": "ok", "archive": _runtime_files_zip(repository, session_id)}
+            try:
+                yield {"status": "ok", "archive": _runtime_files_zip(repository, session_id)}
+            except Exception as exc:
+                logger.warning("Filesystem downloadSourceZip failed: %s", exc)
+                yield {"status": "error", "error": str(exc)}
             return
 
         if github_action == "createPullRequest":

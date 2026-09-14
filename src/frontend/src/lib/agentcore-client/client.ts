@@ -197,6 +197,9 @@ export class AgentCoreClient {
 
     if (!response.ok) {
       const errorText = await response.text()
+      if (action === "listFiles" && (response.status === 424 || response.status >= 500)) {
+        return { status: "ok", files: [] }
+      }
       throw new Error(`HTTP ${response.status}: ${errorText}`)
     }
 

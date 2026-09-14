@@ -569,8 +569,13 @@ export function FileSystemPanel({
         setStatus("connected")
         if (options.showLoading) void refreshChangeStatus()
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to list files")
-        setStatus("error")
+        const msg = err instanceof Error ? err.message : "Failed to list files"
+        if (msg.includes("502") || msg.includes("424") || msg.includes("Failed to fetch") || msg.includes("warm")) {
+          setStatus("loading")
+        } else {
+          setError(msg)
+          setStatus("error")
+        }
       } finally {
         if (options.showLoading) setIsRefreshing(false)
       }
@@ -663,7 +668,10 @@ export function FileSystemPanel({
       .catch(err => {
         if (cancelled) return
         setPreview(null)
-        setError(err instanceof Error ? err.message : "Failed to preview file")
+        const msg = err instanceof Error ? err.message : "Failed to preview file"
+        if (!msg.includes("502") && !msg.includes("424")) {
+          setError(msg)
+        }
       })
       .finally(() => {
         if (!cancelled) setIsPreviewLoading(false)
@@ -701,7 +709,10 @@ export function FileSystemPanel({
       .catch(err => {
         if (cancelled) return
         setFileDiff(null)
-        setError(err instanceof Error ? err.message : "Failed to load file diff")
+        const msg = err instanceof Error ? err.message : "Failed to load file diff"
+        if (!msg.includes("502") && !msg.includes("424")) {
+          setError(msg)
+        }
       })
       .finally(() => {
         if (!cancelled) setIsDiffLoading(false)
@@ -753,9 +764,17 @@ export function FileSystemPanel({
 
   return (
     <aside className="flex h-full min-w-0 flex-col border-l border-slate-200 bg-white">
-      {error && (
-        <div className="border-b border-red-100 bg-red-50 px-4 py-2 text-sm text-red-700">
-          {error}
+      {error && !error.includes("502") && !error.includes("424") && (
+        <div className="flex items-center justify-between border-b border-red-100 bg-red-50 px-4 py-2 text-sm text-red-700">
+          <span>{error}</span>
+          <button
+            type="button"
+            onClick={() => setError(null)}
+            className="ml-2 text-xs font-semibold text-red-600 hover:text-red-800"
+            aria-label="Dismiss error"
+          >
+            ✕
+          </button>
         </div>
       )}
 
